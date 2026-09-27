@@ -70,6 +70,8 @@ const telemetryEventSchema = z.strictObject({
   queryShape: z.enum(["empty", "identifier", "text"]).optional(),
   hasFilters: z.boolean().optional(),
   hasCursor: z.boolean().optional(),
+  upstreamStatus: z.number().int().min(100).max(599).optional(),
+  upstreamCode: z.enum(["22023", "P0001", "57014", "PGRST", "unknown"]).optional(),
   sort: z.enum(["relevance", "modified_desc", "name_asc", "other"]).optional(),
   backend: z.enum(["supabase_data_api", "portal_edge_lcia", "portal_edge_hybrid", "portal_bff"]),
   latencyMs: z.number().int().min(0).max(120_000),

@@ -1,6 +1,11 @@
 import "server-only";
 
 export type PortalDataErrorCode = "invalid_request" | "upstream_unavailable" | "invalid_response";
+export type PortalUpstreamErrorCode = "22023" | "P0001" | "57014" | "PGRST" | "unknown";
+export type PortalUpstreamFailure = {
+  readonly upstreamStatus?: number;
+  readonly upstreamCode: PortalUpstreamErrorCode;
+};
 
 /**
  * The single public failure shape of the Portal data boundary. Messages stay
@@ -9,8 +14,9 @@ export type PortalDataErrorCode = "invalid_request" | "upstream_unavailable" | "
  */
 export class PortalDataError extends Error {
   readonly code: PortalDataErrorCode;
+  readonly upstream?: Readonly<PortalUpstreamFailure>;
 
-  constructor(code: PortalDataErrorCode) {
+  constructor(code: PortalDataErrorCode, upstream?: PortalUpstreamFailure) {
     super(
       code === "invalid_request"
         ? "The Portal request is invalid."
@@ -18,5 +24,6 @@ export class PortalDataError extends Error {
     );
     this.name = "PortalDataError";
     this.code = code;
+    if (upstream !== undefined) this.upstream = Object.freeze({ ...upstream });
   }
 }

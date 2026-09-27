@@ -52,6 +52,179 @@ function sitemapItems(count: number) {
 }
 
 describe("Portal Supabase public RPC client", () => {
+  it.each([
+    [400, "P0001", "upstream_unavailable"],
+    [400, "22023", "invalid_request"],
+    [500, "57014", "upstream_unavailable"],
+    [503, "22023", "upstream_unavailable"],
+    [400, "untrusted-provider-text", "upstream_unavailable"],
+  ] as const)(
+    "classifies HTTP %i / %s without exposing provider text",
+    async (status, code, expected) => {
+      const logger = vi.fn<PortalTelemetryLogger>();
+      const response = Response.json(
+        {
+          code,
+          message: "private-provider-message",
+          details: "private-details",
+          hint: "private-hint",
+        },
+        { status },
+      );
+      const client = createPortalRpcClient({
+        environment,
+        logger,
+        fetchImplementation: vi.fn<typeof fetch>(async () => response),
+      });
+      await expect(getPublicCatalogSummary(client)).rejects.toMatchObject({
+        code: expected,
+        upstream: {
+          upstreamStatus: status,
+          upstreamCode: code === "untrusted-provider-text" ? "unknown" : code,
+        },
+      });
+      expect(response.bodyUsed).toBe(true);
+      expect(logger).toHaveBeenCalledWith(
+        expect.objectContaining({
+          errorCode: expected,
+          upstreamStatus: status,
+          upstreamCode: code === "untrusted-provider-text" ? "unknown" : code,
+        }),
+      );
+      expect(JSON.stringify(logger.mock.calls)).not.toMatch(/private-|untrusted-provider-text/u);
+    },
+  );
+
+  it.each(["not-json", "null", "[]", '{"code":22023}', '{"code":"22023"}junk', "x".repeat(4097)])(
+    "fails unavailable for an unverified or oversized error body %#",
+    async (body) => {
+      const client = createPortalRpcClient({
+        environment,
+        logger: vi.fn<PortalTelemetryLogger>(),
+        fetchImplementation: vi.fn<typeof fetch>(async () => new Response(body, { status: 400 })),
+      });
+      await expect(getPublicCatalogSummary(client)).rejects.toMatchObject({
+        code: "upstream_unavailable",
+        upstream: { upstreamStatus: 400, upstreamCode: "unknown" },
+      });
+    },
+  );
+
+  it("cancels oversized chunked and declared error bodies before consuming them", async () => {
+    for (const declared of [false, true]) {
+      let cancelled = false;
+      let pulls = 0;
+      const body = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          pulls += 1;
+          controller.enqueue(new Uint8Array(2048));
+        },
+        cancel() {
+          cancelled = true;
+        },
+      });
+      const response = new Response(body, {
+        status: 400,
+        ...(declared ? { headers: { "content-length": "1000000" } } : {}),
+      });
+      const client = createPortalRpcClient({
+        environment,
+        logger: vi.fn<PortalTelemetryLogger>(),
+        fetchImplementation: vi.fn<typeof fetch>(async () => response),
+      });
+      await expect(getPublicCatalogSummary(client)).rejects.toMatchObject({
+        code: "upstream_unavailable",
+      });
+      expect(cancelled).toBe(true);
+      expect(pulls).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it.each([
+    [Response.error(), "unknown"],
+    [
+      Response.json({ code: "PGRST102", message: "private-provider-message" }, { status: 400 }),
+      "PGRST",
+    ],
+  ] as const)(
+    "retains a generic failure event for gateway and transport response %#",
+    async (response, code) => {
+      const logger = vi.fn<PortalTelemetryLogger>();
+      const client = createPortalRpcClient({
+        environment,
+        logger,
+        fetchImplementation: vi.fn<typeof fetch>(async () => response),
+      });
+      await expect(getPublicCatalogSummary(client)).rejects.toMatchObject({
+        code: "upstream_unavailable",
+      });
+      expect(logger).toHaveBeenCalledWith(
+        expect.objectContaining({ errorCode: "upstream_unavailable", upstreamCode: code }),
+      );
+      expect(logger.mock.calls[0]?.[0].upstreamStatus).toBe(
+        response.status === 0 ? undefined : response.status,
+      );
+      expect(JSON.stringify(logger.mock.calls)).not.toMatch(/PGRST102|private-provider-message/u);
+    },
+  );
+
+  it("releases an error stream that aborts during its bounded read", async () => {
+    let released = false;
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        controller.error(new DOMException("private-abort-detail", "AbortError"));
+      },
+    });
+    const response = new Response(body, { status: 400 });
+    const cancel = response.body!.cancel.bind(response.body);
+    vi.spyOn(response.body!, "cancel").mockImplementation(async (reason) => {
+      released = !body.locked;
+      return cancel(reason);
+    });
+    const logger = vi.fn<PortalTelemetryLogger>();
+    const client = createPortalRpcClient({
+      environment,
+      logger,
+      fetchImplementation: vi.fn<typeof fetch>(async () => response),
+    });
+    await expect(getPublicCatalogSummary(client)).rejects.toMatchObject({
+      code: "upstream_unavailable",
+    });
+    expect(released).toBe(true);
+    expect(JSON.stringify(logger.mock.calls)).not.toContain("private-abort-detail");
+  });
+
+  it.each(["P0001", "22023"] as const)(
+    "retains %s classification in both controlled origin and consumer logs",
+    async (code) => {
+      const logger = vi.fn<PortalTelemetryLogger>();
+      const client = createPortalRpcClient({
+        environment,
+        logger,
+        fetchImplementation: vi.fn<typeof fetch>(async () =>
+          Response.json({ code, message: "private-provider-message" }, { status: 400 }),
+        ),
+      });
+      const errorCode = code === "22023" ? "invalid_request" : "upstream_unavailable";
+      await expect(searchPublicProcesses({ query: "private-query" }, client)).rejects.toMatchObject(
+        { code: errorCode },
+      );
+      expect(logger.mock.calls).toHaveLength(2);
+      expect(logger.mock.calls.map(([event]) => event)).toEqual([
+        expect.objectContaining({
+          eventKind: "origin",
+          errorCode,
+          upstreamStatus: 400,
+          upstreamCode: code,
+        }),
+        expect.objectContaining({ errorCode, upstreamStatus: 400, upstreamCode: code }),
+      ]);
+      expect(JSON.stringify(logger.mock.calls)).not.toMatch(
+        /private-provider-message|private-query/u,
+      );
+    },
+  );
+
   it("uses the explicit api profile and only a publishable API key", async () => {
     const fetchImplementation = vi.fn<typeof fetch>(async (..._arguments) =>
       Response.json(fixture.search),

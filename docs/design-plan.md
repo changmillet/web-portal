@@ -1182,6 +1182,8 @@ Compatibility spike 必须实测：
 
 结构化事件：route family、query kind、locale、cache hit/miss、backend、latency、row count、fallback、status/error code、deployment SHA。
 
+公共 RPC 失败响应最多读取 4 KiB；只有 HTTP 400 与 PostgreSQL `22023` 同时成立时，才归为 `invalid_request`。`P0001`（包括 `portal catalog unavailable`）、`57014`、PostgREST 错误、未知错误码、畸形或超大错误体均归为暂不可用。服务端事件仅额外记录 HTTP `upstreamStatus` 与闭集 `upstreamCode`（`22023/P0001/57014/PGRST/unknown`）；`PGRST` 合并符合 `PGRST` 加三位数字形态的提供者码，非 HTTP transport 响应不带 status，不记录 message/details/hint。实际收到错误响应的回源与消费者事件保留相同的已验证类别；消费者 deadline 先到或本地拒绝时不伪造上游字段。读取失败时取消剩余响应体，错误不进入成功缓存。
+
 不记录：原始自然语言、完整 UUID 列表、候选集、用户备注、embedding、Supabase key 或内部 locator。
 
 Dashboard 至少覆盖：

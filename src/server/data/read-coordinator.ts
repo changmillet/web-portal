@@ -2,7 +2,11 @@ import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
 
-import { PortalDataError } from "./portal-data-error";
+import {
+  PortalDataError,
+  type PortalDataErrorCode,
+  type PortalUpstreamFailure,
+} from "./portal-data-error";
 
 /**
  * Cache-boundary contract shared by the Portal RPC client and the Next runtime
@@ -38,6 +42,8 @@ export type PortalOriginRecord = {
   readonly marker: string;
   readonly status: "ok" | "error";
   readonly reason?: "capacity" | "cooldown" | "timeout" | "upstream";
+  readonly errorCode?: PortalDataErrorCode;
+  readonly upstream?: Readonly<PortalUpstreamFailure>;
   readonly durationMs: number;
   readonly gateWaitMs: number;
 };
@@ -406,6 +412,9 @@ export function createPortalReadCoordinator(
           reason:
             shed ??
             (error instanceof Error && error.name === "TimeoutError" ? "timeout" : "upstream"),
+          ...(error instanceof PortalDataError
+            ? { errorCode: error.code, ...(error.upstream ? { upstream: error.upstream } : {}) }
+            : {}),
           durationMs: now() - loadStartedAt,
           gateWaitMs: gate.waitMs,
         });

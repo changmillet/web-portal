@@ -4,7 +4,11 @@ import type { ZodType } from "zod";
 
 import { portalNextDataCacheBoundary } from "@/server/data/cache-boundary";
 import { readPortalDataEnvironment, type PortalDataEnvironment } from "@/server/data/environment";
-import { PortalDataError, type PortalDataErrorCode } from "@/server/data/portal-data-error";
+import {
+  PortalDataError,
+  type PortalDataErrorCode,
+  type PortalUpstreamFailure,
+} from "@/server/data/portal-data-error";
 import {
   createPortalReadCoordinator,
   PortalLocalShedError,
@@ -26,6 +30,7 @@ import {
 } from "@/server/telemetry/logger";
 
 const defaultMaximumResponseBytes = 512 * 1024;
+const maximumErrorResponseBytes = 4 * 1024;
 const sitemapShardMaximumResponseBytes = 2 * 1024 * 1024;
 const rpcNames = new Set([
   "portal_search_processes_v2",
@@ -145,9 +150,10 @@ function emitOriginTelemetry(
             ? "local_capacity_shed"
             : record.reason === "cooldown"
               ? "local_cooldown_shed"
-              : "upstream_unavailable",
+              : (record.errorCode ?? "upstream_unavailable"),
       gateQueuedMs: record.gateWaitMs,
       originMarker: record.marker,
+      ...record.upstream,
       ...(locale ? { locale } : {}),
     },
     environment,
@@ -351,6 +357,39 @@ async function parseBoundedJson(response: Response, maximumBytes: number): Promi
   }
 }
 
+async function upstreamFailure(response: Response): Promise<PortalDataError> {
+  let upstreamCode: PortalUpstreamFailure["upstreamCode"] = "unknown";
+  try {
+    const body = await parseBoundedJson(response, maximumErrorResponseBytes);
+    if (body !== null && typeof body === "object" && !Array.isArray(body)) {
+      const code = (body as Record<string, unknown>).code;
+      if (code === "22023" || code === "P0001" || code === "57014") upstreamCode = code;
+      else if (typeof code === "string" && /^PGRST\d{3}$/u.test(code)) upstreamCode = "PGRST";
+    }
+  } catch {
+    // A malformed or oversized provider failure cannot prove invalid input.
+    try {
+      await response.body?.cancel();
+    } catch {
+      // The failed stream may already be closed.
+    }
+  }
+  // PostgREST uses HTTP 400 for P0001 operational failures as well as 22023.
+  // Only its known validation code can classify a request as invalid. Keep
+  // provider messages, details and hints out of the public error and telemetry.
+  return new PortalDataError(
+    response.status === 400 && upstreamCode === "22023"
+      ? "invalid_request"
+      : "upstream_unavailable",
+    {
+      ...(response.status >= 100 && response.status <= 599
+        ? { upstreamStatus: response.status }
+        : {}),
+      upstreamCode,
+    },
+  );
+}
+
 export function createPortalRpcClient(options: PortalRpcClientOptions = {}): PortalRpcClient {
   let environment: PortalDataEnvironment;
   try {
@@ -409,6 +448,7 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
         errorCode: PortalDataErrorCode | PortalTelemetryEvent["errorCode"],
         rowCount: number | null,
         consumer?: PortalReadResult["consumer"],
+        upstream?: Readonly<PortalUpstreamFailure>,
       ) => {
         emitPortalTelemetry(
           logger,
@@ -425,6 +465,7 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
             rowCount,
             status,
             errorCode,
+            ...upstream,
             ...(consumer === undefined
               ? {}
               : {
@@ -479,9 +520,7 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
         }
 
         if (!response.ok) {
-          throw new PortalDataError(
-            response.status === 400 ? "invalid_request" : "upstream_unavailable",
-          );
+          throw await upstreamFailure(response);
         }
 
         try {
@@ -565,7 +604,13 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
               : error instanceof PortalDataError
                 ? error.code
                 : "upstream_unavailable";
-        recordTelemetry("error", code, null, consumer);
+        recordTelemetry(
+          "error",
+          code,
+          null,
+          consumer,
+          error instanceof PortalDataError ? error.upstream : undefined,
+        );
         throw error instanceof PortalDataError
           ? error
           : new PortalDataError("upstream_unavailable");

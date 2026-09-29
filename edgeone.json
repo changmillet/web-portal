@@ -3,7 +3,11 @@
   "buildCommand": "pnpm build",
   "outputDirectory": ".next",
   "nodeVersion": "24.18.0",
-  "redirects": [{ "source": "/", "destination": "/zh-CN", "statusCode": 302 }],
+  "redirects": [
+    { "source": "/", "destination": "/zh-CN", "statusCode": 302 },
+    { "source": "/zh", "destination": "/zh-CN", "statusCode": 301 },
+    { "source": "/zh/", "destination": "/zh-CN", "statusCode": 301 }
+  ],
   "headers": [
     {
       "source": "/maps/*",

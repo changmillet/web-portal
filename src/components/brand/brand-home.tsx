@@ -64,6 +64,14 @@ export async function BrandHome({ locale, summary, hero, counts }: BrandHomeProp
       >
         <div className="brand-container">
           {await CatalogSearchEntry({ locale, number: "02", counts })}
+          <p className="mb-6">
+            <Link
+              className="text-foreground underline underline-offset-4"
+              href={localePath(locale, "lca-database")}
+            >
+              {t("databaseAction")}
+            </Link>
+          </p>
 
           <div className="brand-catalog-summary" aria-label={catalog("scaleTitle")}>
             <div>

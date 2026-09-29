@@ -5,6 +5,7 @@ import { defaultLanguagePath, publicSiteUrl } from "@/lib/seo";
 
 const staticPaths = [
   "",
+  "lca-database",
   "team",
   "community",
   "methodology",

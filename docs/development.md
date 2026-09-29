@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-21
-lastReviewedCommit: 969ed22b4d9336f850ed4fc5e96464e32e8c36a4
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -54,6 +54,8 @@ portal_docpact="${portal_workspace:-$portal_root}/scripts/docpact"
 Replace the example input with the paths being changed. These variables are reused in the checks below. An independent checkout can run local development and Docpact without a workspace. For tracked delivery, locate the configured workspace and read its root `AGENTS.md`, branch policy and delivery skill; the standalone Portal repository does not contain the workspace controller.
 
 Use that workspace's `scripts/workspace-ops` for task creation/start, durable updates, PR submission and completion. Follow each returned next command. Keep implementation in Portal; its `main` PR must merge before a separate root task can integrate the exact eligible commit. Hosted release acceptance is a separate responsibility described by the [product plan](design-plan.md#17-edgeone-makers-部署).
+
+The public `lca-database` entry is exercised by `tests/e2e/database-guide.spec.ts`: all four locales retain raw HTML discovery links, matching canonical/alternates and usable mobile light/dark states. The theme check waits for the actual mobile selector to close and finite transitions to finish before measuring contrast. `Catalog/LCA database` supplies the component, long-localization and unavailable-count scenarios. Public site identity on the homepage remains separate from Dataset metadata on exact-version pages.
 
 ## Choose local checks
 

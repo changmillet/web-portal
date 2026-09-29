@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #117: byte-identical GeoJSON now uses standard .json asset URLs so EdgeOne applies HTTP compression. Geometry, UI behavior, data contracts and CSP directives remain unchanged."
+lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -38,6 +38,8 @@ related:
 可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
 
 品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。目录任务页面不加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。品牌首页的几何与专属材质按下述已采纳组件要求实现；任何页面都不编造统计或产品能力。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
+
+数据库入口使用现有 `PortalPage` 阅读布局、语义按钮与分隔组件，正文区说明选择和获取数据的条件，旁列仅展示有真实公开来源的目录计数。导航和页脚沿访问者任务连接各站，德法到 PCR 英文及 ILCD 节点的链接明确标注语言。所有新增文字须在四语和移动/桌面环境下作为最终读者文案审阅，不使用开发进度或历史迁移叙事。
 
 公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏通过三幕连续叙事建立 Tiangong LCA 品牌识别，数据与平台入口放在后续实际内容区；Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
 

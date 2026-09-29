@@ -16,8 +16,8 @@ checkPaths:
   - docs/development.md
   - docs/ui-system.md
   - .docpact/config.yaml
-lastReviewedAt: 2026-09-21
-lastReviewedCommit: 969ed22b4d9336f850ed4fc5e96464e32e8c36a4
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
 lastReviewedNote: "Reviewed for Portal #113: classification DTO/check routing and production MapLibre stay within Portal ownership, anonymous read-only data and the existing reviewed main/integration release policy."
 related:
   - docs/development.md

@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-09-26
-lastReviewedCommit: 90980f893a4eb5ebbe8d9250545879fa40e74c3a
-lastReviewedNote: "Reviewed Portal #121: Next-first bounded instance envelope reuse, serialized-byte/count limits, original 30-second age, safe tier/instance telemetry, and non-persisting-runtime regressions preserve public contracts, homepage ISR and CSP. Hosted positive cache proof is owned by #121; adapter source alone does not invalidate native ISR evidence."
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
+lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

@@ -6,10 +6,12 @@ import { getTranslations } from "next-intl/server";
 
 import { Separator } from "@/components/ui/separator";
 import { localePath, type PortalLocale } from "@/i18n/routing";
+import { publicResources } from "@/lib/public-resources";
 
 /** @import import { SiteFooter } from "@/components/shell/site-footer"; */
 export async function SiteFooter({ locale }: { locale: PortalLocale }) {
   const t = await getTranslations({ locale, namespace: "Common" });
+  const resources = publicResources(locale);
 
   return (
     <footer className="site-footer site-shell-container mx-auto mt-auto w-full pb-8">
@@ -26,6 +28,7 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
           <p className="font-medium">{t("footerExplore")}</p>
           {(
             [
+              [localePath(locale, "lca-database"), t("databases")],
               [localePath(locale, "search?v=1"), t("catalog")],
               [localePath(locale, "methodology"), t("methodology")],
               [localePath(locale, "team"), t("team")],
@@ -47,6 +50,11 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
             {t("externalLcaAction")}
             <ExternalLinkIcon aria-hidden="true" className="size-4" />
           </a>
+          {(["docs", "tidas", "pcr", "lcdn"] as const).map((key) => (
+            <a className="site-footer-link" href={resources[key]} key={key}>
+              {t(`${key}Resource`)}
+            </a>
+          ))}
         </div>
       </div>
     </footer>

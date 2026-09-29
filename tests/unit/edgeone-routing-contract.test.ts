@@ -19,6 +19,8 @@ describe("EdgeOne native routing contract", () => {
 
     expect(configuration.redirects).toEqual([
       { source: "/", destination: "/zh-CN", statusCode: 302 },
+      { source: "/zh", destination: "/zh-CN", statusCode: 301 },
+      { source: "/zh/", destination: "/zh-CN", statusCode: 301 },
     ]);
     expect(configuration.headers).toEqual([
       {

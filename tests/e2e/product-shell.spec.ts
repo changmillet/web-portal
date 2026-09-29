@@ -15,7 +15,8 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.goto("/");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("看见完整的生命周期。");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
+  await expect(page).toHaveTitle("天工 LCA 生命周期评价数据库");
   await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
     "href",
     "https://lca.tiangong.earth",
@@ -53,7 +54,10 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.getByRole("option", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("See the whole life cycle.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "TianGong Life Cycle Assessment Database",
+  );
+  await expect(page).toHaveTitle("TianGong Life Cycle Assessment Database");
   const englishHtml = await (await page.request.get("/en")).text();
   expect(englishHtml).toMatch(/<html[^>]*\slang="en"/u);
   await expect(page.getByText("Catalog overview", { exact: true })).toBeVisible();
@@ -67,14 +71,16 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Den ganzen Lebenszyklus sehen.",
+    "TianGong Datenbank für Ökobilanzen",
   );
 
   await page.getByRole("combobox", { name: "Sprache" }).click();
   await page.getByRole("option", { name: "Français" }).click();
   await expect(page).toHaveURL(/\/fr$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Voir tout le cycle de vie.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "TianGong Base de données d’analyse du cycle de vie",
+  );
   await expect(page.getByRole("contentinfo")).not.toContainText(
     /lecture seule|aucun compte requis/i,
   );

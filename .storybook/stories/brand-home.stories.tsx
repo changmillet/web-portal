@@ -34,6 +34,7 @@ const meta = {
         ultrawide: { name: "Ultrawide · 2560", styles: { width: "2560px", height: "1440px" } },
         panoramic: { name: "Panoramic · 21:9", styles: { width: "2560px", height: "1080px" } },
         tall: { name: "Tall desktop", styles: { width: "1440px", height: "1200px" } },
+        shortMobile: { name: "Short mobile", styles: { width: "320px", height: "568px" } },
       },
     },
     docs: {
@@ -66,7 +67,7 @@ const meta = {
             eyebrow={text.eyebrow}
             titleLead={text.titleLead}
             titleFocus={text.titleFocus}
-            titleSeparator={locale === "zh-CN" ? "" : " "}
+            titleSeparator=" "
             description={text.description}
             chapterTwoLabel={text.chapterTwoLabel}
             chapterTwoTitle={text.chapterTwoTitle}
@@ -97,7 +98,7 @@ const meta = {
     const locale = storyLocale(globals);
     const text = dictionaries[locale].BrandHome;
     await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
-      `${text.titleLead}${locale === "zh-CN" ? "" : " "}${text.titleFocus}`,
+      `${text.titleLead} ${text.titleFocus}`,
     );
     await expect(canvasElement.querySelector(".brand-hero")).not.toBeInTheDocument();
     await expect(canvasElement.querySelector(".brand-cinematic-hero")).toBeInTheDocument();
@@ -131,6 +132,29 @@ export const Ultrawide: Story = {
 };
 export const English: Story = {
   globals: { locale: "en" },
+};
+const shortMobilePlay: Story["play"] = async (context) => {
+  await meta.play(context);
+  await document.fonts.ready;
+  const heading = context.canvas.getByRole("heading", { level: 1 });
+  const sticky = context.canvasElement.querySelector<HTMLElement>(".brand-cinematic-sticky");
+  await expect(sticky).toBeInTheDocument();
+  await waitFor(async () => {
+    const panel = heading.parentElement!.getBoundingClientRect();
+    const frame = sticky!.getBoundingClientRect();
+    await expect(panel.top).toBeGreaterThanOrEqual(frame.top);
+    await expect(panel.bottom).toBeLessThanOrEqual(frame.bottom);
+    await expect(panel.left).toBeGreaterThanOrEqual(frame.left);
+    await expect(panel.right).toBeLessThanOrEqual(frame.right);
+  });
+};
+export const EnglishShortMobile: Story = {
+  globals: { locale: "en", viewport: { value: "shortMobile", isRotated: false } },
+  play: shortMobilePlay,
+};
+export const FrenchShortMobileDark: Story = {
+  globals: { locale: "fr", theme: "dark", viewport: { value: "shortMobile", isRotated: false } },
+  play: shortMobilePlay,
 };
 export const CinematicPrototype: Story = {
   globals: { locale: "en", viewport: { value: "wide", isRotated: false } },
@@ -204,7 +228,19 @@ export const CinematicPrototype: Story = {
       await expect(titleStyle.lineHeight).toBe(referenceTitleStyle.lineHeight);
       await expect(titleStyle.letterSpacing).toBe(referenceTitleStyle.letterSpacing);
       await expect(panelStyle.left).toBe(referencePanelStyle.left);
-      await expect(panelStyle.top).toBe(referencePanelStyle.top);
+      // Mobile anchors each panel to its bottom edge, so translated paragraphs may have
+      // different heights and used top values. Desktop keeps the shared top anchor.
+      if (window.innerWidth <= 760) {
+        await expect(panelStyle.bottom).toBe(referencePanelStyle.bottom);
+        await expect(
+          Math.abs(
+            title.parentElement!.getBoundingClientRect().bottom -
+              referenceTitle.parentElement!.getBoundingClientRect().bottom,
+          ),
+        ).toBeLessThanOrEqual(1);
+      } else {
+        await expect(panelStyle.top).toBe(referencePanelStyle.top);
+      }
       await expect(panelStyle.width).toBe(referencePanelStyle.width);
     }
     await expect(frame).toHaveAttribute("src", "/brand/cinematic-v4/frame-001.webp");

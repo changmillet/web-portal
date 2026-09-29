@@ -4,7 +4,7 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
   await page.goto("/");
 
   await expect(page).toHaveURL(/\/zh-CN$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("看见完整的生命周期。");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
   await expect(
     page.getByRole("contentinfo").getByText("连接公开数据、专业工具与生命周期评价实践。"),
   ).toBeVisible();

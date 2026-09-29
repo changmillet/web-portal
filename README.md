@@ -16,8 +16,8 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-09-21
-lastReviewedCommit: 969ed22b4d9336f850ed4fc5e96464e32e8c36a4
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
 lastReviewedNote: "Reviewed for Portal #113: globe geography and expandable category navigation extend anonymous discovery; repository boundaries and hosted evidence entrypoints remain accurate."
 related:
   - docs/development.md
@@ -34,6 +34,7 @@ related:
 
 Portal 以数据发现为首要任务：
 
+- **数据库使用入口**：`/:locale/lca-database` 介绍记录种类、数据选择、版本引用与获取条件，并连接使用文档、TIDAS、PCR 和 ILCD 分发节点。
 - **搜索与浏览优先**：按名称、UUID、CAS 号、分类、对象类型、地区或来源进入公开目录。
 - **使用背景完整**：记录页同时提供版本、适用范围、来源、许可、方法、质量与可用结果，缺失内容不补写或补零。
 - **匿名只读**：无需注册即可使用公共查询、详情、比较、引用与本地候选清单；浏览器不持有 Supabase 或 HMAC 凭据。

@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { BrandHome } from "@/components/brand/brand-home";
 import { isPortalLocale } from "@/i18n/routing";
-import { localizedMetadata } from "@/lib/seo";
+import { localizedMetadata, portalWebsiteJsonLd } from "@/lib/seo";
 import type { PublicCatalogSummary } from "@/server/contracts/portal";
 import { getPublicCatalogSummary } from "@/server/data/catalog";
 import { getPublicNavigation } from "@/server/data/navigation";
@@ -24,8 +24,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
   const { locale } = await params;
   if (!isPortalLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: "BrandHome" });
+  const title = t("metadataTitle");
 
-  return localizedMetadata({ locale, title: t("metadataTitle"), description: t("description") });
+  return {
+    ...localizedMetadata({ locale, title, description: t("description") }),
+    title: { absolute: title },
+  };
 }
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -51,5 +55,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       throw error;
     }),
   ]);
-  return <BrandHome locale={locale} summary={summary} counts={navigation?.totals ?? null} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(portalWebsiteJsonLd()).replace(/</g, "\\u003c"),
+        }}
+      />
+      <BrandHome locale={locale} summary={summary} counts={navigation?.totals ?? null} />
+    </>
+  );
 }

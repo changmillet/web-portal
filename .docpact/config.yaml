@@ -1,7 +1,7 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-09-21"
-lastReviewedCommit: "969ed22b4d9336f850ed4fc5e96464e32e8c36a4"
+lastReviewedAt: "2026-09-29"
+lastReviewedCommit: "5762d3aecfc97bef3ea8c83d8be66973118526cb"
 lastReviewedNote: "Reviewed for Portal #113: the compact classification branch DTO and its unit checks now route to the existing product-runtime contract; ownership and completion rules are unchanged."
 
 catalog:
@@ -375,6 +375,8 @@ rules:
         kind: catalog-seo
       - path: src/lib/seo.ts
         kind: seo
+      - path: src/lib/public-resources.ts
+        kind: public-navigation
       - path: src/lib/fragment-codec.ts
         kind: browser-state
       - path: src/lib/hybrid-request.ts
@@ -393,6 +395,8 @@ rules:
         kind: public-data-fixture
       - path: tests/unit/portal-*.test.ts
         kind: public-data-test
+      - path: tests/unit/public-resources.test.ts
+        kind: public-navigation-test
       - path: tests/unit/catalog-navigation.test.ts
         kind: public-data-test
       - path: tests/unit/catalog-sitemap.test.ts

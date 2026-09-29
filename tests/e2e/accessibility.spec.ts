@@ -69,7 +69,9 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
 
   try {
     await page.goto("/en");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("See the whole life cycle.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "TianGong Life Cycle Assessment Database",
+    );
     await expect(page.locator(".catalog-search-teaser")).toBeVisible();
     await expect(page.getByRole("link", { name: "Process datasets" }).first()).toBeVisible();
 
@@ -84,7 +86,7 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
     await page.goto("/de");
     await expect(page.locator("html")).toHaveAttribute("lang", "de");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Den ganzen Lebenszyklus sehen.",
+      "TianGong Datenbank für Ökobilanzen",
     );
     await page.goto("/fr/methodology");
     await expect(page.locator("html")).toHaveAttribute("lang", "fr");

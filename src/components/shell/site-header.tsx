@@ -24,6 +24,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
   const homeHref = localePath(locale);
 
   const links = [
+    [localePath(locale, "lca-database"), t("databases"), t("databasesCompact")],
     [localePath(locale, "search?v=1"), t("catalog"), t("catalogCompact")],
     [localePath(locale, "methodology"), t("methodology"), t("methodologyCompact")],
     [localePath(locale, "team"), t("team"), t("teamCompact")],

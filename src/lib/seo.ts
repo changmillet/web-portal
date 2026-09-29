@@ -128,3 +128,29 @@ export function localizedMetadata({
 export function absolutePortalUrl(path: string): string {
   return new URL(path, publicSiteUrl()).toString();
 }
+
+/** Site identity does not imply authorship, review or licensing of individual datasets. */
+export function portalWebsiteJsonLd() {
+  const origin = publicSiteUrl().origin;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${origin}/#organization`,
+        name: "TianGong Initiative",
+        alternateName: "天工计划",
+        url: origin,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${origin}/#website`,
+        name: "TianGong LCA",
+        alternateName: "天工 LCA",
+        url: origin,
+        inLanguage: [...locales],
+        publisher: { "@id": `${origin}/#organization` },
+      },
+    ],
+  };
+}

@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-26
-lastReviewedCommit: 90980f893a4eb5ebbe8d9250545879fa40e74c3a
-lastReviewedNote: "Reviewed Portal #121: Next-first bounded instance envelope reuse, serialized-byte/count limits, original 30-second age, safe tier/instance telemetry, and non-persisting-runtime regressions preserve public contracts, homepage ISR and CSP. Hosted positive cache proof is owned by #121; adapter source alone does not invalidate native ISR evidence."
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
+lastReviewedNote: "Reviewed Portal #126: brand and database purpose are explicit in all homepage headings; the public data guide, site identity and exact home aliases preserve data, routing, CSP and ISR boundaries."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -343,12 +343,17 @@ DTO 不返回：
 | `/:locale/browse/:dimension` | 受控目录浏览 | ISR/RSC | 仅规范目录页可索引 |
 | `/:locale/collections` | 本地候选集 | Client island | `noindex,nofollow` |
 | `/:locale/methodology` | 方法论与字段解释 | SSG | `index,follow` |
+| `/:locale/lca-database` | 生命周期评价数据库介绍、数据选择与获取入口 | ISR/RSC | `index,follow` |
 | `/:locale/team` | 天工团队与公开联系方式 | SSG | `index,follow` |
 | `/:locale/community` | 领域专家、合作高校与机构及贡献者 | SSG | `index,follow` |
 | `/:locale/databases` | 数据库目录 | 扩展阶段 | `index,follow` |
 | `/:locale/map` | 地图 | 扩展阶段 | `noindex,follow`，提供等价表格 |
 
 详情页的“标签页”使用真实子路由，不把主要内容藏在仅客户端可见的 Tab 内。这样可以深链、无 JavaScript 阅读并生成独立 metadata。
+
+`lca-database` 是公开数据的阅读和查找入口，不把 Source facet 推断为独立 Database/Data Package。页面复用公开 summary 的按种类和标识去重计数；统计不可用时保留可用入口并明确说明状态，不补造数量、库级许可或覆盖。四语正文解释过程/流、范围、地区/时间、来源/质量、版本/引用与使用许可，并连接各站真实语言版本的使用文档、TIDAS、PCR 与 LCDN。LCDN 保留独立的 ILCD 发布分发语义，不由 Portal 宣称尚未发生的数据更新或 GLAD 同步。
+
+主站 `/zh` 与 `/zh/` 是中文首页 `/zh-CN` 的受控永久别名，由 EdgeOne 原生 301 规则处理。该白名单不匹配 `/zh/post/**` 或其他任意旧路径；没有等价目标的地址继续返回真实 404。各语言首页发布最小 Organization/WebSite 标识，不把站点发布方推断为具体数据集作者或审查方。
 
 Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
@@ -871,7 +876,7 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 可索引：首页、受控 Browse 目录、Process/Flow 精确版本、方法论、扩展阶段的 Database；
 - 不索引：任意 Search、Compare、Collections、Map 参数组合；
 - Facet URL 使用 `noindex,follow`，避免 query × filter 的无限索引空间；
-- zh-CN/en/de/fr 在 HTML 与 sitemap 中互相声明 self-inclusive reciprocal `hreflang`；基础 sitemap 为 8 个静态路径 × 4 种语言输出 32 条各自独立的规范 `<url>`，每条互指同一语言集合；
+- zh-CN/en/de/fr 在 HTML 与 sitemap 中互相声明 self-inclusive reciprocal `hreflang`；基础 sitemap 为 9 个静态路径 × 4 种语言输出 36 条各自独立的规范 `<url>`，每条互指同一语言集合；
 - `x-default` 指向同内容的默认语言页面（`/zh-CN/...`）；`/` 只重定向到 `/zh-CN`，因此不进入 sitemap，也不作为 `x-default`；
 - 页面 metadata 与 robots.txt 共用同一 `PORTAL_PUBLIC_INDEXING` 开关，且全局开关优先：未启用时即使页面显式 `index: true` 也不索引，页面仍可自行 `index: false` 退出。robots `Disallow` 仍会阻止爬虫抓取，被 disallow 的路径上的 `noindex` 因此读不到——metadata 属于纵深防御，不等于已从索引移除；确实需要移除时应让该页可被抓取并下发 `noindex`；
 - Database sitemap manifest 仍固定返回 64 个 opaque source shard。Portal 将每个 source shard 按稳定位置取模切成 4 个公开 part，因此根级 `/catalog-{process|flow}-sitemap.xml` 各固定列出 256 项；唯一规范参数为 `?shard={0..63}&part={0..3}`，确保根文件作用域覆盖四种语言；

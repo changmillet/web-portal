@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-09-29"
-lastReviewedCommit: "5762d3aecfc97bef3ea8c83d8be66973118526cb"
-lastReviewedNote: "Reviewed for Portal #113: the compact classification branch DTO and its unit checks now route to the existing product-runtime contract; ownership and completion rules are unchanged."
+lastReviewedAt: "2026-09-30"
+lastReviewedCommit: "78d8061ac8cce2fd501861bd2343844e11906e3b"
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 
 catalog:
   repos:
@@ -44,6 +44,7 @@ ownership:
           - vitest.setup.ts
           - playwright.config.ts
           - edgeone.json
+          - edge-functions/**
           - .node-version
           - .npmrc
           - .env.example
@@ -79,6 +80,7 @@ coverage:
     - vitest.setup.ts
     - playwright.config.ts
     - edgeone.json
+    - edge-functions/**
     - .node-version
     - .npmrc
     - .env.example
@@ -131,6 +133,7 @@ routing:
         - .docpact/config.yaml
     app-runtime:
       paths:
+        - edge-functions/**
         - package.json
         - pnpm-lock.yaml
         - pnpm-workspace.yaml
@@ -158,6 +161,7 @@ routing:
     deployment:
       paths:
         - edgeone.json
+        - edge-functions/**
         - .node-version
         - .npmrc
         - .env.example
@@ -424,6 +428,10 @@ rules:
     scope: repo
     repo: portal
     triggers:
+      - path: tests/unit/chinese-home-redirect.test.ts
+        kind: bounded-edge-route-test
+      - path: edge-functions/**
+        kind: bounded-edge-route
       - path: docs/r0/**
         kind: hosted-evidence
       - path: edgeone.json

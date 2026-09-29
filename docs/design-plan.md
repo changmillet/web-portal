@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
-lastReviewedNote: "Reviewed Portal #126: brand and database purpose are explicit in all homepage headings; the public data guide, site identity and exact home aliases preserve data, routing, CSP and ISR boundaries."
+lastReviewedAt: 2026-09-30
+lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -353,7 +353,7 @@ DTO 不返回：
 
 `lca-database` 是公开数据的阅读和查找入口，不把 Source facet 推断为独立 Database/Data Package。页面复用公开 summary 的按种类和标识去重计数；统计不可用时保留可用入口并明确说明状态，不补造数量、库级许可或覆盖。四语正文解释过程/流、范围、地区/时间、来源/质量、版本/引用与使用许可，并连接各站真实语言版本的使用文档、TIDAS、PCR 与 LCDN。LCDN 保留独立的 ILCD 发布分发语义，不由 Portal 宣称尚未发生的数据更新或 GLAD 同步。
 
-主站 `/zh` 与 `/zh/` 是中文首页 `/zh-CN` 的受控永久别名，由 EdgeOne 原生 301 规则处理。该白名单不匹配 `/zh/post/**` 或其他任意旧路径；没有等价目标的地址继续返回真实 404。各语言首页发布最小 Organization/WebSite 标识，不把站点发布方推断为具体数据集作者或审查方。
+主站 `/zh` 与 `/zh/` 是中文首页 `/zh-CN` 的受控永久别名。精确原生 rewrite 把 `/zh/` 交给 `/zh` 边缘函数，避开框架尾斜杠规范化；函数只对这两个路径的 GET/HEAD 返回 301，以固定的相对目标保留完整查询串，响应 `no-store`。该白名单不匹配 `/zh/post/**` 或其他任意旧路径；没有等价目标的地址继续返回真实 404。该处理不读取环境变量或数据，不发起上游请求，不使用 Next Proxy 或中间件。各语言首页发布最小 Organization/WebSite 标识，不把站点发布方推断为具体数据集作者或审查方。
 
 Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
@@ -1143,7 +1143,7 @@ HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 S
 
 ### 17.3 平台约束
 
-EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。`dppeqhecdjax@82e9edb` 已证明无 Proxy native routing、query-preserving redirects、exact SHA、Node 20.19.3、真实 ISR regeneration、五段 Streaming、native WebP 以及 Production HMAC signer。当前目标只在 `edgeone.json` 保留 query-free root redirect/R0 headers；stateful 无 locale 路径由 bounded Route Handlers 保留 pathname/query。EdgeOne 对 raw unknown-first-segment 404 的 `__next_error__` 包装已证明是平台适配缺陷：Portal #33 复测了 `dynamicParams=true` 候选，它只能修复深层未知路径，无法修复单段未知 locale；完整 route-tree 迁移会破坏 locale-correct root document/ISR，因此候选已撤回。首次公开接受真实 404/noindex/原 URL 与平台通用 raw document，Portal #28 继续持有上游修复，不以软跳转、200 shell 或 Proxy 伪装。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底。
+EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。`dppeqhecdjax@82e9edb` 已证明无 Proxy native routing、query-preserving redirects、exact SHA、Node 20.19.3、真实 ISR regeneration、五段 Streaming、native WebP 以及 Production HMAC signer。当前目标在 `edgeone.json` 保留 query-free root redirect/R0 headers，并用一个精确 `/zh/` rewrite 接入只处理旧中文首页的无状态边缘函数；stateful 无 locale 路径由 bounded Route Handlers 保留 pathname/query。EdgeOne 对 raw unknown-first-segment 404 的 `__next_error__` 包装已证明是平台适配缺陷：Portal #33 复测了 `dynamicParams=true` 候选，它只能修复深层未知路径，无法修复单段未知 locale；完整 route-tree 迁移会破坏 locale-correct root document/ISR，因此候选已撤回。首次公开接受真实 404/noindex/原 URL 与平台通用 raw document，Portal #28 继续持有上游修复，不以软跳转、200 shell 或 Proxy 伪装。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底。
 
 Compatibility spike 必须实测：
 

@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
-lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
+lastReviewedAt: 2026-09-30
+lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -30,6 +30,8 @@ related:
 ---
 
 # Portal R0 Compatibility Matrix
+
+The exact `/zh` and `/zh/` home aliases use a stateless EdgeOne edge function and one exact `/zh/` rewrite. Their independent release gate requires a single 301 with the original ordered query for GET/HEAD, plus 405 for other methods and unchanged root/unknown-route behavior. The normal Next server does not execute these provider routes; source tests and generated routing output do not prove their order in Production. Keep the native root 302, existing headers, framework trailing-slash policy and CSP/ISR decisions intact while qualifying this gate.
 
 R0 exit requires the exact selected Portal `main` commit and EdgeOne Production deployment on `portal.tiangong.earth` to pass every non-excepted row below. The table retains the exact historical platform-qualification receipts, including public indexing and the cacheable enforcing performance CSP at `bf97795512480dc00f680521cbf36aeab113ecfe`. A real 404/noindex/unchanged-URL EdgeOne generic raw document for unknown first segments remains the accepted platform disposition. New Portal #48 release acceptance must verify the final Main marker on the canonical public origin `https://www.tiangong.earth` (with apex and `portal.tiangong.earth` redirecting to it), four-language user workflows, public-data boundaries, cache/headers and the controlled lexical payload/latency checks; historical receipts are not a substitute for that exact rollout.
 

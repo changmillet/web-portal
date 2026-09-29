@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
+lastReviewedAt: 2026-09-30
+lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #126: final database headings, short-screen stories and the compatible AJV URI override retain the documented validation and deployment workflow."
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -77,6 +77,8 @@ Unit tests rendering shared localized client components must use `NextIntlClient
 Normal tests use fixtures and never contact Production. The read-only live probe is explicitly enabled with `PORTAL_LIVE_PROBE=true`; missing live credentials must remain a reported skip, not an inferred production pass.
 
 The scoped `ajv>fast-uri` override keeps AJV on the compatible 3.x API while resolving its authority-parser advisories. Dependency changes require a frozen install, licence and high-severity audit checks plus the affected tooling. Reassess the override against the installed AJV dependency when upgrading; do not move it to an incompatible major solely to match a registry's global latest tag.
+
+The exact legacy Chinese home aliases use `edge-functions/zh/index.ts` and the single native `/zh/` rewrite. The provider compiles this TypeScript to its Web API edge runtime; the function uses no Node API, environment variable or upstream request. The ordinary Next development server does not execute this provider route. Run its Request/Response unit matrix, typecheck and lint, then build with the installed EdgeOne CLI and generate its routing output. Inspect the emitted exact edge route and rewrite before deployment. Production must verify both aliases without following redirects, with GET/HEAD and ordered, repeated, blank and encoded query values; also verify root 302, nested unknown 404 and the unchanged public/private boundary. Only the production matrix proves the rewrite's order relative to the framework's trailing-slash rule.
 
 ## Storybook and MCP
 

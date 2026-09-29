@@ -590,9 +590,9 @@
     "emailMember": "给 {name} 发送邮件"
   },
   "BrandHome": {
-    "eyebrow": "天工 LCA · 生命周期智能",
-    "titleLead": "看见完整的",
-    "titleFocus": "生命周期。",
+    "eyebrow": "看见完整的生命周期",
+    "titleLead": "天工 LCA",
+    "titleFocus": "生命周期评价数据库",
     "description": "查找生命周期评价（LCA）数据，核对来源、版本与适用范围，在天工平台开展建模与环境影响分析。",
     "chapterTwoLabel": "数字孪生",
     "chapterTwoTitle": "让每一种材料都清晰可读。",
@@ -600,7 +600,7 @@
     "chapterThreeLabel": "可追溯证据",
     "chapterThreeTitle": "追随证据，而非印象。",
     "chapterThreeDescription": "查看经验证的信息如何从原材料流经加工、使用与回收。",
-    "metadataTitle": "天工 LCA｜生命周期评价数据与工具",
+    "metadataTitle": "天工 LCA 生命周期评价数据库",
     "explore": "探索公开数据",
     "platformAction": "进入 LCA 平台",
     "heroIndex": "从数据出发，理解环境影响",

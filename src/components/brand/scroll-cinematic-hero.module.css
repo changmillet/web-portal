@@ -165,6 +165,12 @@
   font-weight: inherit;
 }
 
+.title:lang(zh) strong {
+  display: inline-block;
+  max-width: 6em;
+  text-wrap: wrap;
+}
+
 .description,
 .chapterCopy p:last-child {
   max-width: 420px;

@@ -24,8 +24,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
   const { locale } = await params;
   if (!isPortalLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: "BrandHome" });
+  const title = t("metadataTitle");
 
-  return localizedMetadata({ locale, title: t("metadataTitle"), description: t("description") });
+  return {
+    ...localizedMetadata({ locale, title, description: t("description") }),
+    title: { absolute: title },
+  };
 }
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {

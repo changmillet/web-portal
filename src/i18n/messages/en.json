@@ -590,9 +590,9 @@
     "emailMember": "Email {name}"
   },
   "BrandHome": {
-    "eyebrow": "TianGong LCA · Life cycle intelligence",
-    "titleLead": "See the whole",
-    "titleFocus": "life cycle.",
+    "eyebrow": "See the whole life cycle",
+    "titleLead": "TianGong",
+    "titleFocus": "Life Cycle Assessment Database",
     "description": "Find life cycle assessment (LCA) data, check its sources, versions and scope, and build models and assess environmental impacts with TianGong.",
     "chapterTwoLabel": "Digital twin",
     "chapterTwoTitle": "Make every material legible.",
@@ -600,7 +600,7 @@
     "chapterThreeLabel": "Traceable evidence",
     "chapterThreeTitle": "Follow evidence, not impressions.",
     "chapterThreeDescription": "See how verified information moves from raw material through processing, use and recovery.",
-    "metadataTitle": "TianGong LCA | Life cycle assessment data and tools",
+    "metadataTitle": "TianGong Life Cycle Assessment Database",
     "explore": "Explore open data",
     "platformAction": "Go to LCA platform",
     "heroIndex": "From data to environmental understanding",

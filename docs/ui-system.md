@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-21
-lastReviewedCommit: c8c3ece4d5da9687014cdf411adcc9c99193806f
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -32,6 +32,8 @@ related:
 本文拥有共享视觉、组件、无障碍、国际化和隔离场景的要求。[开发指南](development.md#storybook-and-mcp)拥有 Storybook/MCP/skills 的启动、操作与验证步骤；[产品方案](design-plan.md#7-页面与交互)拥有搜索、详情、比较与清单的业务行为。修改组合场景时，按涉及的业务读取对应章节。
 
 ## 设计方向
+
+首页最大标题同时表达品牌与用途：中文为“天工 LCA 生命周期评价数据库”，英文为“TianGong Life Cycle Assessment Database”；德法版本使用对应的数据库定位。“看见完整的生命周期”及其译文作为辅助品牌文字，不能替代 H1 的用途说明。长标题须在短屏手机和桌面完整可读。
 
 公开首页采用“精密科技”品牌方向：以滚动驱动的抽象工业影像建立 Tiangong LCA 识别，用明确标题和连续分区连接数据与产品平台。搜索、详情、浏览与清单继续采用“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先。品牌首页不覆盖这些数据任务页面的布局。
 

@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-29
-lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
+lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #113: production MapLibre geometry/worker receipts, branch paging tests, software-rendered browser gates and initial route budgets match the implemented workflow."
+lastReviewedNote: "Reviewed Portal #126: final database headings, short-screen stories and the compatible AJV URI override retain the documented validation and deployment workflow."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -75,6 +75,8 @@ Run the checks that demonstrate the changed behavior before committing or pushin
 Unit tests rendering shared localized client components must use `NextIntlClientProvider` with the test locale dictionary. Production browser checks open the shortlist add disclosure and filter drawer before interacting with their controls. For constrained local machines, use `--workers=2` for the multi-locale UI suite.
 
 Normal tests use fixtures and never contact Production. The read-only live probe is explicitly enabled with `PORTAL_LIVE_PROBE=true`; missing live credentials must remain a reported skip, not an inferred production pass.
+
+The scoped `ajv>fast-uri` override keeps AJV on the compatible 3.x API while resolving its authority-parser advisories. Dependency changes require a frozen install, licence and high-severity audit checks plus the affected tooling. Reassess the override against the installed AJV dependency when upgrading; do not move it to an incompatible major solely to match a registry's global latest tag.
 
 ## Storybook and MCP
 

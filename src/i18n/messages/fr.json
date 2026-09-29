@@ -590,9 +590,9 @@
     "emailMember": "Envoyer un e-mail à {name}"
   },
   "BrandHome": {
-    "eyebrow": "TianGong LCA · Comprendre le cycle de vie",
-    "titleLead": "Voir tout le",
-    "titleFocus": "cycle de vie.",
+    "eyebrow": "Voir tout le cycle de vie",
+    "titleLead": "TianGong",
+    "titleFocus": "Base de données d’analyse du cycle de vie",
     "description": "Trouvez des données d’analyse du cycle de vie, vérifiez leurs sources, versions et périmètres, puis utilisez TianGong pour modéliser et évaluer les impacts environnementaux.",
     "chapterTwoLabel": "Jumeau numérique",
     "chapterTwoTitle": "Rendre chaque matériau lisible.",
@@ -600,7 +600,7 @@
     "chapterThreeLabel": "Preuves traçables",
     "chapterThreeTitle": "Suivre les preuves, pas les impressions.",
     "chapterThreeDescription": "Suivez le parcours des informations vérifiées, des matières premières à la transformation, à l’usage et à la valorisation.",
-    "metadataTitle": "TianGong LCA | Données et outils d’analyse du cycle de vie",
+    "metadataTitle": "TianGong Base de données d’analyse du cycle de vie",
     "explore": "Explorer les données",
     "platformAction": "Ouvrir la plateforme ACV",
     "heroIndex": "Des données à la compréhension des impacts",

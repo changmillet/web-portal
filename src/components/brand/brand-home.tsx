@@ -41,7 +41,7 @@ export async function BrandHome({ locale, summary, hero, counts }: BrandHomeProp
       eyebrow={t("eyebrow")}
       titleLead={t("titleLead")}
       titleFocus={t("titleFocus")}
-      titleSeparator={locale === "zh-CN" ? "" : " "}
+      titleSeparator=" "
       description={t("description")}
       chapterTwoLabel={t("chapterTwoLabel")}
       chapterTwoTitle={t("chapterTwoTitle")}

@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-26
-lastReviewedCommit: 90980f893a4eb5ebbe8d9250545879fa40e74c3a
-lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
+lastReviewedNote: "Reviewed Portal #126: brand and database purpose are explicit in all homepage headings; the public data guide, site identity and exact home aliases preserve data, routing, CSP and ISR boundaries."
 related:
   - docs/ui-system.md
   - docs/development.md

@@ -590,9 +590,9 @@
     "emailMember": "E-Mail an {name}"
   },
   "BrandHome": {
-    "eyebrow": "TianGong LCA · Lebenszyklen verstehen",
-    "titleLead": "Den ganzen",
-    "titleFocus": "Lebenszyklus sehen.",
+    "eyebrow": "Den ganzen Lebenszyklus sehen",
+    "titleLead": "TianGong",
+    "titleFocus": "Datenbank für Ökobilanzen",
     "description": "Finden Sie Ökobilanzdaten, prüfen Sie Quellen, Versionen und Geltungsbereiche und nutzen Sie TianGong für Modellierung und Wirkungsabschätzung.",
     "chapterTwoLabel": "Digitaler Zwilling",
     "chapterTwoTitle": "Jedes Material lesbar machen.",
@@ -600,7 +600,7 @@
     "chapterThreeLabel": "Nachverfolgbare Nachweise",
     "chapterThreeTitle": "Nachweisen folgen, nicht Eindrücken.",
     "chapterThreeDescription": "Sehen Sie, wie verifizierte Informationen vom Rohstoff über Verarbeitung und Nutzung bis zur Rückgewinnung fließen.",
-    "metadataTitle": "TianGong LCA | Daten und Werkzeuge für Ökobilanzen",
+    "metadataTitle": "TianGong Datenbank für Ökobilanzen",
     "explore": "Offene Daten entdecken",
     "platformAction": "LCA-Plattform öffnen",
     "heroIndex": "Mit Daten Umweltwirkungen verstehen",

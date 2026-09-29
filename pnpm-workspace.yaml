@@ -9,6 +9,8 @@ allowBuilds:
   # Storybook generates its worker explicitly in its own static directory.
   msw: false
 overrides:
+  # AJV retains its compatible 3.x URI API; 3.1.8 resolves the authority-parser advisories.
+  ajv>fast-uri: 3.1.8
   # This offline pipeline supports GeoJSON only. Omit the lazily loaded
   # GeoPackage plugin and its obsolete image reader / native SQLite stack.
   "mapshaper>@ngageoint/geopackage": "-"

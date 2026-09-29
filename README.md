@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
-lastReviewedNote: "Reviewed for Portal #113: globe geography and expandable category navigation extend anonymous discovery; repository boundaries and hosted evidence entrypoints remain accurate."
+lastReviewedAt: 2026-09-30
+lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 related:
   - docs/development.md
   - docs/ui-system.md
@@ -41,6 +41,8 @@ Portal 以数据发现为首要任务：
 - **谨慎比较**：只有现有公开字段中的功能单位、方法、地区、时间和 publication 背景满足条件时，才并列展示数值；系统边界与研究适用性仍需使用者核对，不能把字段一致当作科学审查结论。
 
 ## 技术形态
+
+旧中文首页的两个精确入口由 `edge-functions/zh/index.ts` 处理永久跳转，保留查询参数。构建与实际托管路由验收遵循 [开发流程](docs/development.md) 和 [部署兼容性契约](docs/r0/compatibility-matrix.md)。
 
 Next.js App Router 前后端同构，React Server Components 优先，部署到 EdgeOne Makers。终端用户没有登录态；EdgeOne 后端以 Portal 专用 HMAC 请求签名调用专用 Supabase Edge Functions（如 `portal_hybrid_search_v1`）。数据库读取使用 server-only 的公共只读契约，不使用 service-role；MVP 分享只使用 URL fragment 与 JSON，不写 Redis。默认浅色/深色主色与 `tiangong-lca-next` 一致，其余颜色遵循 shadcn/ui + Tailwind v4 最佳实践，并支持部署级主色、Logo 与 favicon 替换。
 

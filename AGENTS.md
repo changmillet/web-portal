@@ -16,9 +16,9 @@ checkPaths:
   - docs/development.md
   - docs/ui-system.md
   - .docpact/config.yaml
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
-lastReviewedNote: "Reviewed for Portal #113: classification DTO/check routing and production MapLibre stay within Portal ownership, anonymous read-only data and the existing reviewed main/integration release policy."
+lastReviewedAt: 2026-09-30
+lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 related:
   - docs/development.md
   - docs/ui-system.md

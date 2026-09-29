@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 5762d3aecfc97bef3ea8c83d8be66973118526cb
-lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
+lastReviewedAt: 2026-09-30
+lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
+lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

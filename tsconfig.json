@@ -27,6 +27,7 @@
     ".next/dev/types/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "edge-functions/**/*.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "vitest.setup.ts",

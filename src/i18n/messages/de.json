@@ -590,7 +590,7 @@
     "emailMember": "E-Mail an {name}"
   },
   "BrandHome": {
-    "eyebrow": "Tiangong LCA · Lebenszyklen verstehen",
+    "eyebrow": "TianGong LCA · Lebenszyklen verstehen",
     "titleLead": "Den ganzen",
     "titleFocus": "Lebenszyklus sehen.",
     "description": "Finden Sie Ökobilanzdaten, prüfen Sie Quellen, Versionen und Geltungsbereiche und nutzen Sie TianGong für Modellierung und Wirkungsabschätzung.",
@@ -615,7 +615,7 @@
     "understandingTitle": "Der Kontext hinter den Daten.",
     "understandingDescription": "Verstehen Sie, was ein Datensatz beschreibt und wofür er gilt, bevor Sie ihn in Ihrer Analyse verwenden.",
     "platformTitle": "Mit Daten zur nächsten Analyse.",
-    "platformDescription": "Entdecken und verstehen Sie hier öffentliche Daten. Setzen Sie Ihre Ökobilanzierung auf der Tiangong LCA-Plattform fort.",
+    "platformDescription": "Entdecken und verstehen Sie hier öffentliche Daten. Setzen Sie Ihre Ökobilanzierung auf der TianGong LCA-Plattform fort.",
     "databaseAction": "Die TianGong-Ökobilanz-Datenbank entdecken"
   },
   "Navigation": {

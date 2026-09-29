@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { DatabaseGuide } from "@/features/catalog/database-guide";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
+import type { PublicCatalogSummary } from "@/server/contracts/portal";
 import { getPublicCatalogSummary } from "@/server/data/catalog";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 
@@ -29,10 +30,14 @@ export default async function DatabasePage({ params }: PageProps<"/[locale]/lca-
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
   const messages = await getMessages({ locale });
-  const summary = await getPublicCatalogSummary().catch((error: unknown) => {
-    if (error instanceof PortalDataError) return null;
-    throw error;
-  });
+  let summary: PublicCatalogSummary | null = null;
+  try {
+    // Client configuration can fail before a Promise exists; unavailable counts must not
+    // prevent the public guidance from rendering in either that case or an upstream outage.
+    summary = await getPublicCatalogSummary();
+  } catch (error) {
+    if (!(error instanceof PortalDataError)) throw error;
+  }
   return (
     <DatabaseGuide
       locale={locale}

@@ -204,7 +204,19 @@ export const CinematicPrototype: Story = {
       await expect(titleStyle.lineHeight).toBe(referenceTitleStyle.lineHeight);
       await expect(titleStyle.letterSpacing).toBe(referenceTitleStyle.letterSpacing);
       await expect(panelStyle.left).toBe(referencePanelStyle.left);
-      await expect(panelStyle.top).toBe(referencePanelStyle.top);
+      // Mobile anchors each panel to its bottom edge, so translated paragraphs may have
+      // different heights and used top values. Desktop keeps the shared top anchor.
+      if (window.innerWidth <= 760) {
+        await expect(panelStyle.bottom).toBe(referencePanelStyle.bottom);
+        await expect(
+          Math.abs(
+            title.parentElement!.getBoundingClientRect().bottom -
+              referenceTitle.parentElement!.getBoundingClientRect().bottom,
+          ),
+        ).toBeLessThanOrEqual(1);
+      } else {
+        await expect(panelStyle.top).toBe(referencePanelStyle.top);
+      }
       await expect(panelStyle.width).toBe(referencePanelStyle.width);
     }
     await expect(frame).toHaveAttribute("src", "/brand/cinematic-v4/frame-001.webp");

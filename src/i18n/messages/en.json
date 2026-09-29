@@ -590,7 +590,7 @@
     "emailMember": "Email {name}"
   },
   "BrandHome": {
-    "eyebrow": "Tiangong LCA · Life cycle intelligence",
+    "eyebrow": "TianGong LCA · Life cycle intelligence",
     "titleLead": "See the whole",
     "titleFocus": "life cycle.",
     "description": "Find life cycle assessment (LCA) data, check its sources, versions and scope, and build models and assess environmental impacts with TianGong.",
@@ -615,7 +615,7 @@
     "understandingTitle": "The context behind the data.",
     "understandingDescription": "Understand what a dataset describes and where it applies before taking it into your next analysis.",
     "platformTitle": "Take data into your next analysis.",
-    "platformDescription": "Discover and understand public data here. Continue your life cycle assessment work in the Tiangong LCA platform.",
+    "platformDescription": "Discover and understand public data here. Continue your life cycle assessment work in the TianGong LCA platform.",
     "databaseAction": "Explore the TianGong LCA database"
   },
   "Navigation": {

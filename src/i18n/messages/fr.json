@@ -590,7 +590,7 @@
     "emailMember": "Envoyer un e-mail à {name}"
   },
   "BrandHome": {
-    "eyebrow": "Tiangong LCA · Comprendre le cycle de vie",
+    "eyebrow": "TianGong LCA · Comprendre le cycle de vie",
     "titleLead": "Voir tout le",
     "titleFocus": "cycle de vie.",
     "description": "Trouvez des données d’analyse du cycle de vie, vérifiez leurs sources, versions et périmètres, puis utilisez TianGong pour modéliser et évaluer les impacts environnementaux.",
@@ -615,7 +615,7 @@
     "understandingTitle": "Le contexte derrière les données.",
     "understandingDescription": "Comprenez ce que décrit un jeu de données et son domaine d’application avant de l’intégrer à votre analyse.",
     "platformTitle": "Des données pour votre prochaine analyse.",
-    "platformDescription": "Découvrez et comprenez les données publiques ici. Poursuivez votre analyse du cycle de vie sur la plateforme Tiangong LCA.",
+    "platformDescription": "Découvrez et comprenez les données publiques ici. Poursuivez votre analyse du cycle de vie sur la plateforme TianGong LCA.",
     "databaseAction": "Découvrir la base de données ACV TianGong"
   },
   "Navigation": {

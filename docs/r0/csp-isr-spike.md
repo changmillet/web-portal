@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-10-07
-lastReviewedCommit: 6fcd28ac5ccbfc4ae58d70908a3d0141736bb623
-lastReviewedNote: "Reviewed Portal #130: adding only an exact English data-gateway edge route and rewrite preserves the existing CSP, ISR, headers and runtime boundary; no strict-profile requalification is claimed."
+lastReviewedCommit: 621b7f204c9cb6d751b27ec9ef206d90dc2da3b0
+lastReviewedNote: "Reviewed Portal #130 at 621b7f2: fetchable public noindex routes, functional-link crawl hints, truthful detail descriptions and the exact English data-gateway alias preserve public data, native navigation and CSP/ISR; hosted acceptance remains a separate delivery receipt."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

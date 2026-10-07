@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
+lastReviewedAt: 2026-10-07
+lastReviewedCommit: 621b7f204c9cb6d751b27ec9ef206d90dc2da3b0
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
+lastReviewedNote: "Reviewed Portal #130 at 621b7f2: fetchable public noindex routes, functional-link crawl hints, truthful detail descriptions and the exact English data-gateway alias preserve public data, native navigation and CSP/ISR; hosted acceptance remains a separate delivery receipt."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:

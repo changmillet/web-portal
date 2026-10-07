@@ -62,6 +62,8 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 输入输出表主要显示流、方向、类型、原始数量与单位及定量参考意义。数量右对齐并与单位保持同行，禁止转换为浮点数或改变精度。逐行原生展开项保留 Flow/Process 精确版本、功能单位和展示依据，支持键盘；移动端使用相同信息层级。
 
+`globals.css` 从 `src/components/ui/vendor/shadcn-tailwind.css` 导入已审阅的 shadcn Tailwind 样式，替代对 CLI 包的样式路径依赖。该资产保持原有 4.19.0 发布字节、导入顺序和规则，来源及 SHA-256 见同目录 NOTICE，MIT 许可同时随源码和 `/licenses/shadcn-css.txt` 发布。刷新资产必须重新核对来源、许可和组件渲染；不随生成器版本自动改变当前界面。
+
 ## 默认主色：与 `tiangong-lca-next` 一致
 
 只对齐 `tiangong-lca-next/config/branding.ts` 当前两套主色，不复制 Ant Design 的完整 token 或算法：

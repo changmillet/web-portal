@@ -1,0 +1,18 @@
+shadcn Tailwind utilities
+
+Upstream: https://github.com/shadcn-ui/ui/tree/shadcn%404.19.0/packages/shadcn
+Published source: https://registry.npmjs.org/shadcn/-/shadcn-4.19.0.tgz
+Package member: package/dist/tailwind.css (exported as shadcn/tailwind.css)
+
+shadcn-tailwind.css preserves the exact upstream 4.19.0 stylesheet bytes used
+by Portal before removing the locally installed CLI dependency.
+Bytes: 16041
+SHA-256: bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a
+Do not format or edit this snapshot. Deliberate updates require upstream
+comparison, a new checksum, and UI qualification.
+
+License: MIT, Copyright (c) 2023 shadcn.
+The complete original license is retained in shadcn-LICENSE.txt and served at
+/licenses/shadcn-css.txt (public/licenses/shadcn-css.txt).
+Local stylesheet retention follows the official shadcn eject workflow:
+https://ui.shadcn.com/docs/changelog/2026-05-shadcn-eject

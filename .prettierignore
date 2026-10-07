@@ -3,3 +3,6 @@ contracts/database-engine/portal/**
 public/baidu_verify_codeva-TdxNc4b0Uq.html
 # Content-hashed, canonical MapLibre geometry, worker and license assets.
 public/maps/gl/**
+
+# Preserve the exact licensed upstream shadcn CSS bytes.
+src/components/ui/vendor/shadcn-tailwind.css

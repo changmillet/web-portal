@@ -19,16 +19,27 @@ overrides:
   # Storybook uses Vite 8's native path resolution, so tsconfck and its optional
   # TypeScript 5 compiler peer are unused. Portal retains TypeScript 7.
   tsconfck@3.1.6>typescript: "-"
+  # Preserve jsdom's Undici 8 API; the patched test-only client runs on local Node 24.
+  jsdom>undici: 8.11.2
+  # Patch the current minimatch line without replacing older major APIs.
+  "brace-expansion@^5": 5.0.12
+  # Converge only compatible declared ranges on the patched source-map parser.
+  "source-map-js@": 1.2.2
+  # Keep Next's compatible image runtime, including the fixed librsvg binaries.
+  next>sharp: 0.35.5
+  # Keep Storybook's environment loader on the same compatible Next maintenance line.
+  vite-plugin-storybook-nextjs>@next/env: 16.3.8
 pnpmfile: scripts/pnpm-hooks.cjs
 minimumReleaseAgeExclude:
-  - "@next/env@16.3.3"
-  - "@next/swc-darwin-arm64@16.3.3"
-  - "@next/swc-linux-arm64-gnu@16.3.3"
-  - "@next/swc-linux-arm64-musl@16.3.3"
-  - "@next/swc-linux-x64-gnu@16.3.3"
-  - "@next/swc-linux-x64-musl@16.3.3"
-  - "@next/swc-win32-arm64-msvc@16.3.3"
-  - "@next/swc-win32-x64-msvc@16.3.3"
-  - next@16.3.3
+  - "@next/env@16.3.8"
+  - "@next/swc-darwin-arm64@16.3.8"
+  - "@next/swc-linux-arm64-gnu@16.3.8"
+  - "@next/swc-linux-arm64-musl@16.3.8"
+  - "@next/swc-linux-x64-gnu@16.3.8"
+  - "@next/swc-linux-x64-musl@16.3.8"
+  - "@next/swc-win32-arm64-msvc@16.3.8"
+  - "@next/swc-win32-x64-msvc@16.3.8"
+  - next@16.3.8
   - skills@1.5.24
   - three@0.186.0
+  - "@next/swc-darwin-x64@16.3.8"

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
+import { functionalLinkRel } from "@/lib/catalog-crawl-policy";
 
 /** @import import { CatalogSearchTeaser } from "@/components/brand/catalog-search-teaser"; */
 export function CatalogSearchTeaser({
@@ -84,6 +85,7 @@ export function CatalogSearchTeaser({
       ref={host}
       className="catalog-search-teaser"
       href={href}
+      rel={functionalLinkRel(href)}
       aria-label={label}
       onMouseEnter={() => {
         hovered.current = true;

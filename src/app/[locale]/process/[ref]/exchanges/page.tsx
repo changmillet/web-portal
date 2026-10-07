@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { safePublicCursor } from "@/features/catalog/cursor";
 import { ExchangesPanel } from "@/features/catalog/exchanges-panel";
 import { mapDataset, mapExchangePage } from "@/features/catalog/map-public-data";
+import { detailSubpageDescription } from "@/features/catalog/detail-metadata";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import { isPortalLocale, localePath } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
@@ -28,7 +29,15 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("exchangesDescription"),
+    description: detailSubpageDescription({
+      dataset,
+      description: dataset.capabilities.exchangesVisible
+        ? t("exchangesDescription")
+        : t("exchangesEmpty"),
+      locale,
+      title: t("exchangesTitle"),
+      versionLabel: t("currentVersion"),
+    }),
     index: !safePublicCursor((await searchParams).cursor),
     locale,
     path: `process/${record.ref}/exchanges`,

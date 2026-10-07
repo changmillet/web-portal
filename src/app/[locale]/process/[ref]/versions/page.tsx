@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { safePublicCursor } from "@/features/catalog/cursor";
 import { mapDataset, mapVersions } from "@/features/catalog/map-public-data";
+import { detailSubpageDescription } from "@/features/catalog/detail-metadata";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import { VersionsPanel } from "@/features/catalog/versions-panel";
 import { isPortalLocale, localePath } from "@/i18n/routing";
@@ -28,7 +29,13 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("versionsDescription"),
+    description: detailSubpageDescription({
+      dataset,
+      description: t("versionsDescription"),
+      locale,
+      title: t("versionsTitle"),
+      versionLabel: t("currentVersion"),
+    }),
     index: !safePublicCursor((await searchParams).cursor),
     locale,
     path: `process/${record.ref}/versions`,

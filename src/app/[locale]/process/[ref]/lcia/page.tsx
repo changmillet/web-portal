@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { safePublicCursor } from "@/features/catalog/cursor";
 import { LciaPanel } from "@/features/catalog/lcia-panel";
 import { mapDataset, mapLciaPage } from "@/features/catalog/map-public-data";
+import { detailSubpageDescription } from "@/features/catalog/detail-metadata";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import type { LciaViewModel } from "@/features/catalog/view-model";
 import { isPortalLocale, localePath } from "@/i18n/routing";
@@ -29,7 +30,13 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("lciaDescription"),
+    description: detailSubpageDescription({
+      dataset,
+      description: dataset.capabilities.lciaVisible ? t("lciaDescription") : t("lciaUnavailable"),
+      locale,
+      title: t("lciaTitle"),
+      versionLabel: t("currentVersion"),
+    }),
     index: !safePublicCursor((await searchParams).cursor),
     locale,
     path: `process/${record.ref}/lcia`,

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
+import { functionalLinkRel } from "@/lib/catalog-crawl-policy";
 import { defaultLocale, localePath, locales } from "@/i18n/routing";
 import {
   absolutePortalUrl,
@@ -72,6 +73,57 @@ describe("public indexing gate", () => {
 
     vi.stubEnv("PORTAL_PUBLIC_INDEXING", "enabled");
     expect(metadata({ follow: false }).robots).toEqual({ follow: false, index: true });
+  });
+});
+
+describe("public functional crawl policy", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("allows crawlers to read noindex without publishing functional pages in the sitemap", () => {
+    vi.stubEnv("SITE_URL", siteOrigin);
+    vi.stubEnv("PORTAL_PUBLIC_INDEXING", "enabled");
+    const rules = robots().rules;
+    expect(rules).toEqual([{ userAgent: "*", allow: "/", disallow: ["/r0-compat/"] }]);
+    for (const locale of locales) {
+      for (const path of ["search", "compare", "collections"]) {
+        expect(metadata({ locale, path, index: false }).robots).toMatchObject({ index: false });
+        expect(
+          sitemap().some((entry) => new URL(entry.url).pathname === `/${locale}/${path}`),
+        ).toBe(false);
+        expect(functionalLinkRel(`/${locale}/${path}?v=1`)).toBe("nofollow");
+      }
+    }
+  });
+
+  it("preserves relationship tokens and handles query, fragment and object links", () => {
+    expect(functionalLinkRel("/en/search?q=steel", "noopener noreferrer")).toBe(
+      "noopener noreferrer nofollow",
+    );
+    expect(functionalLinkRel("/de/compare/", "nofollow")).toBe("nofollow");
+    expect(functionalLinkRel("/fr/collections#local", "NOFOLLOW")).toBe("NOFOLLOW");
+    expect(functionalLinkRel({ pathname: "/zh-CN/search", query: { geo: "cn" } })).toBe("nofollow");
+  });
+
+  it("leaves indexable destinations, unknown routes and external links discoverable", () => {
+    for (const href of [
+      "/en",
+      "/en/lca-database",
+      "/en/browse/process",
+      "/en/process/id@01.00.000",
+      "/en/flow/id@01.00.000/versions",
+      "/en/searching",
+      "/en/search/unknown",
+      "/unknown/search",
+      "https://example.com/en/search?q=steel",
+      "//example.com/en/search",
+      "#search",
+    ]) {
+      expect(functionalLinkRel(href)).toBeUndefined();
+      expect(functionalLinkRel(href, "noopener")).toBe("noopener");
+    }
+    expect(
+      functionalLinkRel({ protocol: "https:", hostname: "example.com", pathname: "/en/search" }),
+    ).toBeUndefined();
   });
 });
 

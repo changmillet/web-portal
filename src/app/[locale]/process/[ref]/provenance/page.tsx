@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailEmpty } from "@/features/catalog/detail-empty";
 import { localizedText, mapDataset } from "@/features/catalog/map-public-data";
+import { detailSubpageDescription } from "@/features/catalog/detail-metadata";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import { isPortalLocale } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
@@ -24,7 +25,13 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("provenanceDescription"),
+    description: detailSubpageDescription({
+      dataset,
+      description: t("provenanceDescription"),
+      locale,
+      title: t("provenanceTitle"),
+      versionLabel: t("currentVersion"),
+    }),
     locale,
     path: `process/${record.ref}/provenance`,
     title: `${t("provenanceTitle")} · ${record.name}`,

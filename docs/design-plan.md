@@ -862,6 +862,7 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 
 ### 11.1 HTML-first
 
+- 详情子页面 description 组合真实本地化数据集名称、精确版本和该 tab 的用途；保留来源语言回退标记，缺失名称直接省略，不以 UUID 填充。已知不提供 Exchanges 或 LCIA 的能力使用现有的不可用说明，不为 metadata 额外请求结果，也不据临时失败改变 canonical、hreflang 或索引策略。
 - 首页、目录、详情元数据和公开 LCIA 摘要必须存在于初始 HTML；
 - 每个 `/:locale` 初始响应的 `<html lang>` 必须等于已验证的路由 locale；不能依赖水合后脚本修正，也不能通过读取请求 header 把 SSG/ISR 全部转为动态渲染；
 - 关闭 JavaScript 后仍能完成 identifier/lexical 搜索提交、翻页、详情阅读和 tab 跳转；Hybrid 明确不属于无 JS 基线；
@@ -876,6 +877,8 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 可索引：首页、受控 Browse 目录、Process/Flow 精确版本、方法论、扩展阶段的 Database；
 - 不索引：任意 Search、Compare、Collections、Map 参数组合；
 - Facet URL 使用 `noindex,follow`，避免 query × filter 的无限索引空间；
+- 公开 Search、Compare、Collections 路径允许抓取，使其初始 HTML 的 `noindex` 可被读取；Search/Compare 保留 `follow`，Collections 保留 `nofollow`。启用公开索引时 robots 仅保留 `/r0-compat/` 的禁抓规则，全局禁用时仍为 `Disallow: /`。这不是数据访问控制，也不保证搜索引擎已完成移除。
+- 指向四语 Search、Compare、Collections 的站内功能链接统一附加 `rel="nofollow"`，抑制参数组合发现；共享 `FeedbackLink` 与 SVG 地图原生 Link 使用同一策略，保留现有 rel token、原生 href、无 JS 操作和 `prefetch=false`。此属性只是爬虫提示，不是速率限制；详情、版本、受控 Browse 和其他正常内容链接保持可发现，三类功能页不进入 sitemap。Search HTML 的 private/no-store、公开 RPC 短缓存和有界准入不变，GET 抓取不得触发 Hybrid/AI POST。
 - zh-CN/en/de/fr 在 HTML 与 sitemap 中互相声明 self-inclusive reciprocal `hreflang`；基础 sitemap 为 9 个静态路径 × 4 种语言输出 36 条各自独立的规范 `<url>`，每条互指同一语言集合；
 - `x-default` 指向同内容的默认语言页面（`/zh-CN/...`）；`/` 只重定向到 `/zh-CN`，因此不进入 sitemap，也不作为 `x-default`；
 - 页面 metadata 与 robots.txt 共用同一 `PORTAL_PUBLIC_INDEXING` 开关，且全局开关优先：未启用时即使页面显式 `index: true` 也不索引，页面仍可自行 `index: false` 退出。robots `Disallow` 仍会阻止爬虫抓取，被 disallow 的路径上的 `noindex` 因此读不到——metadata 属于纵深防御，不等于已从索引移除；确实需要移除时应让该页可被抓取并下发 `noindex`；
@@ -888,6 +891,8 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 公开规范来源由 `SITE_URL` 提供并收口到 `https://www.tiangong.earth`；production 部署缺失或非法取值时 fail closed（抛出而不是发布 loopback canonical），本地与 CI fixture 显式设置的 loopback 取值仍然可用；
 - 可选 `BAIDU_SITE_VERIFICATION` 由部署环境提供（仓库不写入取值），配置时在根 document 元数据输出 `<meta name="baidu-site-verification">` 供全部语言首页继承，未配置时不输出任何标记；
 - 共享 SEO checker 以生成快照形式消费（`scripts/vendor/workspace-seo/`，权威源 `tiangong-lca/workspace` 为私有库）：CI 只用标准库校验快照摘要与来源字段，不 checkout 私有仓库、不申请额外权限；本地摘要一致只证明字节完整，来源证明由私有集成任务按 Git blob 校验。
+
+旧英文数据入口 `/data` 与 `/data/` 精确永久跳转到 `/en/lca-database`。归档页面的英文数据访问用途决定目标语言，不按站点默认语言猜测。单独的无状态 `edge-functions/data/index.ts` 仅对 GET/HEAD 返回 301/no-store，并保留查询串；精确 `/data/` rewrite 与原有 `/zh/` rewrite 并存，不匹配嵌套路径或旧博客。
 
 ### 11.3 缓存与新鲜度
 

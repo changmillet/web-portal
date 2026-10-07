@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "../components/ui/vendor/shadcn-tailwind.css";
 @import "./brand.generated.css";
 
 @import "@fontsource-variable/source-sans-3";

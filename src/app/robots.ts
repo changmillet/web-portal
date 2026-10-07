@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 
-import { locales } from "@/i18n/routing";
 import { publicIndexingEnabled, publicSiteUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
@@ -19,12 +18,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: [
-          "/r0-compat/",
-          ...locales.flatMap((locale) =>
-            ["search", "compare", "collections"].map((path) => `/${locale}/${path}`),
-          ),
-        ],
+        // Public functional pages must be fetchable for their noindex directive to be read.
+        // Parameter-link discovery is discouraged separately; robots is not access control.
+        disallow: ["/r0-compat/"],
       },
     ],
     sitemap: [

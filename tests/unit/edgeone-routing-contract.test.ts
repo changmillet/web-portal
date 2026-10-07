@@ -20,7 +20,10 @@ describe("EdgeOne native routing contract", () => {
     expect(configuration.redirects).toEqual([
       { source: "/", destination: "/zh-CN", statusCode: 302 },
     ]);
-    expect(configuration.rewrites).toEqual([{ source: "/zh/", destination: "/zh" }]);
+    expect(configuration.rewrites).toEqual([
+      { source: "/zh/", destination: "/zh" },
+      { source: "/data/", destination: "/data" },
+    ]);
     expect(configuration.headers).toEqual([
       {
         source: "/maps/*",

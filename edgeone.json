@@ -4,7 +4,10 @@
   "outputDirectory": ".next",
   "nodeVersion": "24.18.0",
   "redirects": [{ "source": "/", "destination": "/zh-CN", "statusCode": 302 }],
-  "rewrites": [{ "source": "/zh/", "destination": "/zh" }],
+  "rewrites": [
+    { "source": "/zh/", "destination": "/zh" },
+    { "source": "/data/", "destination": "/data" }
+  ],
   "headers": [
     {
       "source": "/maps/*",

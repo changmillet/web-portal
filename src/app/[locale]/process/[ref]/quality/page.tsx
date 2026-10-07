@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailEmpty } from "@/features/catalog/detail-empty";
 import { mapDataset } from "@/features/catalog/map-public-data";
+import { detailSubpageDescription } from "@/features/catalog/detail-metadata";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import { localizeReviewStatus } from "@/i18n/domain-vocabulary";
 import { isPortalLocale } from "@/i18n/routing";
@@ -23,7 +24,13 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("qualityDescription"),
+    description: detailSubpageDescription({
+      dataset,
+      description: t("qualityDescription"),
+      locale,
+      title: t("qualityTitle"),
+      versionLabel: t("currentVersion"),
+    }),
     locale,
     path: `process/${record.ref}/quality`,
     title: `${t("qualityTitle")} · ${record.name}`,

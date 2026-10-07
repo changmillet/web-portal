@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-30
-lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
+lastReviewedAt: 2026-10-07
+lastReviewedCommit: 62e4c8817695572398470b9804ab3970de812a31
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
+lastReviewedNote: "Reviewed Portal #130 at 62e4c88: compatible Next 16.3.8 security pins, unchanged audit gate and exact licensed shadcn CSS preserve component behavior; production browser and restarted component checks pass, with hosted acceptance separate."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -77,6 +77,10 @@ Unit tests rendering shared localized client components must use `NextIntlClient
 Normal tests use fixtures and never contact Production. The read-only live probe is explicitly enabled with `PORTAL_LIVE_PROBE=true`; missing live credentials must remain a reported skip, not an inferred production pass.
 
 The scoped `ajv>fast-uri` override keeps AJV on the compatible 3.x API while resolving its authority-parser advisories. Dependency changes require a frozen install, licence and high-severity audit checks plus the affected tooling. Reassess the override against the installed AJV dependency when upgrading; do not move it to an incompatible major solely to match a registry's global latest tag.
+
+Portal uses the checked-in UI components and retains the required shadcn Tailwind stylesheet as an exact licensed source asset in `src/components/ui/vendor/`. The CLI is not required by build or test scripts; its dependency graph is excluded from the application lockfile. Follow the vendor NOTICE when refreshing the stylesheet, preserve the upstream bytes and MIT license, and publish the matching notice at `/licenses/shadcn-css.txt`. A generator update is separate from updating the styles used by existing components.
+
+The release audit uses the full dependency graph and fails on high or critical advisories; do not lower this gate or ignore an advisory to publish a feature. Next and `@next/env` stay aligned at the exact compatible stable version in `package.json`. The reviewed security pins retain Undici 8 only in jsdom's Node 24 test graph, patched Sharp within Next's declared range and brace-expansion's current major. The `source-map-js@` empty-range key is pnpm 11 convergence syntax: it pins the reviewed version only where the consumer's declared semver range accepts it. Preserve narrower incompatible edges rather than forcing a new major. Native packages in the upstream lockfile do not qualify macOS Intel as a supported target.
 
 The exact legacy Chinese home aliases use `edge-functions/zh/index.ts` and the single native `/zh/` rewrite. The provider compiles this TypeScript to its Web API edge runtime; the function uses no Node API, environment variable or upstream request. The ordinary Next development server does not execute this provider route. Run its Request/Response unit matrix, typecheck and lint, then build with the installed EdgeOne CLI and generate its routing output. Inspect the emitted exact edge route and rewrite before deployment. Production must verify both aliases without following redirects, with GET/HEAD and ordered, repeated, blank and encoded query values; also verify root 302, nested unknown 404 and the unchanged public/private boundary. Only the production matrix proves the rewrite's order relative to the framework's trailing-slash rule.
 

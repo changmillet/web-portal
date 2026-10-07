@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { functionalLinkRel } from "@/lib/catalog-crawl-policy";
 import { FeedbackLink } from "@/components/shell/feedback-link";
 import { Button } from "@/components/ui/button";
 import type { NavigationEntry } from "./catalog-navigation";
@@ -239,6 +240,7 @@ export function RegionMap({
                     <Link
                       key={group.key}
                       href={entry.href}
+                      rel={functionalLinkRel(entry.href)}
                       prefetch={false}
                       aria-label={`${entry.label}: ${entry.countLabel}`}
                       data-count={shade}

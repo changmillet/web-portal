@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-29
-lastReviewedCommit: 0cdb0298b016a8b67972ec23dff749458c8dca41
+lastReviewedAt: 2026-10-07
+lastReviewedCommit: 62e4c8817695572398470b9804ab3970de812a31
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed Portal #126: the public data guide, four-language reader copy, site identity and explicit Chinese home aliases preserve public-data, native-routing, CSP and ISR boundaries. Exact production proof remains owned by the delivery Issue."
+lastReviewedNote: "Reviewed Portal #130 at 62e4c88: compatible Next 16.3.8 security pins, unchanged audit gate and exact licensed shadcn CSS preserve component behavior; production browser and restarted component checks pass, with hosted acceptance separate."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -43,6 +43,8 @@ related:
 
 数据库入口使用现有 `PortalPage` 阅读布局、语义按钮与分隔组件，正文区说明选择和获取数据的条件，旁列仅展示有真实公开来源的目录计数。导航和页脚沿访问者任务连接各站，德法到 PCR 英文及 ILCD 节点的链接明确标注语言。所有新增文字须在四语和移动/桌面环境下作为最终读者文案审阅，不使用开发进度或历史迁移叙事。
 
+功能链接继续使用原生 href，保持键盘、无 JavaScript 导航、焦点和 pending feedback。共享 FeedbackLink 与 SVG 地图链接为 Search、Compare、Collections 目标添加 nofollow 提示，不修改可见标签或交互，也不对详情、版本和受控目录链接附加该提示。具体抓取与索引规则由产品方案 §11.2 管理。
+
 公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏通过三幕连续叙事建立 Tiangong LCA 品牌识别，数据与平台入口放在后续实际内容区；Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
 
 术语冲突按以下顺序收敛：
@@ -59,6 +61,8 @@ related:
 Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选择以勾选图标标明状态，保留稳定的可访问名称和 pressed/checked 语义。禁用态只作用于控件，组内仍需阅读的说明保留正常对比度。InputGroup 附加区域将焦点转给相应的可用 Input 或 Textarea，按钮保留自己的操作。
 
 输入输出表主要显示流、方向、类型、原始数量与单位及定量参考意义。数量右对齐并与单位保持同行，禁止转换为浮点数或改变精度。逐行原生展开项保留 Flow/Process 精确版本、功能单位和展示依据，支持键盘；移动端使用相同信息层级。
+
+`globals.css` 从 `src/components/ui/vendor/shadcn-tailwind.css` 导入已审阅的 shadcn Tailwind 样式，替代对 CLI 包的样式路径依赖。该资产保持原有 4.19.0 发布字节、导入顺序和规则，来源及 SHA-256 见同目录 NOTICE，MIT 许可同时随源码和 `/licenses/shadcn-css.txt` 发布。刷新资产必须重新核对来源、许可和组件渲染；不随生成器版本自动改变当前界面。
 
 ## 默认主色：与 `tiangong-lca-next` 一致
 

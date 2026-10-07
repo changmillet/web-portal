@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-09-30
-lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
-lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
+lastReviewedAt: 2026-10-07
+lastReviewedCommit: 621b7f204c9cb6d751b27ec9ef206d90dc2da3b0
+lastReviewedNote: "Reviewed Portal #130 at 621b7f2: fetchable public noindex routes, functional-link crawl hints, truthful detail descriptions and the exact English data-gateway alias preserve public data, native navigation and CSP/ISR; hosted acceptance remains a separate delivery receipt."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -32,6 +32,8 @@ related:
 # Portal R0 Compatibility Matrix
 
 The exact `/zh` and `/zh/` home aliases use a stateless EdgeOne edge function and one exact `/zh/` rewrite. Their independent release gate requires a single 301 with the original ordered query for GET/HEAD, plus 405 for other methods and unchanged root/unknown-route behavior. The normal Next server does not execute these provider routes; source tests and generated routing output do not prove their order in Production. Keep the native root 302, existing headers, framework trailing-slash policy and CSP/ISR decisions intact while qualifying this gate.
+
+The English `/data` and `/data/` aliases use the same bounded edge-route pattern, with a separate exact rewrite and fixed `/en/lca-database` target. Verify original ordered query preservation, GET/HEAD 301, other-method 405 and nested unknown 404 on the exact deployment. The target is the current equivalent of the archived English data-access gateway; this does not redirect arbitrary retired content or change CSP/ISR. Portal #130 owns the current production acceptance receipt.
 
 R0 exit requires the exact selected Portal `main` commit and EdgeOne Production deployment on `portal.tiangong.earth` to pass every non-excepted row below. The table retains the exact historical platform-qualification receipts, including public indexing and the cacheable enforcing performance CSP at `bf97795512480dc00f680521cbf36aeab113ecfe`. A real 404/noindex/unchanged-URL EdgeOne generic raw document for unknown first segments remains the accepted platform disposition. New Portal #48 release acceptance must verify the final Main marker on the canonical public origin `https://www.tiangong.earth` (with apex and `portal.tiangong.earth` redirecting to it), four-language user workflows, public-data boundaries, cache/headers and the controlled lexical payload/latency checks; historical receipts are not a substitute for that exact rollout.
 

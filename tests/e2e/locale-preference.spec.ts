@@ -1,4 +1,20 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function waitForFrenchMenu(page: Page) {
+  const menu = page.getByRole("listbox", { name: "Langue", exact: true });
+  await expect(menu).toBeVisible();
+  await expect(page.getByRole("option", { name: "Français", exact: true })).toBeFocused();
+  // Placement/focus and finite entrance animations precede the outside-click
+  // interaction, after Radix has mounted its deferred document listeners.
+  await menu.evaluate(async (element) => {
+    await Promise.all(
+      element
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+  });
+}
 
 for (const input of ["mouse", "touch", "Enter", "Space"] as const) {
   test(`records the already selected language after explicit ${input} selection`, async ({
@@ -16,13 +32,18 @@ for (const input of ["mouse", "touch", "Enter", "Space"] as const) {
     try {
       await page.goto("/?entry=same-language#catalog");
       await expect(page).toHaveURL(/\/fr\?entry=same-language#catalog$/);
+      const expectedUrl = page.url();
       expect(await context.cookies()).toEqual([]);
       await page.evaluate(() => {
         document.documentElement.dataset.languageDocument = "same-document";
       });
       const navigations: string[] = [];
-      page.on("framenavigated", (frame) => {
-        if (frame === page.mainFrame()) navigations.push(frame.url());
+      page.on("request", (request) => {
+        // Hydration/hash updates can emit framenavigated without replacing the
+        // document. A reload or cross-document navigation issues a real request.
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+          navigations.push(request.url());
+        }
       });
       const trigger = page.getByRole("combobox", { name: "Langue", exact: true });
       if (input === "touch") await trigger.tap();
@@ -31,6 +52,7 @@ for (const input of ["mouse", "touch", "Enter", "Space"] as const) {
         await trigger.focus();
         await trigger.press("Enter");
       }
+      await waitForFrenchMenu(page);
       const selected = page.getByRole("option", { name: "Français", exact: true });
       await expect(selected).toHaveAttribute("data-state", "checked");
       if (input === "touch") await selected.tap();
@@ -40,6 +62,7 @@ for (const input of ["mouse", "touch", "Enter", "Space"] as const) {
         await selected.press(input === "Space" ? " " : "Enter");
       }
       await expect(trigger).toHaveAttribute("aria-expanded", "false");
+      await expect(page).toHaveURL(expectedUrl);
       await expect(page.locator("html")).toHaveAttribute("data-language-document", "same-document");
       expect(navigations).toEqual([]);
       expect(await context.cookies()).toEqual([
@@ -79,12 +102,14 @@ test("opening, dismissing and typing ahead do not save the current language", as
       includeHidden: true,
     });
     await trigger.click();
+    await waitForFrenchMenu(page);
     await page.keyboard.press("Escape");
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
     await expect(page.getByRole("listbox", { includeHidden: true })).toHaveCount(0);
     expect(await context.cookies()).toEqual([]);
 
     await trigger.click();
+    await waitForFrenchMenu(page);
     // The modal options intentionally make the background inert to accessibility.
     await page.mouse.click(1, 1);
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
@@ -93,6 +118,7 @@ test("opening, dismissing and typing ahead do not save the current language", as
 
     await trigger.focus();
     await trigger.press("Enter");
+    await waitForFrenchMenu(page);
     const current = page.getByRole("option", { name: "Français", exact: true });
     await expect(current).toBeFocused();
     await page.keyboard.type("f");

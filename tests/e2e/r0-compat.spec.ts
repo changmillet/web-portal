@@ -113,13 +113,13 @@ test("keeps the fixed-target HMAC BFF disabled without complete fixture secrets"
 
 test("preserves state while canonicalizing bounded unlocalized paths", async ({ request }) => {
   const cases = [
-    ["/search?v=1&kind=process&q=steel%20coil", "/zh-CN/search?v=1&kind=process&q=steel%20coil"],
-    ["/compare?v=1&m=a&m=b", "/zh-CN/compare?v=1&m=a&m=b"],
-    ["/collections?source=local", "/zh-CN/collections?source=local"],
-    ["/methodology?section=license", "/zh-CN/methodology?section=license"],
-    ["/browse/process?page=2", "/zh-CN/browse/process?page=2"],
-    ["/process/example@01.00.000?tab=quality", "/zh-CN/process/example@01.00.000?tab=quality"],
-    ["/flow/example@01.00.000?tab=versions", "/zh-CN/flow/example@01.00.000?tab=versions"],
+    ["/search?v=1&kind=process&q=steel%20coil", "/en/search?v=1&kind=process&q=steel%20coil"],
+    ["/compare?v=1&m=a&m=b", "/en/compare?v=1&m=a&m=b"],
+    ["/collections?source=local", "/en/collections?source=local"],
+    ["/methodology?section=license", "/en/methodology?section=license"],
+    ["/browse/process?page=2", "/en/browse/process?page=2"],
+    ["/process/example@01.00.000?tab=quality", "/en/process/example@01.00.000?tab=quality"],
+    ["/flow/example@01.00.000?tab=versions", "/en/flow/example@01.00.000?tab=versions"],
   ] as const;
 
   for (const [source, destination] of cases) {

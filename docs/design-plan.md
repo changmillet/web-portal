@@ -93,7 +93,7 @@ Portal 的成功标准不是“提供一个数据库表格”，而是让用户�
 - 购买、许可交易或商业数据交付闭环；
 - 把浏览器本地状态描述为不可篡改或合规审计记录。
 
-Portal 没有后台机器用户、登录页面或浏览器 token/cookie。高级能力统一外链到 `tiangong-lca-next`；Portal 不共享终端用户登录态，也不在本项目复制其 API、MCP 或 Skills 实现。
+Portal 没有后台机器用户、登录页面或浏览器身份 token/cookie；只在用户手动选择语言后设置无身份信息的语言偏好 cookie。高级能力统一外链到 `tiangong-lca-next`；Portal 不共享终端用户登录态，也不在本项目复制其 API、MCP 或 Skills 实现。
 
 ## 3. 跨项目职责
 
@@ -323,7 +323,7 @@ DTO 不返回：
 
 ## 6. 信息架构与路由
 
-正式公开语言为 `zh-CN`、`en`、`de` 与 `fr`，语言进入路径。四套 UI 词典独立完整，不跨语言回退；数据内容缺少当前语言时允许显式标注来源语言。根路径只做默认语言跳转，不承载内容。
+正式公开语言为 `zh-CN`、`en`、`de` 与 `fr`，语言进入路径。四套 UI 词典独立完整，不跨语言回退；数据内容缺少当前语言时允许显式标注来源语言。根路径不承载内容，按有效手动语言偏好 cookie → 浏览器 Accept-Language 权重顺序中首个支持语言（归并地区变体）→ English 做 307/no-store 跳转；带语言的 URL 始终按 URL 渲染。自动协商和直接访问语言 URL 都不写入偏好。
 
 | 路由 | 用途 | 渲染 | 索引 |
 | --- | --- | --- | --- |
@@ -514,6 +514,8 @@ MVP 输入上限：查询 512 个 Unicode code points、解码后的 query strin
 ### 8.2 localStorage
 
 当前键名为 `tiangong.portal.collections.v2`，优先读取 V2，否则严格读取 V1 并迁移为未知类型，保留原始 V1 副本。读取时执行闭合 schema、类型/版本/重复成员和容量校验；损坏数据隔离，允许导出后明确确认清除，不直接传入 DOM。浏览器存储异常不使整页崩溃，不误报保存成功。
+
+语言选择器手动切换时保存 `portal_locale`，并保留当前对象、版本、query 和 fragment。cookie 写入被浏览器拒绝时仍导航到显式语言 URL；无法承诺关闭浏览器后的记忆。普通首次访问不设置 cookie，后续浏览器语言变化仍可影响无偏好的入口。语言偏好按站点主机隔离，不共享身份或跨域同步。
 
 ### 8.3 分享
 
@@ -882,7 +884,7 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 公开 Search、Compare、Collections 路径允许抓取，使其初始 HTML 的 `noindex` 可被读取；Search/Compare 保留 `follow`，Collections 保留 `nofollow`。启用公开索引时 robots 仅保留 `/r0-compat/` 的禁抓规则，全局禁用时仍为 `Disallow: /`。这不是数据访问控制，也不保证搜索引擎已完成移除。
 - 指向四语 Search、Compare、Collections 的站内功能链接统一附加 `rel="nofollow"`，抑制参数组合发现；共享 `FeedbackLink` 与 SVG 地图原生 Link 使用同一策略，保留现有 rel token、原生 href、无 JS 操作和 `prefetch=false`。此属性只是爬虫提示，不是速率限制；详情、版本、受控 Browse 和其他正常内容链接保持可发现，三类功能页不进入 sitemap。Search HTML 的 private/no-store、公开 RPC 短缓存和有界准入不变，GET 抓取不得触发 Hybrid/AI POST。
 - zh-CN/en/de/fr 在 HTML 与 sitemap 中互相声明 self-inclusive reciprocal `hreflang`；基础 sitemap 为 9 个静态路径 × 4 种语言输出 36 条各自独立的规范 `<url>`，每条互指同一语言集合；
-- `x-default` 指向同内容的默认语言页面（`/zh-CN/...`）；`/` 只重定向到 `/zh-CN`，因此不进入 sitemap，也不作为 `x-default`；
+- `x-default` 指向同内容的默认语言页面（`/zh-CN/...`）；`/` 按用户语言协商跳转，因此不进入 sitemap，也不作为 `x-default`；
 - 页面 metadata 与 robots.txt 共用同一 `PORTAL_PUBLIC_INDEXING` 开关，且全局开关优先：未启用时即使页面显式 `index: true` 也不索引，页面仍可自行 `index: false` 退出。robots `Disallow` 仍会阻止爬虫抓取，被 disallow 的路径上的 `noindex` 因此读不到——metadata 属于纵深防御，不等于已从索引移除；确实需要移除时应让该页可被抓取并下发 `noindex`；
 - Database sitemap manifest 仍固定返回 64 个 opaque source shard。Portal 将每个 source shard 按稳定位置取模切成 4 个公开 part，因此根级 `/catalog-{process|flow}-sitemap.xml` 各固定列出 256 项；唯一规范参数为 `?shard={0..63}&part={0..3}`，确保根文件作用域覆盖四种语言；
 - shard 数字只接受规范化 `0..63`，Portal 按 manifest 数组位置选择 opaque cursor 并原样调用 Database；cursor 不进入 URL、XML、响应或日志；
@@ -948,7 +950,7 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 12.3 隐私
 
-- 不设置身份 Cookie；主题与语言只存在本地；
+- 不设置身份 Cookie；主题保存在 localStorage；手动语言偏好使用当前主机的 `portal_locale` cookie（Path=/、365 天、SameSite=Lax，HTTPS 下 Secure），不包含用户身份、查询或数据；
 - 不把候选集、备注或排除理由发送到服务器；
 - 统计默认只收集页面类型、性能、结果数和错误码；
 - Hybrid 原始自然语言 body 不进入 access URL 或应用日志；GET lexical `q` 只受 EdgeOne 默认 24 小时 access-log 生命周期约束；
@@ -1022,7 +1024,7 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 - 多 root layout 的 unmatched URL 使用 Next `experimental.globalNotFound` 输出完整、带语言和 `noindex` 的 404 document；该 experimental 能力与 SRI 一并进入 R0 compatibility gate；
 - TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
 - `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
-- 不部署 Next `proxy.ts`/legacy middleware（host 级 alias 重定向由 provider 原生规则承担）；无 query 的根路径使用 `edgeone.json` exact redirect，R0 routing evidence 使用静态 headers；已知无 locale 的 stateful 路径使用 bounded same-origin 307 Route Handlers 原样保留 pathname/query 并 `no-store`；invalid locale 进入完整 zh-CN global 404 document；
+- 不部署 Next `proxy.ts`/legacy middleware（host 级 alias 重定向由 provider 原生规则承担）；根路径使用 request-aware 307 Route Handler，移除 provider 固定中文 redirect，R0 routing evidence 使用静态 headers；已知无 locale 的 stateful 路径使用同一语言协商的 bounded same-origin 307 Route Handlers，原样保留 pathname/query 并 `no-store`、`Vary: Accept-Language, Cookie`；invalid locale 进入完整 zh-CN global 404 document；
 - 图片使用 `next/image`，仅配置必要远端域名；
 - `next typegen && tsc --noEmit` 是独立 typecheck；
 - Client boundary 通过 lint 和 bundle 检查防止 server-only 模块泄漏。

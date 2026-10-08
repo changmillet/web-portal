@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { isPortalLocale, localeNames, locales, type PortalLocale } from "@/i18n/routing";
+import { rememberLocale } from "@/i18n/preference";
 
 type LocaleSwitcherProps = {
   currentLocale: PortalLocale;
@@ -30,7 +31,9 @@ export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
   }, []);
 
   function switchLocale(nextLocale: string) {
-    if (!isPortalLocale(nextLocale) || nextLocale === currentLocale) return;
+    if (!isPortalLocale(nextLocale)) return;
+    rememberLocale(nextLocale, document, window.location.protocol === "https:");
+    if (nextLocale === currentLocale) return;
     setPending(true);
     const segments = pathname.split("/");
     segments[1] = nextLocale;

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import zh from "../../src/i18n/messages/zh-CN.json" with { type: "json" };
 
 test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/zh-CN");
 
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
@@ -28,7 +28,7 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
 
 test("uses the configured compact mark at mobile width", async ({ page }) => {
   await page.setViewportSize({ height: 667, width: 375 });
-  await page.goto("/");
+  await page.goto("/zh-CN");
   await expect(page.locator("[data-brand-logo-mark]").first()).toBeVisible();
   await expect(page.locator("[data-brand-light-logo]").first()).toBeHidden();
 });
@@ -38,7 +38,7 @@ test("uses the current theme logo as the default mobile mark", async ({ page }) 
   await page.addInitScript(() => {
     localStorage.setItem("tiangong.portal.theme.v1", "dark");
   });
-  await page.goto("/");
+  await page.goto("/zh-CN");
 
   await expect(page.locator("html")).toHaveClass(/dark/);
   await expect(page.locator('[data-brand-logo-mark-theme="light"]').first()).toBeHidden();
@@ -60,7 +60,7 @@ test("falls back to a text mark when configured and default logos fail", async (
 
     return route.continue();
   });
-  await page.goto("/");
+  await page.goto("/zh-CN");
 
   await expect.poll(() => failedLogoRequests).toBeGreaterThan(0);
   await expect(page.locator("[data-brand-logo] img").first()).toHaveJSProperty("naturalWidth", 0);

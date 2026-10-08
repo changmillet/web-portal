@@ -50,7 +50,20 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 同一代码库支持 `tiangong` 和 `atlas` 两套独立展示层。构建前设置 `PORTAL_BRAND=atlas` 即可选择 Atlas 的 Logo、首页、导航、目录卡片和详情布局；默认仍为 TianGong。两者共享四语路由、公开数据契约与业务操作，可将同一提交分别构建部署。详细边界和部署环境覆盖规则见下列开发指南与 UI 规范。
 
-在 `web-portal` 项目目录中，使用 [.node-version](.node-version) 指定的 Node 版本并安装依赖后，选择一条命令启动：
+在 `web-portal` 项目目录中，使用 [.node-version](.node-version) 指定的 Node 版本并安装依赖。启动前，在项目根目录的 `.env.local` 中填写现有后端的连接配置（示例值需要替换）：
+
+```dotenv
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_<your-key>
+```
+
+这两项用于公开目录、关键词搜索与记录读取，两套 UI 共用同一配置。`.env.example` 只是模板，不会自动加载；只设置品牌变量可以显示页面，但无法加载搜索数据。`.env.local` 已被 Git 忽略，不要提交实际密钥。
+
+`pnpm dev` 不会加载 `.env.production`。本地预览需要连接正式后端时，将该后端的上述两项配置填入 `.env.local`；不要通过修改 `NODE_ENV` 来切换数据环境。在本工作区中，Platform 的正式连接配置位于 `../platform/.env`，共享开发配置位于 `../platform/.env.development`；只复用上述两项，不要整份复制环境文件。
+
+描述搜索（Hybrid）和 LCIA 结果还需要对应后端环境的 `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET`；Edge 服务位于不同域名时再设置 `PORTAL_EDGE_ENDPOINT`。签名凭据需与服务端匹配，具体要求见[服务端配置](docs/design-plan.md#101-portal-服务端客户端)。
+
+配置完成后，选择一条命令启动：
 
 ```bash
 # TianGong UI

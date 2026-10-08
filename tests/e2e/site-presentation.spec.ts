@@ -83,7 +83,7 @@ test.describe("site presentation", () => {
     await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
     if (site === "atlas") await expect(page.locator(".atlas-record").first()).toBeVisible();
     await page
-      .locator(`a[href*="${encodeURIComponent(processRef)}"]`)
+      .getByRole("link", { name: "Electricity, medium voltage", exact: true })
       .first()
       .click();
     await expect(page).toHaveURL(
@@ -111,7 +111,7 @@ test.describe("site presentation", () => {
       await page.goto(`${origin}/en/search?v=1&kind=process&q=electricity`);
       await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
       await page
-        .locator(`a[href*="${encodeURIComponent(processRef)}"]`)
+        .getByRole("link", { name: "Electricity, medium voltage", exact: true })
         .first()
         .click();
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(

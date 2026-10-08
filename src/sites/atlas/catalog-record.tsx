@@ -13,11 +13,13 @@ export function AtlasCatalogRecord({
 }: CatalogResultRowProps) {
   return (
     <li className="atlas-record" data-selected={selected || undefined}>
-      {selection && <div className="atlas-record-selection">{selection}</div>}
+      <div className="atlas-record-toolbar">
+        {selection && <div className="atlas-record-selection">{selection}</div>}
+        {action}
+      </div>
       <article>
         <div className="atlas-record-heading">
           <h3>{title}</h3>
-          {action}
         </div>
         <div className="atlas-record-tags">{tags}</div>
         {children}

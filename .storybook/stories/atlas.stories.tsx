@@ -109,11 +109,33 @@ export const CatalogRecords: Story = {
   play: async ({ canvas, userEvent, canvasElement }) => {
     await expect(canvasElement.querySelectorAll(".atlas-record")).toHaveLength(3);
     const checkbox = canvas.getAllByRole("checkbox")[0]!;
+    const label = checkbox.closest("label")!;
+    // A full selection label must fit a compact control, never a vertical gutter.
+    await expect(label.getBoundingClientRect().height).toBeLessThanOrEqual(48);
+    const actions = canvasElement.querySelector(".atlas-record .catalog-result-actions")!;
+    await expect(actions.getBoundingClientRect().height).toBeLessThanOrEqual(48);
     await userEvent.click(checkbox);
     await expect(checkbox).toBeChecked();
+    await userEvent.keyboard("[Space]");
+    await expect(checkbox).not.toBeChecked();
+    await userEvent.click(label);
+    await expect(checkbox).toBeChecked();
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
   },
 };
 export const MobileRecords: Story = {
   ...CatalogRecords,
   globals: { locale: "de", viewport: { value: "mobile", isRotated: false } },
+};
+export const ChineseRecords: Story = {
+  ...CatalogRecords,
+  globals: { locale: "zh-CN" },
+};
+export const ChineseMobileRecords: Story = {
+  ...CatalogRecords,
+  globals: { locale: "zh-CN", viewport: { value: "mobile", isRotated: false } },
+};
+export const FrenchDarkRecords: Story = {
+  ...CatalogRecords,
+  globals: { locale: "fr", theme: "dark" },
 };

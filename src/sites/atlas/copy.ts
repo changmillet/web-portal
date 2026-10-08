@@ -36,7 +36,7 @@ type AtlasCopy = {
 export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
   en: {
     name: "Atlas",
-    descriptor: "LCA data",
+    descriptor: "The Nexus for LCA Data",
     eyebrow: "Explore data for life cycle assessment",
     title: "LCA data.",
     emphasis: "Your research starts here.",
@@ -74,7 +74,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
   },
   "zh-CN": {
     name: "Atlas",
-    descriptor: "LCA 数据",
+    descriptor: "汇聚生命周期评价数据",
     eyebrow: "发现适用于生命周期评价的数据",
     title: "探索生命周期评价数据。",
     emphasis: "找到研究的起点。",
@@ -108,7 +108,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
   },
   de: {
     name: "Atlas",
-    descriptor: "Ökobilanzdaten",
+    descriptor: "Ökobilanzdaten an einem Ort",
     eyebrow: "Daten für Ihre Ökobilanz entdecken",
     title: "Ökobilanzdaten entdecken.",
     emphasis: "Hier beginnt Ihre Recherche.",
@@ -148,7 +148,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
   },
   fr: {
     name: "Atlas",
-    descriptor: "Données ACV",
+    descriptor: "Le carrefour des données d’ACV",
     eyebrow: "Explorer les données pour l’analyse du cycle de vie",
     title: "Données d’ACV.",
     emphasis: "Votre recherche commence ici.",

@@ -23,8 +23,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 1032658137d20ca76615c3d09a8ab1c479517643
-lastReviewedNote: "Reviewed Portal #134: copy changes and the exchange disclosure test preserve exact versions, numeric context, public capabilities, comparison limits and local shortlist semantics. Product routes, data access, privacy and deployment boundaries remain unchanged."
+lastReviewedCommit: fd98c91946ae6d09f23a95717e62ba0529069b95
+lastReviewedNote: "Reviewed Portal #134: localized copy selectors retain anonymous-shell visibility, Hybrid query privacy, sharing confirmation, comparison and numeric context assertions. Routes, public-data permissions and hosted-release boundaries remain unchanged."
 related:
   - docs/ui-system.md
   - docs/development.md

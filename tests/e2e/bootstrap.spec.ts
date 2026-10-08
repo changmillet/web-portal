@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import zh from "../../src/i18n/messages/zh-CN.json" with { type: "json" };
 
 test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
   await page.goto("/");
@@ -6,7 +7,7 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
   await expect(
-    page.getByRole("contentinfo").getByText("连接公开数据、专业工具与生命周期评价实践。"),
+    page.getByRole("contentinfo").getByText(zh.Common.footerDescription, { exact: true }),
   ).toBeVisible();
   await page.locator(".catalog-search-teaser").click();
   await expect(page.getByRole("searchbox")).toBeEnabled();

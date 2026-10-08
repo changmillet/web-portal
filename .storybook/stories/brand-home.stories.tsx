@@ -11,10 +11,10 @@ import { dictionaries, mobileGlobals, storyLocale } from "../fixtures";
 
 const summary = publicCatalogSummarySchema.parse(fixture.catalogSummary);
 const cinematicChapters = {
-  "zh-CN": ["02 — 数字孪生", "03 — 可追溯证据"],
-  en: ["02 — Digital twin", "03 — Traceable evidence"],
-  de: ["02 — Digitaler Zwilling", "03 — Nachverfolgbare Nachweise"],
-  fr: ["02 — Jumeau numérique", "03 — Preuves traçables"],
+  "zh-CN": ["02 — 材料与过程", "03 — 来源与方法"],
+  en: ["02 — Materials and processes", "03 — Sources and methods"],
+  de: ["02 — Materialien und Prozesse", "03 — Quellen und Methoden"],
+  fr: ["02 — Matériaux et processus", "03 — Sources et méthodes"],
 } as const;
 
 const meta = {

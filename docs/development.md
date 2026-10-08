@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: 62e4c8817695572398470b9804ab3970de812a31
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #130 at 62e4c88: compatible Next 16.3.8 security pins, unchanged audit gate and exact licensed shadcn CSS preserve component behavior; production browser and restarted component checks pass, with hosted acceptance separate."
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

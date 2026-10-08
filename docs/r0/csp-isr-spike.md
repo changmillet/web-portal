@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 954eb833fee7c0eb5ac6596ed7ebe3daf6779d6e
-lastReviewedNote: "Reviewed Portal #132 against 954eb83: build-time presentation selection preserves the shared route tree, enforcing performance CSP and ISR; no renderer or hosted qualification claims are changed."
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

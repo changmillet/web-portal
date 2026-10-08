@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-09-30
-lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
-lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 related:
   - docs/development.md
   - docs/ui-system.md

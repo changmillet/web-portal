@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: 621b7f204c9cb6d751b27ec9ef206d90dc2da3b0
-lastReviewedNote: "Reviewed Portal #130 at 621b7f2: fetchable public noindex routes, functional-link crawl hints, truthful detail descriptions and the exact English data-gateway alias preserve public data, native navigation and CSP/ISR; hosted acceptance remains a separate delivery receipt."
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 related:
   - docs/ui-system.md
   - docs/development.md

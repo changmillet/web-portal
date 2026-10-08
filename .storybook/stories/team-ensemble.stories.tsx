@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { lazy, Suspense } from "react";
-import { expect, userEvent, waitFor } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 
 import { TeamEnsemble } from "@/features/team/team-ensemble";
 import { teamMembers } from "@/features/team/team-data";
@@ -79,9 +79,12 @@ export const Selected: Story = {
     await expect(jianchuan).toHaveAttribute("aria-pressed", "true");
     await expect(jianchuan.parentElement).toHaveAttribute("data-band", "front");
     await expect(jianchuan.parentElement).toHaveStyle({ zIndex: "22" });
-    await waitFor(async () => {
-      await expect(canvas.getByRole("heading", { level: 3, name: "Jianchuan Qi" })).toBeVisible();
-    });
+    const heading = await canvas.findByRole("heading", { level: 3, name: "Jianchuan Qi" });
+    const card = heading.closest(".team-ensemble-card")!;
+    // CI can delay the first animation frame while decoding the portrait ensemble.
+    // Wait for the actual entrance to finish instead of polling opacity on a wall-clock budget.
+    await Promise.all(card.getAnimations().map((animation) => animation.finished));
+    await expect(heading).toBeVisible();
   },
 };
 export const Mobile: Story = { globals: mobileGlobals, play: interactionPlay };

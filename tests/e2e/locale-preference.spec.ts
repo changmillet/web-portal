@@ -1,5 +1,111 @@
 import { expect, test } from "@playwright/test";
 
+for (const input of ["mouse", "touch", "Enter", "Space"] as const) {
+  test(`records the already selected language after explicit ${input} selection`, async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext({
+      baseURL,
+      locale: "fr-CA",
+      hasTouch: input === "touch",
+      isMobile: input === "touch",
+      viewport: input === "touch" ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+    });
+    const page = await context.newPage();
+    try {
+      await page.goto("/?entry=same-language#catalog");
+      await expect(page).toHaveURL(/\/fr\?entry=same-language#catalog$/);
+      expect(await context.cookies()).toEqual([]);
+      await page.evaluate(() => {
+        document.documentElement.dataset.languageDocument = "same-document";
+      });
+      const navigations: string[] = [];
+      page.on("framenavigated", (frame) => {
+        if (frame === page.mainFrame()) navigations.push(frame.url());
+      });
+      const trigger = page.getByRole("combobox", { name: "Langue", exact: true });
+      if (input === "touch") await trigger.tap();
+      else if (input === "mouse") await trigger.click();
+      else {
+        await trigger.focus();
+        await trigger.press("Enter");
+      }
+      const selected = page.getByRole("option", { name: "Français", exact: true });
+      await expect(selected).toHaveAttribute("data-state", "checked");
+      if (input === "touch") await selected.tap();
+      else if (input === "mouse") await selected.click();
+      else {
+        await expect(selected).toBeFocused();
+        await selected.press(input === "Space" ? " " : "Enter");
+      }
+      await expect(trigger).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator("html")).toHaveAttribute("data-language-document", "same-document");
+      expect(navigations).toEqual([]);
+      expect(await context.cookies()).toEqual([
+        expect.objectContaining({ name: "portal_locale", value: "fr" }),
+      ]);
+
+      const reopened = await browser.newContext({
+        baseURL,
+        locale: "de-AT",
+        storageState: await context.storageState(),
+      });
+      try {
+        const next = await reopened.newPage();
+        await next.goto("/");
+        await expect(next).toHaveURL(/\/fr$/);
+      } finally {
+        await reopened.close();
+      }
+    } finally {
+      await context.close();
+    }
+  });
+}
+
+test("opening, dismissing and typing ahead do not save the current language", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext({ baseURL, locale: "fr-CA" });
+  const page = await context.newPage();
+  try {
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/fr$/);
+    const trigger = page.getByRole("combobox", {
+      name: "Langue",
+      exact: true,
+      includeHidden: true,
+    });
+    await trigger.click();
+    await page.keyboard.press("Escape");
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByRole("listbox", { includeHidden: true })).toHaveCount(0);
+    expect(await context.cookies()).toEqual([]);
+
+    await trigger.click();
+    // The modal options intentionally make the background inert to accessibility.
+    await page.mouse.click(1, 1);
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByRole("listbox", { includeHidden: true })).toHaveCount(0);
+    expect(await context.cookies()).toEqual([]);
+
+    await trigger.focus();
+    await trigger.press("Enter");
+    const current = page.getByRole("option", { name: "Français", exact: true });
+    await expect(current).toBeFocused();
+    await page.keyboard.type("f");
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByRole("listbox", { includeHidden: true })).toHaveCount(0);
+    expect(await context.cookies()).toEqual([]);
+  } finally {
+    await context.close();
+  }
+});
+
 test("negotiates neutral entries by weighted browser languages without caching or saving them", async ({
   request,
 }) => {
@@ -87,6 +193,14 @@ test("manual language still works when cookie writes are denied", async ({ page,
     });
   });
   await page.goto("/en/methodology?keep=a&keep=b#reading");
+  await page.evaluate(() => {
+    document.documentElement.dataset.languageDocument = "same-document";
+  });
+  await page.getByRole("combobox", { name: "Language", exact: true }).click();
+  await page.getByRole("option", { name: "English", exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/methodology\?keep=a&keep=b#reading$/);
+  await expect(page.locator("html")).toHaveAttribute("data-language-document", "same-document");
+  expect(await context.cookies()).toEqual([]);
   await page.getByRole("combobox", { name: "Language", exact: true }).click();
   await page.getByRole("option", { name: "中文", exact: true }).click();
   await expect(page).toHaveURL(/\/zh-CN\/methodology\?keep=a&keep=b#reading$/);

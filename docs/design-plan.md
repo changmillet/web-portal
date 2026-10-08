@@ -23,8 +23,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: fd98c91946ae6d09f23a95717e62ba0529069b95
-lastReviewedNote: "Reviewed Portal #134: localized copy selectors retain anonymous-shell visibility, Hybrid query privacy, sharing confirmation, comparison and numeric context assertions. Routes, public-data permissions and hosted-release boundaries remain unchanged."
+lastReviewedCommit: 3fc0d0be4989f07e4d1074d957b55b3d7ef63a2d
+lastReviewedNote: "Reviewed Portal #137: neutral entry negotiates manual preference, browser language and English with no-store redirects; explicit language URLs and localized CSP/ISR stay unchanged. Manual same-value menu selections persist without navigation; dismissal does not persist. Local tests do not claim hosted qualification."
 related:
   - docs/ui-system.md
   - docs/development.md

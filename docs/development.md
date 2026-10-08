@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 1032658137d20ca76615c3d09a8ab1c479517643
+lastReviewedCommit: 3fc0d0be4989f07e4d1074d957b55b3d7ef63a2d
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #134: four-locale copy preserves shared routes, public source values and task constraints. Brand copy uses LCA data; LCI data is reserved for inventory context. Existing Storybook, browser and hosted-release validation boundaries remain unchanged."
+lastReviewedNote: "Reviewed Portal #137: neutral entry negotiates manual preference, browser language and English with no-store redirects; explicit language URLs and localized CSP/ISR stay unchanged. Manual same-value menu selections persist without navigation; dismissal does not persist. Local tests do not claim hosted qualification."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

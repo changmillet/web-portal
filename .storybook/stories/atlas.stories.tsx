@@ -67,6 +67,9 @@ const meta = {
       `/${locale}/search?v=1`,
     );
     await expect(canvasElement.querySelector(".brand-cinematic-hero")).toBeNull();
+    await expect(
+      canvas.getByRole("link", { name: dictionaries[locale].Common.databases }),
+    ).toHaveAttribute("href", `/${locale}/lca-database`);
     await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth + 1);
   },
 } satisfies Meta<typeof AtlasHome>;

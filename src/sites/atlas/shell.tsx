@@ -56,6 +56,7 @@ export async function AtlasHeader({
         {(
           [
             ["search?v=1", "catalog"],
+            ["lca-database", "databases"],
             ["methodology", "methodology"],
             ["team", "team"],
             ["community", "community"],

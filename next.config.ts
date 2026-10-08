@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   env: {
     PORTAL_BUILD_SHA: deploymentSha,
+    PORTAL_BRAND: brandConfig.site,
   },
   compiler: {
     async runAfterProductionCompile({ projectDir, distDir }) {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { BrandHome } from "@/components/brand/brand-home";
+import { SiteHome } from "@/sites/home";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata, portalWebsiteJsonLd } from "@/lib/seo";
 import type { PublicCatalogSummary } from "@/server/contracts/portal";
@@ -63,7 +63,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           __html: JSON.stringify(portalWebsiteJsonLd()).replace(/</g, "\\u003c"),
         }}
       />
-      <BrandHome locale={locale} summary={summary} counts={navigation?.totals ?? null} />
+      <SiteHome locale={locale} summary={summary} counts={navigation?.totals ?? null} />
     </>
   );
 }

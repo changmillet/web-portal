@@ -1,4 +1,6 @@
 import { createTranslator } from "next-intl";
+import { brandConfig } from "./brand.mock";
+import { siteMessages } from "../src/sites/messages";
 import { dictionaries } from "./fixtures";
 import type { PortalLocale } from "../src/i18n/routing";
 
@@ -11,9 +13,13 @@ export async function getTranslations({
   locale: PortalLocale;
   namespace: keyof (typeof dictionaries)["en"];
 }) {
-  return createTranslator({ locale, messages: dictionaries[locale], namespace });
+  return createTranslator({
+    locale,
+    messages: siteMessages(dictionaries[locale], locale, brandConfig.site),
+    namespace,
+  });
 }
 
 export async function getMessages({ locale }: { locale: PortalLocale }) {
-  return dictionaries[locale];
+  return siteMessages(dictionaries[locale], locale, brandConfig.site);
 }

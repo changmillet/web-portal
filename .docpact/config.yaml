@@ -112,6 +112,7 @@ routing:
     components:
       paths:
         - src/components/**
+        - src/sites/**
         - src/app/globals.css
         - src/config/brand*
         - src/i18n/**
@@ -236,6 +237,8 @@ rules:
         kind: ui-standard
       - path: src/components/**
         kind: shared-ui
+      - path: src/sites/**
+        kind: brand-presentation
       - path: src/app/globals.css
         kind: ui-style
       - path: src/app/brand.generated.css
@@ -265,6 +268,8 @@ rules:
       - path: tests/unit/ui-*.test.*
         kind: ui-behavior
       - path: tests/unit/brand-*.test.ts
+        kind: brand-check
+      - path: tests/unit/site-presentation.test.tsx
         kind: brand-check
       - path: tests/unit/navigation-geography.test.ts
         kind: dictionary-check

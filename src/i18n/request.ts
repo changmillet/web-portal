@@ -1,5 +1,8 @@
 import { getRequestConfig } from "next-intl/server";
 
+import { brandConfig } from "@/server/brand";
+import { siteMessages } from "@/sites/messages";
+
 import { defaultLocale, isPortalLocale } from "./routing";
 
 export default getRequestConfig(async ({ locale: explicitLocale, requestLocale }) => {
@@ -9,7 +12,11 @@ export default getRequestConfig(async ({ locale: explicitLocale, requestLocale }
 
   return {
     locale,
-    messages: (await import(`./messages/${locale}.json`)).default,
+    messages: siteMessages(
+      (await import(`./messages/${locale}.json`)).default,
+      locale,
+      brandConfig.site,
+    ),
     timeZone: "UTC",
   };
 });

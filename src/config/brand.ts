@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { readSiteId, atlasBrandDefaults, type SiteId } from "../sites/config";
 
 import {
   assertBrandPaletteContrast,
@@ -60,6 +61,7 @@ const rawBrandConfigSchema = z.object({
 });
 
 export type BrandConfig = {
+  site: SiteId;
   lightPrimary: string;
   darkPrimary: string;
   version: string;
@@ -143,6 +145,12 @@ function normalizeAssetReference(value: string, allowedOrigin?: string): string 
 }
 
 export function readBrandConfig(environment: BrandEnvironment = process.env): BrandConfig {
+  const site = readSiteId(environment);
+  if (site === "atlas")
+    environment = {
+      ...atlasBrandDefaults,
+      ...Object.fromEntries(Object.entries(environment).filter(([, value]) => value !== undefined)),
+    };
   const raw = rawBrandConfigSchema.parse({
     lightPrimary: environment.PORTAL_LIGHT_PRIMARY,
     darkPrimary: environment.PORTAL_DARK_PRIMARY,
@@ -170,6 +178,7 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
   assertBrandPaletteContrast(darkPalette, "dark");
 
   return {
+    site,
     lightPrimary: raw.lightPrimary,
     darkPrimary: raw.darkPrimary,
     version: raw.version,

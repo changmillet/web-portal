@@ -1,4 +1,17 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { usePresentation } from "@/sites/presentation";
+import { AtlasCatalogRecord } from "@/sites/atlas/catalog-record";
+
+export type CatalogResultRowProps = {
+  title: ReactNode;
+  tags?: ReactNode;
+  selection?: ReactNode;
+  action?: ReactNode;
+  selected?: boolean;
+  children: ReactNode;
+};
 import "./catalog-result-row.css";
 
 /** Shared result row used by the design reference and live catalog.
@@ -11,14 +24,20 @@ export function CatalogResultRow({
   action,
   selected,
   children,
-}: {
-  title: ReactNode;
-  tags?: ReactNode;
-  selection?: ReactNode;
-  action?: ReactNode;
-  selected?: boolean;
-  children: ReactNode;
-}) {
+}: CatalogResultRowProps) {
+  const site = usePresentation();
+  if (site === "atlas")
+    return (
+      <AtlasCatalogRecord
+        title={title}
+        tags={tags}
+        selection={selection}
+        action={action}
+        selected={selected}
+      >
+        {children}
+      </AtlasCatalogRecord>
+    );
   return (
     <li className="cr-result" data-selected={selected || undefined}>
       {selection && <div className="cr-record-select">{selection}</div>}

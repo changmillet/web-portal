@@ -57,6 +57,16 @@ Use that workspace's `scripts/workspace-ops` for task creation/start, durable up
 
 The public `lca-database` entry is exercised by `tests/e2e/database-guide.spec.ts`: all four locales retain raw HTML discovery links, matching canonical/alternates and usable mobile light/dark states. The theme check waits for the actual mobile selector to close and finite transitions to finish before measuring contrast. `Catalog/LCA database` supplies the component, long-localization and unavailable-count scenarios. Public site identity on the homepage remains separate from Dataset metadata on exact-version pages.
 
+## Brand presentations
+
+Use `PORTAL_BRAND=atlas pnpm dev` or `PORTAL_BRAND=atlas pnpm build` for Atlas; omit the selector for TianGong. Remove explicit TianGong brand overrides from the environment when using Atlas defaults. The brand CSS generator and Next configuration use the same validated selector. `PORTAL_BRAND` is bound into Next's build configuration; changing a running process variable does not switch an already built site's identity. Build each deployment independently and keep its CSS, HTML and server bundle together. Do not run two brand builds concurrently in the same checkout: generated CSS and `.next` are shared build outputs.
+
+Use the same exact source commit for paired brand releases, with separate public origins, build outputs and deployment receipts. Backend connection/feature settings must be verified independently of branding. Adding a brand means extending the closed selector, its presentation modules and localized copy, and the two-brand test matrix; do not fork routes, business rules or server adapters.
+
+Storybook's site toolbar injects presentation identity and matching brand tokens. `Brand/Atlas` includes four locales, desktop/mobile, dark theme, unavailable counts and catalog-selection scenarios. Synthetic counts are only story fixtures. The production home uses the shared navigation DTO; missing counts are explicitly unavailable.
+
+`PORTAL_BRAND=atlas pnpm test:e2e -- tests/e2e/site-presentation.spec.ts` builds against the existing loopback fixture and checks identity, route/metadata parity, light/dark mobile/desktop accessibility, exact-version detail, citations and no-JavaScript reading. CI retains the full TianGong suite and adds the Atlas presentation suite plus existing shared functional flows. Local browser evidence does not prove a hosted Atlas release. A new domain/deployment is a separate operational scope.
+
 ## Choose local checks
 
 Run the checks that demonstrate the changed behavior before committing or pushing. A passing check remains evidence for an unchanged diff; repeat it when code, inputs or relevant configuration change, or when investigating a failure. Use the scripts in [package.json](../package.json), and record the actual commands and results in the PR.

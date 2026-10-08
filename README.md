@@ -48,6 +48,8 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 开发入口
 
+同一代码库支持 `tiangong` 和 `atlas` 两套独立展示层。构建前设置 `PORTAL_BRAND=atlas` 即可选择 Atlas 的 Logo、首页、导航、目录卡片和详情布局；默认仍为 TianGong。两者共享四语路由、公开数据契约与业务操作，可将同一提交分别构建部署。详细边界和部署环境覆盖规则见下列开发指南与 UI 规范。
+
 - [开发指南](docs/development.md)：工具链与工作目录、按改动选择检查、Storybook/MCP、项目 skills 恢复与更新。
 - [UI 与组件规范](docs/ui-system.md)：视觉、共享控件、四语、无障碍和隔离场景要求。
 - [Agent 入口](AGENTS.md)：仓库边界、任务导航和 workspace 交付要求。

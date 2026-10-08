@@ -38,6 +38,7 @@ Portal owns the anonymous, read-only LCA discovery UI, same-origin server adapte
 | `src/features/` | Catalog, comparison and local shortlist behavior. |
 | `src/components/` | Shared primitives, shell and brand components. |
 | `src/server/` | Server-only public data adapters, HMAC signing and reliability logs. |
+| `src/sites/` | Deployment-selected brand presentation, shared slots and localized brand copy; never backend or business policy. |
 | `src/config/`, `src/i18n/` | Validated configuration, dictionaries and receipted vocabulary. |
 | `.storybook/`, `tests/` | Isolated component scenarios and product verification. |
 | `contracts/database-engine/portal/` | Generated public contracts; exact source and bytes belong to its manifest. |

@@ -529,6 +529,8 @@ R2 才提供“分享 Hybrid 查询”或“分享含备注的集合”。只有
 
 服务端 Redis 短链属于扩展阶段的显式例外，只有在单独批准匿名写入、隐私、TTL、续期、删除、限流与滥用策略后才实施。它只能存集合定义，不能复制数据本体。
 
+品牌展示共享上述路由表与业务行为。部署级 `PORTAL_BRAND` 选择 TianGong 或 Atlas；具体展示边界由 [UI 规范](ui-system.md#多品牌展示边界) 管理，品牌不得改变数据可见性、接口契约或精确版本规则。
+
 ## 9. Next.js 架构
 
 ```text
@@ -1127,6 +1129,7 @@ EdgeOne 只配置 Production 环境变量：
 | 公共数据 | `SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SITE_URL` |
 | Hybrid BFF | `PORTAL_HYBRID_EDGE_TIMEOUT_MS=30000`；LCIA 继续使用独立 `PORTAL_EDGE_TIMEOUT_MS=8000` |
 | Sitemap cache | `PORTAL_SITEMAP_CACHE_MODE=no-store`；仅在该平台通过 no-stale 验收后改为 `shared-300` |
+| 品牌展示 | `PORTAL_BRAND=tiangong`（默认）或 `atlas`，构建时绑定 |
 | 主色 | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION` |
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN/DE/FR`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |

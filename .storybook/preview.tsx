@@ -1,3 +1,7 @@
+import { setStoryBrand } from "./brand.mock";
+import { readBrandConfig, renderBrandCss } from "../src/config/brand";
+import { PresentationProvider } from "../src/sites/presentation";
+import { siteMessages } from "../src/sites/messages";
 import { NavigationFeedbackProvider } from "../src/components/shell/navigation-feedback";
 import type { Preview } from "@storybook/nextjs-vite";
 import { NextIntlClientProvider } from "next-intl";
@@ -10,8 +14,12 @@ import "./preview.css";
 
 const preview: Preview = {
   tags: ["autodocs"],
-  initialGlobals: { locale: "zh-CN", theme: "light" },
+  initialGlobals: { site: "tiangong", locale: "zh-CN", theme: "light" },
   globalTypes: {
+    site: {
+      description: "Site presentation",
+      toolbar: { icon: "paintbrush", dynamicTitle: true, items: ["tiangong", "atlas"] },
+    },
     locale: {
       description: "Portal language",
       toolbar: {
@@ -52,6 +60,10 @@ const preview: Preview = {
     },
   },
   loaders: [
+    ({ globals }) => {
+      setStoryBrand(globals.site === "atlas" ? "atlas" : "tiangong");
+      return {};
+    },
     mswLoader(async () => {
       const worker = setupWorker();
       await worker.start({
@@ -65,6 +77,16 @@ const preview: Preview = {
     }),
   ],
   beforeEach({ globals }) {
+    const site = globals.site === "atlas" ? "atlas" : "tiangong";
+    setStoryBrand(site);
+    document.documentElement.dataset.site = site;
+    let palette = document.getElementById("story-brand-palette");
+    if (!palette) {
+      palette = document.createElement("style");
+      palette.id = "story-brand-palette";
+      document.head.append(palette);
+    }
+    palette.textContent = renderBrandCss(readBrandConfig({ PORTAL_BRAND: site }));
     const url = window.location.href;
     document.documentElement.lang = storyLocale(globals);
     document.documentElement.classList.toggle("dark", globals.theme === "dark");
@@ -74,16 +96,23 @@ const preview: Preview = {
   decorators: [
     (Story, { globals, parameters }) => {
       const locale = storyLocale(globals);
+      const site = globals.site === "atlas" ? "atlas" : "tiangong";
       const Surface = parameters.pageLayout ? "div" : "main";
       return (
-        <NextIntlClientProvider locale={locale} messages={dictionaries[locale]} timeZone="UTC">
-          <NavigationFeedbackProvider label={dictionaries[locale].Common.loading}>
-            <Surface
-              className={`bg-background text-foreground min-h-screen ${parameters.pageLayout ? "" : "p-4 sm:p-6"}`}
-            >
-              <Story key={locale} />
-            </Surface>
-          </NavigationFeedbackProvider>
+        <NextIntlClientProvider
+          locale={locale}
+          messages={siteMessages(dictionaries[locale], locale, site)}
+          timeZone="UTC"
+        >
+          <PresentationProvider site={site}>
+            <NavigationFeedbackProvider label={dictionaries[locale].Common.loading}>
+              <Surface
+                className={`bg-background text-foreground min-h-screen ${parameters.pageLayout ? "" : "p-4 sm:p-6"}`}
+              >
+                <Story key={locale} />
+              </Surface>
+            </NavigationFeedbackProvider>
+          </PresentationProvider>
         </NextIntlClientProvider>
       );
     },

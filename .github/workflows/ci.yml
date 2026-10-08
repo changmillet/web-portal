@@ -88,6 +88,11 @@ jobs:
           path: test-results/**/seo-report.json
           if-no-files-found: warn
 
+      - name: Atlas production route and presentation parity
+        env:
+          PORTAL_BRAND: atlas
+        run: pnpm test:e2e -- tests/e2e/site-presentation.spec.ts tests/e2e/product-shell.spec.ts --grep "site presentation|renders public search|HTML-first search to two-member comparison"
+
   components:
     runs-on: ubuntu-latest
     timeout-minutes: 20

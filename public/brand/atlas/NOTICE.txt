@@ -1,0 +1,4 @@
+Atlas identity supplied directly by the user for Portal #132, 2026-10-08.
+logo.png is the original supplied PNG, unchanged (257 x 87 pixels).
+Use only for the authorized Atlas presentation. No third-party stock imagery.
+The decorative coordinate artwork is implemented in CSS and conveys no geographic or scientific measurements.

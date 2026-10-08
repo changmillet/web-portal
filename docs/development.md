@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: 62e4c8817695572398470b9804ab3970de812a31
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #130 at 62e4c88: compatible Next 16.3.8 security pins, unchanged audit gate and exact licensed shadcn CSS preserve component behavior; production browser and restarted component checks pass, with hosted acceptance separate."
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -56,6 +56,16 @@ Replace the example input with the paths being changed. These variables are reus
 Use that workspace's `scripts/workspace-ops` for task creation/start, durable updates, PR submission and completion. Follow each returned next command. Keep implementation in Portal; its `main` PR must merge before a separate root task can integrate the exact eligible commit. Hosted release acceptance is a separate responsibility described by the [product plan](design-plan.md#17-edgeone-makers-部署).
 
 The public `lca-database` entry is exercised by `tests/e2e/database-guide.spec.ts`: all four locales retain raw HTML discovery links, matching canonical/alternates and usable mobile light/dark states. The theme check waits for the actual mobile selector to close and finite transitions to finish before measuring contrast. `Catalog/LCA database` supplies the component, long-localization and unavailable-count scenarios. Public site identity on the homepage remains separate from Dataset metadata on exact-version pages.
+
+## Brand presentations
+
+Use `PORTAL_BRAND=atlas pnpm dev` or `PORTAL_BRAND=atlas pnpm build` for Atlas; omit the selector for TianGong. Remove explicit TianGong brand overrides from the environment when using Atlas defaults. The brand CSS generator and Next configuration use the same validated selector. `PORTAL_BRAND` is bound into Next's build configuration; changing a running process variable does not switch an already built site's identity. Build each deployment independently and keep its CSS, HTML and server bundle together. Do not run two brand builds concurrently in the same checkout: generated CSS and `.next` are shared build outputs.
+
+Use the same exact source commit for paired brand releases, with separate public origins, build outputs and deployment receipts. Backend connection/feature settings must be verified independently of branding. Adding a brand means extending the closed selector, its presentation modules and localized copy, and the two-brand test matrix; do not fork routes, business rules or server adapters.
+
+Storybook's site toolbar injects presentation identity and matching brand tokens. `Brand/Atlas` includes four locales, desktop/mobile, dark theme, unavailable counts and catalog-selection scenarios. Synthetic counts are only story fixtures. The production home uses the shared navigation DTO; missing counts are explicitly unavailable.
+
+`PORTAL_BRAND=atlas pnpm test:e2e -- tests/e2e/site-presentation.spec.ts` builds against the existing loopback fixture and checks identity, route/metadata parity, light/dark mobile/desktop accessibility, exact-version detail, citations and no-JavaScript reading. CI retains the full TianGong suite and adds the Atlas presentation suite plus existing shared functional flows. Local browser evidence does not prove a hosted Atlas release. A new domain/deployment is a separate operational scope.
 
 ## Choose local checks
 

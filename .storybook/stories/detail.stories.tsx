@@ -159,6 +159,15 @@ export const MobileFrenchVersions: Story = {
   ...Versions,
   globals: { ...mobileGlobals, locale: "fr" },
 };
+export const AtlasProcess: Story = { ...Process, globals: { site: "atlas", locale: "en" } };
+export const AtlasMobileGerman: Story = {
+  ...Process,
+  globals: { ...mobileGlobals, site: "atlas", locale: "de" },
+};
+export const AtlasDarkVersions: Story = {
+  ...Versions,
+  globals: { site: "atlas", locale: "fr", theme: "dark" },
+};
 export const Lcia: Story = { parameters: { panel: "lcia" } };
 export const MobileGermanLcia: Story = { ...Lcia, globals: { ...mobileGlobals, locale: "de" } };
 export const DarkFrenchLcia: Story = { ...Lcia, globals: { locale: "fr", theme: "dark" } };

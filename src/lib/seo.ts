@@ -103,6 +103,7 @@ export function localizedMetadata({
     },
     description,
     openGraph: {
+      siteName: brandConfig.alt[locale],
       description,
       images: [
         {
@@ -132,6 +133,19 @@ export function absolutePortalUrl(path: string): string {
 /** Site identity does not imply authorship, review or licensing of individual datasets. */
 export function portalWebsiteJsonLd() {
   const origin = publicSiteUrl().origin;
+  if (brandConfig.site === "atlas")
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${origin}/#website`,
+          name: "Atlas",
+          url: origin,
+          inLanguage: [...locales],
+        },
+      ],
+    };
   return {
     "@context": "https://schema.org",
     "@graph": [

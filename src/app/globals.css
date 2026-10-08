@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "../components/ui/vendor/shadcn-tailwind.css";
 @import "./brand.generated.css";
+@import "../sites/atlas/atlas.css";
 
 @import "@fontsource-variable/source-sans-3";
 @import "@fontsource-variable/noto-sans-sc";

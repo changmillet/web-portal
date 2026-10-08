@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: 621b7f204c9cb6d751b27ec9ef206d90dc2da3b0
-lastReviewedNote: "Reviewed Portal #130 at 621b7f2: fetchable public noindex routes, functional-link crawl hints, truthful detail descriptions and the exact English data-gateway alias preserve public data, native navigation and CSP/ISR; hosted acceptance remains a separate delivery receipt."
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -30,6 +30,8 @@ related:
 ---
 
 # Portal R0 Compatibility Matrix
+
+`PORTAL_BRAND` selects the TianGong or Atlas presentation at build time. Both use the same route tree, server loaders, signed BFF and CSP/ISR policy. Atlas needs its own build with its own canonical origin and deployment environment; local fixture tests and Storybook do not qualify a new hosted Atlas deployment. The historical TianGong receipts below remain scoped to their recorded source and origin.
 
 The exact `/zh` and `/zh/` home aliases use a stateless EdgeOne edge function and one exact `/zh/` rewrite. Their independent release gate requires a single 301 with the original ordered query for GET/HEAD, plus 405 for other methods and unchanged root/unknown-route behavior. The normal Next server does not execute these provider routes; source tests and generated routing output do not prove their order in Production. Keep the native root 302, existing headers, framework trailing-slash policy and CSP/ISR decisions intact while qualifying this gate.
 

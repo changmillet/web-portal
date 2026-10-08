@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: 621b7f204c9cb6d751b27ec9ef206d90dc2da3b0
-lastReviewedNote: "Reviewed Portal #130 at 621b7f2: fetchable public noindex routes, functional-link crawl hints, truthful detail descriptions and the exact English data-gateway alias preserve public data, native navigation and CSP/ISR; hosted acceptance remains a separate delivery receipt."
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -528,6 +528,8 @@ Fragment 不发送到服务器，但会进入浏览器历史并对链接接收�
 R2 才提供“分享 Hybrid 查询”或“分享含备注的集合”。只有用户显式选择相应动作并确认完整泄露预览后，才把选中的查询或备注编码到 fragment；默认分享始终只含精确成员 ID。
 
 服务端 Redis 短链属于扩展阶段的显式例外，只有在单独批准匿名写入、隐私、TTL、续期、删除、限流与滥用策略后才实施。它只能存集合定义，不能复制数据本体。
+
+品牌展示共享上述路由表与业务行为。部署级 `PORTAL_BRAND` 选择 TianGong 或 Atlas；具体展示边界由 [UI 规范](ui-system.md#多品牌展示边界) 管理，品牌不得改变数据可见性、接口契约或精确版本规则。
 
 ## 9. Next.js 架构
 
@@ -1127,6 +1129,7 @@ EdgeOne 只配置 Production 环境变量：
 | 公共数据 | `SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SITE_URL` |
 | Hybrid BFF | `PORTAL_HYBRID_EDGE_TIMEOUT_MS=30000`；LCIA 继续使用独立 `PORTAL_EDGE_TIMEOUT_MS=8000` |
 | Sitemap cache | `PORTAL_SITEMAP_CACHE_MODE=no-store`；仅在该平台通过 no-stale 验收后改为 `shared-300` |
+| 品牌展示 | `PORTAL_BRAND=tiangong`（默认）或 `atlas`，构建时绑定 |
 | 主色 | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION` |
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN/DE/FR`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |

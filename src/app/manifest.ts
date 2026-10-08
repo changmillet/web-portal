@@ -19,8 +19,8 @@ export default function manifest(): MetadataRoute.Manifest {
         src: brandConfig.logoMark ?? brandConfig.lightLogo,
       },
     ],
-    name: "TianGong LCA Data Portal",
-    short_name: "TianGong LCA",
+    name: brandConfig.site === "atlas" ? "Atlas — Life Cycle Data" : "TianGong LCA Data Portal",
+    short_name: brandConfig.site === "atlas" ? "Atlas" : "TianGong LCA",
     start_url: "/",
     theme_color: brandConfig.lightPrimary,
   };

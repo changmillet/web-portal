@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: 62e4c8817695572398470b9804ab3970de812a31
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed Portal #130 at 62e4c88: compatible Next 16.3.8 security pins, unchanged audit gate and exact licensed shadcn CSS preserve component behavior; production browser and restarted component checks pass, with hosted acceptance separate."
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -17,6 +17,7 @@ checkPaths:
   - docs/ui-system.md
   - src/components/**
   - src/config/brand*
+  - src/sites/**
   - src/app/globals.css
   - src/i18n/**
   - public/brand/**
@@ -30,6 +31,20 @@ related:
 # Portal UI 与组件规范
 
 本文拥有共享视觉、组件、无障碍、国际化和隔离场景的要求。[开发指南](development.md#storybook-and-mcp)拥有 Storybook/MCP/skills 的启动、操作与验证步骤；[产品方案](design-plan.md#7-页面与交互)拥有搜索、详情、比较与清单的业务行为。修改组合场景时，按涉及的业务读取对应章节。
+
+## 多品牌展示边界
+
+`PORTAL_BRAND=tiangong|atlas` 在构建时选择站点，缺省为 `tiangong`；未知值使配置检查与构建失败。每个部署使用同一仓库的明确 commit、品牌配置版本和自己的 `SITE_URL`，不根据 Host、Cookie 或用户偏好跨请求切换品牌。浅深色仍是用户偏好。
+
+`src/sites/` 拥有品牌展示与选择入口；`src/app/` 保持唯一的四语路由树和数据加载，`src/server/` 保持唯一的后端适配实现。搜索参数、精确版本、排序/分页、结果分组、比较约束、候选清单存储与科学数据保持共享。品牌配置不得决定数据权限、后端目标、功能开关或数值计算。
+
+Atlas 与 TianGong 可以分别实现首页、导航、记录卡片与详情布局。展示插槽接受公共 DTO 或共享逻辑构造的 React 内容；组件不得复制服务调用或业务状态机。`PresentationProvider` 将服务器选择的公开站点身份传递给客户端展示插槽，Storybook 可注入相同身份进行隔离验证。
+
+Atlas 使用用户提供的原始 `public/brand/atlas/logo.png`，以海军蓝、金色坐标线和纸色表面构成地图集式视觉。首页为静态坐标构图，不加载 TianGong 的滚动帧序列；数据目录使用编号记录卡片，详情操作与阅读区分栏。四语品牌文案由 `src/sites/atlas/copy.ts` 完整提供，通过类型检查约束相同字段。既有词典只覆盖站点身份与品牌首页字段，不修改科学术语或把真实来源机构、天工团队与合作关系改称 Atlas。Atlas 网站结构化数据不声明未经确认的 Organization。
+
+默认 Atlas logo、favicon 和分享图片使用已提供 PNG 的真实尺寸 257×87；它是原始小尺寸品牌资源，不冒充 1200×630 社交卡。正式发布如需独立图标或更大分享卡，提供并配置对应资源和真实尺寸。Logo 失败回退为当前品牌文字。两品牌的主色与资源均允许已有 `PORTAL_*` 变量显式覆盖；选择 Atlas 时应移除从 TianGong 示例环境复制的品牌覆盖值。
+
+TianGong 的以下既有视觉要求继续适用于其展示层。Atlas 独立排版，但同样满足四语、键盘、主题、响应式、无障碍与真实数据要求。
 
 ## 设计方向
 

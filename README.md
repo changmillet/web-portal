@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-09-30
-lastReviewedCommit: 78d8061ac8cce2fd501861bd2343844e11906e3b
-lastReviewedNote: "Reviewed Portal #128: exact Chinese home aliases use a bounded stateless edge route and one native rewrite; source coverage, validation and hosted acceptance remain explicit while public-data, root/header, CSP and ISR boundaries are preserved."
+lastReviewedAt: 2026-10-08
+lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
 related:
   - docs/development.md
   - docs/ui-system.md
@@ -47,6 +47,37 @@ Portal 以数据发现为首要任务：
 Next.js App Router 前后端同构，React Server Components 优先，部署到 EdgeOne Makers。终端用户没有登录态；EdgeOne 后端以 Portal 专用 HMAC 请求签名调用专用 Supabase Edge Functions（如 `portal_hybrid_search_v1`）。数据库读取使用 server-only 的公共只读契约，不使用 service-role；MVP 分享只使用 URL fragment 与 JSON，不写 Redis。默认浅色/深色主色与 `tiangong-lca-next` 一致，其余颜色遵循 shadcn/ui + Tailwind v4 最佳实践，并支持部署级主色、Logo 与 favicon 替换。
 
 ## 开发入口
+
+同一代码库支持 `tiangong` 和 `atlas` 两套独立展示层。构建前设置 `PORTAL_BRAND=atlas` 即可选择 Atlas 的 Logo、首页、导航、目录卡片和详情布局；默认仍为 TianGong。两者共享四语路由、公开数据契约与业务操作，可将同一提交分别构建部署。详细边界和部署环境覆盖规则见下列开发指南与 UI 规范。
+
+在 `web-portal` 项目目录中，使用 [.node-version](.node-version) 指定的 Node 版本并安装依赖。启动前，在项目根目录的 `.env.local` 中填写现有后端的连接配置（示例值需要替换）：
+
+```dotenv
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_<your-key>
+```
+
+这两项用于公开目录、关键词搜索与记录读取，两套 UI 共用同一配置。`.env.example` 只是模板，不会自动加载；只设置品牌变量可以显示页面，但无法加载搜索数据。`.env.local` 已被 Git 忽略，不要提交实际密钥。
+
+`pnpm dev` 不会加载 `.env.production`。本地预览需要连接正式后端时，将该后端的上述两项配置填入 `.env.local`；不要通过修改 `NODE_ENV` 来切换数据环境。在本工作区中，Platform 的正式连接配置位于 `../platform/.env`，共享开发配置位于 `../platform/.env.development`；只复用上述两项，不要整份复制环境文件。
+
+描述搜索（Hybrid）和 LCIA 结果还需要对应后端环境的 `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET`；Edge 服务位于不同域名时再设置 `PORTAL_EDGE_ENDPOINT`。签名凭据需与服务端匹配，具体要求见[服务端配置](docs/design-plan.md#101-portal-服务端客户端)。
+
+配置完成后，选择一条命令启动：
+
+```bash
+# TianGong UI
+PORTAL_BRAND=tiangong SITE_URL=http://localhost:3000 pnpm dev
+```
+
+```bash
+# Atlas UI
+PORTAL_BRAND=atlas SITE_URL=http://localhost:3000 pnpm dev
+```
+
+启动后访问 [中文首页](http://localhost:3000/zh-CN) 或 [英文首页](http://localhost:3000/en)。切换品牌时先按 `Ctrl+C` 停止服务，再运行另一条命令。同一目录共用生成的品牌 CSS 和 `.next`，同时运行两套站点需要独立 checkout/worktree 和不同端口。
+
+使用 Atlas 默认外观时，请删除或注释环境配置中显式填写的 TianGong 主色、Logo、favicon、分享图和品牌名称覆盖项，保留后端连接配置。
 
 - [开发指南](docs/development.md)：工具链与工作目录、按改动选择检查、Storybook/MCP、项目 skills 恢复与更新。
 - [UI 与组件规范](docs/ui-system.md)：视觉、共享控件、四语、无障碍和隔离场景要求。

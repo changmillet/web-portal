@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import en from "../../src/i18n/messages/en.json" with { type: "json" };
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 const fixtureOrigin = `http://127.0.0.1:${process.env.PORTAL_FIXTURE_PORT ?? "4328"}`;
@@ -33,8 +34,8 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
     page.getByRole("button", { name: "How your request was interpreted" }),
   ).toBeVisible();
   await expect(
-    page.getByText("This interpretation guides search", {
-      exact: false,
+    page.getByText(en.Hybrid.advisoryDescription, {
+      exact: true,
     }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Matching datasets" })).toBeVisible();

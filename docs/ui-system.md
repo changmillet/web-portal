@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedCommit: 753d87ca076af0e2a9471e3a842327db09e17c75
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
+lastReviewedNote: "Reviewed Portal #134: four-locale copy preserves shared routes, public source values and task constraints. Brand copy uses LCA data; LCI data is reserved for inventory context. Existing Storybook, browser and hosted-release validation boundaries remain unchanged."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -61,6 +61,8 @@ TianGong 的以下既有视觉要求继续适用于其展示层。Atlas 独立�
 功能链接继续使用原生 href，保持键盘、无 JavaScript 导航、焦点和 pending feedback。共享 FeedbackLink 与 SVG 地图链接为 Search、Compare、Collections 目标添加 nofollow 提示，不修改可见标签或交互，也不对详情、版本和受控目录链接附加该提示。具体抓取与索引规则由产品方案 §11.2 管理。
 
 公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏通过三幕连续叙事建立 Tiangong LCA 品牌识别，数据与平台入口放在后续实际内容区；Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
+
+TianGong 文案以数据库定位、材料与过程、来源与方法为主线；Atlas 以探索生命周期评价数据和选择研究所需版本为主线。Atlas 页头使用简短的品牌定位，传达汇聚数据的意象，与首页完整的用途说明形成层次。两者的动作与领域术语保持一致：加入比较、比较所选版本、候选清单、数据使用说明。门户总称使用生命周期评价数据（LCA data），介绍具体清单数据时使用生命周期清单数据（LCI data）；避免以 lifecycle data 或 life cycle data 作为泛化宣传用语。LCDN 等专有名称保持原名。来源机构和团队身份保持真实归属。过程比较、浏览器内保存、分享内容披露、许可和缺失结果等条件在相应操作处说明；地图说明使用中性的颜色描述，兼容两品牌主题。
 
 术语冲突按以下顺序收敛：
 
@@ -235,7 +237,7 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 `src/components/brand/` 拥有实际首页与 `ScrollCinematicHero` 轻量客户端岛。`Brand/Homepage` 场景复用生产页面与四语字典；`Brand Explorations/Lifecycle Sculpture` 继续保留为独立部件、姿态与参考对照研究，不再进入生产首页。
 
-首屏由 226 帧同源 WebP 图像组成三幕连续叙事：生命周期智能、数字孪生、可追溯证据。三幕标题、说明与章节标签使用四语字典，位置、宽度和标签样式一致；文字层在滚动期间固定，只交叉淡入淡出，不跟随页面向上平移。首幕不放操作按钮，实际目录和平台入口由后续内容区承担。画面在 Header 下方顶格铺满可用宽度，高度固定为视口减去 Header；16:9 主画面完整按宽度展示，纵向不足由同帧模糊环境层上下延展，避免硬边、留白或裁掉主体。
+首屏由 226 帧同源 WebP 图像组成三幕连续叙事：生命周期评价数据、材料与过程、来源与方法。文案描述查找数据、了解投入产出和判断适用范围的任务，不暗示每条记录已通过科学评审或门户提供数字孪生功能。三幕标题、说明与章节标签使用四语字典，位置、宽度和标签样式一致；文字层在滚动期间固定，只交叉淡入淡出，不跟随页面向上平移。首幕不放操作按钮，实际目录和平台入口由后续内容区承担。画面在 Header 下方顶格铺满可用宽度，高度固定为视口减去 Header；16:9 主画面完整按宽度展示，纵向不足由同帧模糊环境层上下延展，避免硬边、留白或裁掉主体。
 
 首帧解码前显示与画面明暗兼容的加载幕，完成后以短暂淡化过渡进入序列，不瞬间闪切。滚动从第一个输入增量开始映射帧进度；加载中的帧不得替换当前已解码画面，避免闪屏。减少动态效果时显示代表性静帧并保留完整文字、对比度和阅读顺序。亮暗主题共享影像素材，通过遮罩与文字颜色分别校准。
 

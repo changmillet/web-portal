@@ -120,7 +120,7 @@ test("renders public search, exact details, numeric context, versions, and lates
   await expect(page.getByRole("cell", { name: "1.25 kg" })).toBeVisible();
   const exchangeContext = page
     .locator("summary:visible")
-    .filter({ hasText: "Identifiers and display context" })
+    .filter({ hasText: en.Detail.exchangeContext })
     .first();
   await exchangeContext.click();
   await expect(exchangeContext.locator("..").getByText("1 kWh", { exact: true })).toBeVisible();

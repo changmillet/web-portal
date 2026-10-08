@@ -23,8 +23,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
-lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
+lastReviewedCommit: fd98c91946ae6d09f23a95717e62ba0529069b95
+lastReviewedNote: "Reviewed Portal #134: localized copy selectors retain anonymous-shell visibility, Hybrid query privacy, sharing confirmation, comparison and numeric context assertions. Routes, public-data permissions and hosted-release boundaries remain unchanged."
 related:
   - docs/ui-system.md
   - docs/development.md

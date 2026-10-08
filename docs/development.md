@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
+lastReviewedCommit: 1032658137d20ca76615c3d09a8ab1c479517643
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
+lastReviewedNote: "Reviewed Portal #134: four-locale copy preserves shared routes, public source values and task constraints. Brand copy uses LCA data; LCI data is reserved for inventory context. Existing Storybook, browser and hosted-release validation boundaries remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

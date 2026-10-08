@@ -12,7 +12,7 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   context,
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/zh-CN");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
@@ -84,7 +84,9 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await expect(page.getByRole("contentinfo")).not.toContainText(
     /lecture seule|aucun compte requis/i,
   );
-  expect(await context.cookies()).toEqual([]);
+  expect((await context.cookies()).map(({ name, value }) => ({ name, value }))).toEqual([
+    { name: "portal_locale", value: "fr" },
+  ]);
 });
 
 test("renders public search, exact details, numeric context, versions, and latest redirects", async ({

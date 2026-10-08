@@ -17,9 +17,8 @@ describe("EdgeOne native routing contract", () => {
       readFileSync(`${repositoryRoot}/edgeone.json`, "utf8"),
     ) as Record<string, unknown>;
 
-    expect(configuration.redirects).toEqual([
-      { source: "/", destination: "/zh-CN", statusCode: 302 },
-    ]);
+    // The request-aware root handler owns language negotiation; no CDN fixed-locale override.
+    expect(configuration.redirects).toBeUndefined();
     expect(configuration.rewrites).toEqual([
       { source: "/zh/", destination: "/zh" },
       { source: "/data/", destination: "/data" },

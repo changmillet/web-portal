@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 753d87ca076af0e2a9471e3a842327db09e17c75
+lastReviewedCommit: 3fc0d0be4989f07e4d1074d957b55b3d7ef63a2d
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed Portal #134: four-locale copy preserves shared routes, public source values and task constraints. Brand copy uses LCA data; LCI data is reserved for inventory context. Existing Storybook, browser and hosted-release validation boundaries remain unchanged."
+lastReviewedNote: "Reviewed Portal #137: neutral entry negotiates manual preference, browser language and English with no-store redirects; explicit language URLs and localized CSP/ISR stay unchanged. Manual same-value menu selections persist without navigation; dismissal does not persist. Local tests do not claim hosted qualification."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -201,7 +201,7 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 - 四份消息字典具有完全相同的闭合 key topology；缺 key、整段英语复制、未翻译开发标签或跨语言 UI fallback 均使构建/测试失败；
 - UI 语言与数据内容语言分离；
 - 数据字段回退到其他语言时明确标记来源，不伪装成本地化原文；
-- 切换语言保留同一对象、版本、查询和分面。
+- 切换语言保留同一对象、版本、查询、fragment 和分面，并仅对手动选择保存站点语言偏好；无语言入口按手动偏好、浏览器支持语言、English 顺序选择，显式语言 URL 不被偏好覆盖。
 
 ### 响应式
 

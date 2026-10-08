@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 844c42328dd6aa7064419f181de5f82fee879161
-lastReviewedNote: "Reviewed Portal #132 at 844c423: independent Atlas presentation preserves shared routes, public DTOs, business operations and CSP/ISR. Local dual-brand browser/component validation is recorded in #132; hosted Atlas deployment and exact workspace integration remain separate."
+lastReviewedCommit: 3fc0d0be4989f07e4d1074d957b55b3d7ef63a2d
+lastReviewedNote: "Reviewed Portal #137: neutral entry negotiates manual preference, browser language and English with no-store redirects; explicit language URLs and localized CSP/ISR stay unchanged. Manual same-value menu selections persist without navigation; dismissal does not persist. Local tests do not claim hosted qualification."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -33,7 +33,7 @@ related:
 
 `PORTAL_BRAND` selects the TianGong or Atlas presentation at build time. Both use the same route tree, server loaders, signed BFF and CSP/ISR policy. Atlas needs its own build with its own canonical origin and deployment environment; local fixture tests and Storybook do not qualify a new hosted Atlas deployment. The historical TianGong receipts below remain scoped to their recorded source and origin.
 
-The exact `/zh` and `/zh/` home aliases use a stateless EdgeOne edge function and one exact `/zh/` rewrite. Their independent release gate requires a single 301 with the original ordered query for GET/HEAD, plus 405 for other methods and unchanged root/unknown-route behavior. The normal Next server does not execute these provider routes; source tests and generated routing output do not prove their order in Production. Keep the native root 302, existing headers, framework trailing-slash policy and CSP/ISR decisions intact while qualifying this gate.
+The exact `/zh` and `/zh/` home aliases use a stateless EdgeOne edge function and one exact `/zh/` rewrite. Their independent release gate requires a single 301 with the original ordered query for GET/HEAD, plus 405 for other methods and unchanged root/unknown-route behavior. The normal Next server does not execute these provider routes; source tests and generated routing output do not prove their order in Production. The root now uses a request-aware 307/no-store Route Handler for manual-cookie/browser-language/English negotiation; its provider fixed redirect is removed. Existing localized page headers, framework trailing-slash policy and CSP/ISR decisions remain intact. This new source behavior needs its own hosted acceptance; historical root 302 receipts below are not evidence for it.
 
 The English `/data` and `/data/` aliases use the same bounded edge-route pattern, with a separate exact rewrite and fixed `/en/lca-database` target. Verify original ordered query preservation, GET/HEAD 301, other-method 405 and nested unknown 404 on the exact deployment. The target is the current equivalent of the archived English data-access gateway; this does not redirect arbitrary retired content or change CSP/ISR. Portal #130 owns the current production acceptance receipt.
 

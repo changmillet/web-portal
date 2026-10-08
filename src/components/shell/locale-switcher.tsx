@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PendingFeedback } from "./navigation-feedback";
 import { LanguagesIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { isPortalLocale, localeNames, locales, type PortalLocale } from "@/i18n/routing";
+import { rememberLocale } from "@/i18n/preference";
 
 type LocaleSwitcherProps = {
   currentLocale: PortalLocale;
@@ -23,6 +24,8 @@ type LocaleSwitcherProps = {
 export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
   const pathname = usePathname();
   const [pending, setPending] = useState(false);
+  const [open, setOpen] = useState(false);
+  const currentSelection = useRef(false);
   useEffect(() => {
     const restored = () => setPending(false);
     window.addEventListener("pageshow", restored);
@@ -30,18 +33,41 @@ export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
   }, []);
 
   function switchLocale(nextLocale: string) {
-    if (!isPortalLocale(nextLocale) || nextLocale === currentLocale) return;
+    if (!isPortalLocale(nextLocale)) return;
+    rememberLocale(nextLocale, document, window.location.protocol === "https:");
+    if (nextLocale === currentLocale) return;
     setPending(true);
     const segments = pathname.split("/");
     segments[1] = nextLocale;
     window.location.assign(`${segments.join("/")}${window.location.search}${window.location.hash}`);
   }
 
+  function markCurrentSelection(locale: PortalLocale) {
+    if (locale !== currentLocale) return;
+    currentSelection.current = true;
+    // Radix confirms selection by closing in this event. Typeahead Space can
+    // leave the menu open, so it must not turn a later dismissal into a choice.
+    queueMicrotask(() => {
+      currentSelection.current = false;
+    });
+  }
+
   return (
     <div className="flex items-center gap-2">
       <PendingFeedback pending={pending} />
       <LanguagesIcon aria-hidden="true" className="hidden sm:block" />
-      <Select onValueChange={switchLocale} value={currentLocale}>
+      <Select
+        onValueChange={switchLocale}
+        value={currentLocale}
+        open={open}
+        onOpenChange={(nextOpen) => {
+          // onValueChange omits same-value choices. Controlled open state makes
+          // Radix's selection-close callback synchronous with the item event.
+          if (!nextOpen && currentSelection.current) switchLocale(currentLocale);
+          currentSelection.current = false;
+          setOpen(nextOpen);
+        }}
+      >
         <SelectTrigger
           aria-label={label}
           className="portal-pending-control min-h-11 w-16 sm:min-w-28"
@@ -58,7 +84,22 @@ export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
         <SelectContent aria-label={label} position="popper">
           <SelectGroup>
             {locales.map((locale) => (
-              <SelectItem key={locale} value={locale}>
+              <SelectItem
+                key={locale}
+                value={locale}
+                onPointerUp={(event) => {
+                  if (event.pointerType === "mouse") markCurrentSelection(locale);
+                }}
+                onClick={() => markCurrentSelection(locale)}
+                onKeyDown={(event) => {
+                  if (
+                    event.target === event.currentTarget &&
+                    (event.key === "Enter" || event.key === " ")
+                  ) {
+                    markCurrentSelection(locale);
+                  }
+                }}
+              >
                 {localeNames[locale]}
               </SelectItem>
             ))}

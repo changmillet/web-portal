@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-08
-lastReviewedCommit: 1032658137d20ca76615c3d09a8ab1c479517643
+lastReviewedCommit: 3fc0d0be4989f07e4d1074d957b55b3d7ef63a2d
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed Portal #134: four-locale copy preserves shared routes, public source values and task constraints. Brand copy uses LCA data; LCI data is reserved for inventory context. Existing Storybook, browser and hosted-release validation boundaries remain unchanged."
+lastReviewedNote: "Reviewed Portal #137: neutral entry negotiates manual preference, browser language and English with no-store redirects; explicit language URLs and localized CSP/ISR stay unchanged. Manual same-value menu selections persist without navigation; dismissal does not persist. Local tests do not claim hosted qualification."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -92,7 +92,7 @@ Portal uses the checked-in UI components and retains the required shadcn Tailwin
 
 The release audit uses the full dependency graph and fails on high or critical advisories; do not lower this gate or ignore an advisory to publish a feature. Next and `@next/env` stay aligned at the exact compatible stable version in `package.json`. The reviewed security pins retain Undici 8 only in jsdom's Node 24 test graph, patched Sharp within Next's declared range and brace-expansion's current major. The `source-map-js@` empty-range key is pnpm 11 convergence syntax: it pins the reviewed version only where the consumer's declared semver range accepts it. Preserve narrower incompatible edges rather than forcing a new major. Native packages in the upstream lockfile do not qualify macOS Intel as a supported target.
 
-The exact legacy Chinese home aliases use `edge-functions/zh/index.ts` and the single native `/zh/` rewrite. The provider compiles this TypeScript to its Web API edge runtime; the function uses no Node API, environment variable or upstream request. The ordinary Next development server does not execute this provider route. Run its Request/Response unit matrix, typecheck and lint, then build with the installed EdgeOne CLI and generate its routing output. Inspect the emitted exact edge route and rewrite before deployment. Production must verify both aliases without following redirects, with GET/HEAD and ordered, repeated, blank and encoded query values; also verify root 302, nested unknown 404 and the unchanged public/private boundary. Only the production matrix proves the rewrite's order relative to the framework's trailing-slash rule.
+The exact legacy Chinese home aliases use `edge-functions/zh/index.ts` and the single native `/zh/` rewrite. The provider compiles this TypeScript to its Web API edge runtime; the function uses no Node API, environment variable or upstream request. The ordinary Next development server does not execute this provider route. Run its Request/Response unit matrix, typecheck and lint, then build with the installed EdgeOne CLI and generate its routing output. Inspect the emitted exact edge route and rewrite before deployment. Production must verify both aliases without following redirects, with GET/HEAD and ordered, repeated, blank and encoded query values; also verify request-aware root 307/no-store with language cookie and Accept-Language, nested unknown 404 and the unchanged public/private boundary. Only the production matrix proves the rewrite's order relative to the framework's trailing-slash rule.
 
 ## Storybook and MCP
 

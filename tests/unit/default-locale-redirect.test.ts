@@ -10,8 +10,10 @@ describe("default locale redirect", () => {
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toBe(
-      "/zh-CN/search?v=1&kind=process&q=steel%20coil&m=a&m=b",
+      "/en/search?v=1&kind=process&q=steel%20coil&m=a&m=b",
     );
     expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("vary")).toBe("Accept-Language, Cookie");
+    expect(response.headers.has("set-cookie")).toBe(false);
   });
 });

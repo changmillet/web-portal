@@ -18,6 +18,40 @@ const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 
 test.describe("site presentation", () => {
   for (const locale of locales) {
+    test(`${site} ${locale} catalog entry includes scope coverage`, async ({ page }, testInfo) => {
+      await page.goto(`/${locale}/search?v=1`);
+      const coverage = catalogCoverage(readPortalDataBrandScope(process.env));
+      const index = page.locator(".brand-catalog-index");
+      await expect(index.getByRole("link")).toHaveCount(4);
+      for (const dimension of ["region", "source"] as const) {
+        const card = index.locator(`a[href$="explore=${dimension}"]`);
+        await expect(card).toHaveAttribute("href", `/${locale}/search?v=1&explore=${dimension}`);
+        // The shared component story already supplies coverage; this must exercise the route.
+        if (coverage) {
+          await expect(card).toContainText(
+            dictionaries[locale].BrandHome[
+              dimension === "region" ? "regionCount" : "sourceCount"
+            ].replace("{count}", new Intl.NumberFormat(locale).format(coverage[dimension])),
+          );
+        }
+      }
+      if (coverage) await expect(page.getByText(coverage.asOf, { exact: false })).toHaveCount(0);
+      for (const width of [390, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        expect(
+          await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+        ).toBe(true);
+        if (locale === "en") {
+          await page.screenshot({
+            path: testInfo.outputPath(`${site}-catalog-${width}.png`),
+            fullPage: true,
+          });
+        }
+      }
+    });
+  }
+
+  for (const locale of locales) {
     test(`${site} ${locale} identity, routes and responsive themes`, async ({ page }, testInfo) => {
       await page.goto(`/${locale}`);
       await expect(page.locator("html")).toHaveAttribute("data-site", site);
@@ -41,6 +75,7 @@ test.describe("site presentation", () => {
       }
       const coverage = catalogCoverage(readPortalDataBrandScope(process.env));
       if (coverage) {
+        await expect(page.getByText(coverage.asOf, { exact: false })).toHaveCount(0);
         const index = page.locator(site === "atlas" ? ".atlas-index-grid" : ".brand-catalog-index");
         for (const dimension of ["region", "source"] as const) {
           await expect(index.locator(`a[href$="explore=${dimension}"]`)).toContainText(

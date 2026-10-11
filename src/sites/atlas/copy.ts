@@ -1,7 +1,6 @@
 import type { PortalLocale } from "@/i18n/routing";
 
 type AtlasCopy = {
-  coverageNote: string;
   name: string;
   descriptor: string;
   eyebrow: string;
@@ -36,7 +35,6 @@ type AtlasCopy = {
 };
 export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
   en: {
-    coverageNote: "Region and source counts as of",
     name: "Atlas",
     descriptor: "Your Map to LCA Data",
     eyebrow: "Explore data for life cycle assessment",
@@ -75,7 +73,6 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
     metadataTitle: "Atlas — Life Cycle Assessment Data",
   },
   "zh-CN": {
-    coverageNote: "地区与来源数量截至",
     name: "Atlas",
     descriptor: "探索生命周期评价数据的地图",
     eyebrow: "发现适用于生命周期评价的数据",
@@ -110,7 +107,6 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
     metadataTitle: "Atlas — 生命周期评价数据",
   },
   de: {
-    coverageNote: "Regions- und Quellenzahlen vom",
     name: "Atlas",
     descriptor: "Ihre Karte zu Ökobilanzdaten",
     eyebrow: "Daten für Ihre Ökobilanz entdecken",
@@ -151,7 +147,6 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
     metadataTitle: "Atlas — Daten für Ökobilanzen",
   },
   fr: {
-    coverageNote: "Nombre de régions et de sources au",
     name: "Atlas",
     descriptor: "Votre carte des données d’ACV",
     eyebrow: "Explorer les données pour l’analyse du cycle de vie",

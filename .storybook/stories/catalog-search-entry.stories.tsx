@@ -28,13 +28,25 @@ const meta = {
     counts: { process: 17299, flow: 83012 },
   },
   parameters: { pageLayout: true },
-  play: async ({ args, canvasElement }) => {
+  play: async ({ args, canvasElement, globals }) => {
     if (args.number) {
       const entry = canvasElement.querySelector(".catalog-search-teaser");
       await expect(entry).toHaveAttribute("href", expect.stringContaining("/search?v=1"));
       await expect(canvasElement.querySelector("input[type=search]")).toBeNull();
     } else {
       await expect(canvasElement.querySelector("input[type=search]")).toBeVisible();
+    }
+    const index = canvasElement.querySelector(".brand-catalog-index");
+    if (index && args.coverage) {
+      const locale = storyLocale(globals);
+      for (const dimension of ["region", "source"] as const) {
+        const label =
+          dictionaries[locale].BrandHome[dimension === "region" ? "regionCount" : "sourceCount"];
+        await expect(index.querySelector(`a[href$="explore=${dimension}"]`)).toHaveTextContent(
+          label.replace("{count}", new Intl.NumberFormat(locale).format(args.coverage[dimension])),
+        );
+      }
+      await expect(canvasElement).not.toHaveTextContent(args.coverage.asOf);
     }
   },
   loaders: [
@@ -55,6 +67,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 export const Homepage: Story = { args: { number: "02" } };
 export const InitialSearch: Story = {};
+export const AtlasInitialSearch: Story = {
+  args: { coverage: { region: 226, source: 38, asOf: "2026-10-11" } },
+  globals: { site: "atlas", locale: "en" },
+};
+export const AtlasInitialMobile: Story = {
+  ...AtlasInitialSearch,
+  globals: { site: "atlas", locale: "en", ...mobileGlobals },
+};
 export const CountsUnavailable: Story = { args: { counts: null } };
 export const Dark: Story = { args: { number: "02" }, globals: { theme: "dark" } };
 export const MobileGerman: Story = {

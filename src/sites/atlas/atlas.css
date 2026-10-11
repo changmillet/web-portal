@@ -889,11 +889,6 @@
   white-space: normal;
   text-align: start;
 }
-.atlas-coverage-note {
-  margin-top: 24px;
-  color: var(--muted-foreground);
-  font-size: 0.875rem;
-}
 @media (max-width: 767px) {
   .atlas-information-body {
     grid-template-columns: minmax(0, 1fr);

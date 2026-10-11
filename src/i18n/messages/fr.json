@@ -621,7 +621,8 @@
     "platformTitle": "De la recherche de données à la modélisation et à l’analyse.",
     "platformDescription": "Consultez les jeux de données du catalogue, puis utilisez la plateforme TianGong LCA pour la modélisation du cycle de vie et l’évaluation des impacts.",
     "databaseAction": "Découvrir la base de données ACV TianGong",
-    "coverageNote": "Nombre de régions et de sources au {date}."
+    "regionCount": "{count} zones géographiques",
+    "sourceCount": "{count} sources"
   },
   "Navigation": {
     "classification": "Parcourir les catégories",

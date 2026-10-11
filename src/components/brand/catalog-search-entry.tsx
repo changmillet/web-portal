@@ -92,7 +92,11 @@ export async function CatalogSearchEntry({
                 </span>
               )}
               {(dimension === "region" || dimension === "source") && coverage && (
-                <span>{new Intl.NumberFormat(locale).format(coverage[dimension])}</span>
+                <span>
+                  {t(dimension === "region" ? "regionCount" : "sourceCount", {
+                    count: new Intl.NumberFormat(locale).format(coverage[dimension]),
+                  })}
+                </span>
               )}
               <span>{catalog(description)}</span>
             </span>
@@ -100,11 +104,6 @@ export async function CatalogSearchEntry({
           </Link>
         ))}
       </nav>
-      {coverage && (
-        <p className="text-muted-foreground mb-6 text-sm">
-          {t("coverageNote", { date: coverage.asOf })}
-        </p>
-      )}
       {!number && (
         <Link
           className="catalog-explore-toggle"

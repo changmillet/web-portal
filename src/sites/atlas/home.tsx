@@ -109,11 +109,6 @@ export function AtlasHome({ locale, counts, coverage }: BrandHomeProps) {
             </Link>
           ))}
         </nav>
-        {coverage && (
-          <p className="atlas-coverage-note">
-            {copy.coverageNote} <time dateTime={coverage.asOf}>{coverage.asOf}</time>
-          </p>
-        )}
       </section>
       <section className="atlas-perspective">
         <div className="site-shell-container atlas-perspective-grid">

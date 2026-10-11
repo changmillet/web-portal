@@ -63,7 +63,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "A dataset’s name is only a starting point. Review the activity, geography, period and method it describes before using it in your assessment.",
     read: "Explore datasets",
     compare: "Compare process datasets",
-    collect: "Organize and share a collection",
+    collect: "Save and share datasets",
     readDescription: "Open a dataset to review its scope, source, license and available results.",
     compareDescription:
       "Select 2–4 process versions and compare their scope and methods side by side.",
@@ -100,7 +100,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "数据集名称只是起点。了解它描述的活动、地区、时间和方法，再判断是否适合你的研究。",
     read: "查阅数据集",
     compare: "比较过程数据",
-    collect: "整理与分享数据清单",
+    collect: "保存与分享数据集",
     readDescription: "打开数据集，查看适用范围、来源、许可和可用结果。",
     compareDescription: "选择 2–4 个过程版本，并列核对范围与方法。",
     collectDescription: "整理过程与流的具体版本，添加备注，与他人分享数据清单，并导出备份留存。",
@@ -138,7 +138,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "Der Name eines Datensatzes ist nur der Anfang. Prüfen Sie die beschriebene Aktivität, Region, Zeitspanne und Methode, bevor Sie ihn verwenden.",
     read: "Datensätze erkunden",
     compare: "Prozessdaten vergleichen",
-    collect: "Datensammlung erstellen und teilen",
+    collect: "Datensätze speichern und teilen",
     readDescription:
       "Geltungsbereich, Quelle, Lizenz und verfügbare Ergebnisse eines Datensatzes prüfen.",
     compareDescription:
@@ -178,7 +178,7 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "Le nom d’un jeu de données n’est qu’un point de départ. Examinez l’activité, la région, la période et la méthode décrites avant de l’utiliser.",
     read: "Explorer les jeux de données",
     compare: "Comparer les processus",
-    collect: "Organiser et partager une collection",
+    collect: "Enregistrer et partager des jeux de données",
     readDescription:
       "Consulter le périmètre, la source, la licence et les résultats disponibles d’un jeu de données.",
     compareDescription:

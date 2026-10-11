@@ -61,7 +61,6 @@ export async function AtlasHeader({
             ["methodology", "methodology"],
             ["team", "team"],
             ["community", "community"],
-            ["collections", "collections"],
           ] as const
         ).map(([path, key], i) => (
           <NavigationLink key={path} href={localePath(locale, path)}>

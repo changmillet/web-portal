@@ -29,7 +29,6 @@ export async function TiangongHeader({ locale }: SiteHeaderProps) {
     [localePath(locale, "methodology"), t("methodology"), t("methodologyCompact")],
     [localePath(locale, "team"), t("team"), t("teamCompact")],
     [localePath(locale, "community"), t("community"), t("communityCompact")],
-    [localePath(locale, "collections"), t("collections"), t("collectionsCompact")],
   ] as const;
 
   return (

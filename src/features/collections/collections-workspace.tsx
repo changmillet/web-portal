@@ -1,5 +1,6 @@
 "use client";
 import "./collections-workspace.css";
+import { notifySavedDatasetsChanged } from "./saved-datasets";
 import { CatalogResultRow, CatalogResultList } from "@/features/catalog/catalog-result-row";
 import { DatasetVersionTag } from "@/features/catalog/dataset-tags";
 import { CatalogCopyIdentity } from "@/features/catalog/catalog-copy-identity";
@@ -168,6 +169,7 @@ export function CollectionsWorkspace({
     if (corrupt || readFailed) return;
     try {
       localStorage.setItem(collectionsStorageKeyV2, JSON.stringify(state));
+      notifySavedDatasetsChanged();
       setSaveFailed(false);
     } catch {
       setSaveFailed(true);

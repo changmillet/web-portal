@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-11
-lastReviewedCommit: 8bd7f3d36e632b6acc948dab51b10764ac3f2e33
+lastReviewedCommit: 7f66e19ccc06c076f367a78bc8c4d0ba635b986b
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #145: existing Storybook CLI review and production browser workflow cover both branded page compositions; no toolchain changes."
+lastReviewedNote: "Portal #147: saved-dataset browser scenarios cover both brands in CI; Storybook exercises inline saving, legacy storage and failure states. No toolchain changes."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -67,7 +67,7 @@ Use the same exact source commit for paired brand releases, with separate public
 
 Storybook's site toolbar injects presentation identity and matching brand tokens. `Brand/Atlas` includes four locales, desktop/mobile, dark theme, unavailable counts and catalog-selection scenarios. Synthetic counts are only story fixtures. The production home uses the shared navigation DTO; missing counts are explicitly unavailable.
 
-`PORTAL_BRAND=atlas pnpm test:e2e -- tests/e2e/site-presentation.spec.ts` builds against the existing loopback fixture and checks identity, route/metadata parity, light/dark mobile/desktop accessibility, exact-version detail, citations and no-JavaScript reading. CI retains the full TianGong suite and adds the Atlas presentation suite plus existing shared functional flows. Local browser evidence does not prove a hosted Atlas release. A new domain/deployment is a separate operational scope.
+`PORTAL_BRAND=atlas pnpm test:e2e -- tests/e2e/site-presentation.spec.ts` builds against the existing loopback fixture and checks identity, route/metadata parity, light/dark mobile/desktop accessibility, exact-version detail, citations and no-JavaScript reading. CI retains the full TianGong suite and adds the Atlas presentation suite plus existing shared functional flows. `tests/e2e/saved-datasets.spec.ts` checks the secondary Saved entry, inline persistence, removal and default sharing in four locales at desktop light and mobile dark sizes for both builds. Local browser evidence does not prove a hosted Atlas release. A new domain/deployment is a separate operational scope.
 
 ## Deployment data scope (Portal #139)
 

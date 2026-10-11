@@ -64,6 +64,7 @@ const meta = {
   ),
   play: async ({ canvas, canvasElement, globals }) => {
     const locale = storyLocale(globals);
+    await expect(canvas.getByRole("banner").querySelector('a[href$="/collections"]')).toBeNull();
     await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
       atlasCopy[locale].title,
     );

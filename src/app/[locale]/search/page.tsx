@@ -1,3 +1,4 @@
+import { SavedDatasetsLink } from "@/features/collections/saved-datasets";
 import { readPortalServerBrandScope } from "@/server/data/environment";
 import { dataBrandNames } from "@/config/data-brands";
 import { CatalogFacetResults } from "@/features/catalog/catalog-facet-results";
@@ -428,11 +429,16 @@ export default async function SearchPage({
             }}
             keyword={
               initialEntry ? (
-                <CatalogSearchEntry
-                  locale={locale}
-                  kind={parsedSearch.kind}
-                  counts={navigation?.totals ?? null}
-                />
+                <>
+                  <div className="flex justify-end">
+                    <SavedDatasetsLink />
+                  </div>
+                  <CatalogSearchEntry
+                    locale={locale}
+                    kind={parsedSearch.kind}
+                    counts={navigation?.totals ?? null}
+                  />
+                </>
               ) : (
                 <>
                   <search className="brand-search catalog-results-query">

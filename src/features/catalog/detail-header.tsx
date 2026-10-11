@@ -1,11 +1,8 @@
 import { DetailFrame } from "@/sites/detail-frame";
-import { BookmarkPlusIcon } from "lucide-react";
-import { FeedbackLink as Link } from "@/components/shell/feedback-link";
 import { getTranslations } from "next-intl/server";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ActionGroup } from "@/components/ui/action-group";
 import type { DatasetDetailViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
@@ -15,7 +12,7 @@ import { NavigationLink } from "@/components/shell/navigation-link";
 import { DatasetVersionTag, PublicContentTag } from "./dataset-tags";
 import styles from "./detail.module.css";
 import { CompareChoice } from "@/features/compare/selection";
-import { buildMemberFragment } from "@/features/collections/storage-v2";
+import { SaveDataset } from "@/features/collections/saved-datasets";
 
 type DetailHeaderProps = {
   kind: "process" | "flow";
@@ -109,14 +106,7 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
               locale={locale}
             />
           ) : null}
-          <Button asChild variant="outline">
-            <Link
-              href={`${localePath(locale, "collections")}${buildMemberFragment({ kind, ref: refValue })}`}
-            >
-              <BookmarkPlusIcon data-icon="inline-start" />
-              {t("collect")}
-            </Link>
-          </Button>
+          <SaveDataset identity={{ kind, ref: refValue }} name={record?.name ?? refValue} />
           <CitationDialog
             citation={record?.citation}
             refValue={refValue}

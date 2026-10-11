@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-11
-lastReviewedCommit: e4410a69c7db32921c4d4e103489091990603d1e
+lastReviewedCommit: 7f66e19ccc06c076f367a78bc8c4d0ba635b986b
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #145: reviewed independent Atlas institutional/community content, collection terminology, scoped static coverage counts, and four-locale responsive review; TianGong roster and shared scientific data remain unchanged."
+lastReviewedNote: "Portal #147: reviewed secondary Saved entry, inline persistence and sharing terminology; carries forward #145: reviewed independent Atlas institutional/community content, collection terminology, scoped static coverage counts, and four-locale responsive review; TianGong roster and shared scientific data remain unchanged."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -48,7 +48,7 @@ TianGong 的以下既有视觉要求继续适用于其展示层。Atlas 独立�
 
 Atlas header 使用“Your Map to LCA Data”及四语译文。首页、机构、社区与说明页面的站点介绍、页脚和外链不显示 Tiangong 或 GLAD；实际数据出处不受此约束。Atlas 资源入口指向 UNEP 官方 Life Cycle Initiative 介绍。
 
-两品牌共用 Collections / 数据清单的交互与存储；导出文件使用当前品牌前缀。保留现有单清单、旧分享链接、导入备份及明确确认后才分享备注的行为。首页四个探索入口都可显示数量：过程和流继续使用实时公共版本总数，地区与来源使用按数据范围匹配的静态快照，并标明日期。
+两品牌共用 Saved datasets / 已保存的数据集的交互与存储；导出文件使用当前品牌前缀。保留现有单清单、旧分享链接、导入备份及明确确认后才分享备注的行为。首页四个探索入口都可显示数量：过程和流继续使用实时公共版本总数，地区与来源使用按数据范围匹配的静态快照，并标明日期。
 
 ## 设计方向
 
@@ -340,3 +340,7 @@ Header 与 Footer 的容器宽度、响应式边距及字体由 `src/components/
 ## 数据品牌展示
 
 数据 Brand 使用数据库返回的固定名称，在搜索卡片、匹配版本、详情、版本列表和比较中显示；它与来源原文以及 `PORTAL_BRAND` 站点视觉品牌分别呈现。多品牌部署提供带可访问名称的单选筛选，候选仅取服务端部署范围；单品牌部署隐藏该控件。空品牌不渲染标签或占位文案，不得推测归属。搜索结果的品牌标签位于指纹、复制引用、收藏三个操作按钮下方；移动端该组随内容排布，避免挤压标题。品牌筛选的默认选项中文为“可选数据库”，其余语言使用对应表达。跨品牌技术依赖保留原始数量和单位，但只有属于当前部署独立目录范围的 Flow 才提供详情链接。
+
+### 保存数据的次级入口（Portal #147）
+
+两品牌的主导航不再显示 Collections。搜索、过程/流、地区与来源浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。

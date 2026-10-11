@@ -72,9 +72,11 @@ PORTAL_BRAND=tiangong SITE_URL=http://localhost:3000 pnpm dev
 ```
 
 ```bash
-# Atlas UI
-PORTAL_BRAND=atlas SITE_URL=http://localhost:3000 pnpm dev
+# Atlas UI + Tiangong LCA、BAFU、USLCI、World steel 全部数据品牌
+pnpm local:atlas
 ```
+
+`local:atlas` 固定使用 Atlas 外观、全部四个数据品牌和 `http://localhost:3000`，只监听本机 `127.0.0.1`；它复用 `dev` 的品牌资源生成流程，后端连接仍读取现有 `.env.local`，不会修改环境文件。需要自定义品牌范围或端口时，使用普通 `pnpm dev` 并自行配置环境变量。
 
 启动后访问 [中文首页](http://localhost:3000/zh-CN) 或 [英文首页](http://localhost:3000/en)。切换品牌时先按 `Ctrl+C` 停止服务，再运行另一条命令。同一目录共用生成的品牌 CSS 和 `.next`，同时运行两套站点需要独立 checkout/worktree 和不同端口。
 

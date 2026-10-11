@@ -136,12 +136,12 @@ test.describe("site presentation", () => {
 
   test(`${site} exports a collection under its own brand`, async ({ page }) => {
     await page.goto("/en/collections");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Data collections");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Saved datasets");
     await page.locator(".collection-add-shell > summary").click();
     await page.getByPlaceholder("uuid@version").fill(processRef);
-    await page.getByRole("button", { name: "Add to collection", exact: true }).click();
+    await page.getByRole("button", { name: "Save dataset", exact: true }).click();
     const downloadPromise = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Export collection", exact: true }).click();
+    await page.getByRole("button", { name: "Export saved datasets", exact: true }).click();
     expect((await downloadPromise).suggestedFilename()).toBe(`${site}-collection.json`);
   });
 

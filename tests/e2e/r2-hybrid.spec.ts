@@ -150,14 +150,14 @@ test("shares collection notes only after preview and second confirmation", async
   await page.goto("/en/collections");
   await page.locator(".collection-add-shell > summary").click();
   await page.getByLabel("Add by version ID").fill(processRef);
-  await page.getByRole("button", { name: "Add to collection" }).click();
+  await page.getByRole("button", { name: "Save dataset" }).click();
   await page.locator(".collection-details > summary").click();
   await page.getByLabel("Collection name").fill("Private research name");
   await page.getByLabel("Purpose or research question").fill("Private purpose");
   await page.getByLabel("Notes or selection rationale").fill("Private local note");
   await page.evaluate(() => navigator.clipboard.writeText("sentinel"));
 
-  await page.getByRole("button", { name: "Share collection and notes" }).click();
+  await page.getByRole("button", { name: "Share datasets and notes" }).click();
   await expect(page.getByRole("heading", { name: "Review before sharing" })).toBeVisible();
   await expect(
     page

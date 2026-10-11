@@ -51,6 +51,7 @@ export const Desktop: Story = {
   play: async ({ canvas, canvasElement, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)].Common;
     const banner = within(canvas.getByRole("banner"));
+    await expect(banner.queryByRole("link", { name: m.collections })).toBeNull();
     const active = banner.getByRole("link", { name: m.catalog });
     const target = banner.getByRole("link", { name: m.methodology });
     await expect(banner.getByRole("link", { name: m.team })).toHaveAttribute(

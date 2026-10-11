@@ -93,7 +93,7 @@ jobs:
       - name: Atlas production route and presentation parity
         env:
           PORTAL_BRAND: atlas
-        run: pnpm test:e2e -- tests/e2e/site-presentation.spec.ts tests/e2e/product-shell.spec.ts --grep "site presentation|renders public search|HTML-first search to two-member comparison"
+        run: pnpm test:e2e -- tests/e2e/site-presentation.spec.ts tests/e2e/product-shell.spec.ts tests/e2e/saved-datasets.spec.ts --grep "site presentation|renders public search|HTML-first search to two-member comparison|secondary tools"
 
   components:
     runs-on: ubuntu-latest

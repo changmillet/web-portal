@@ -4,7 +4,6 @@ import { CatalogCopyIdentity } from "./catalog-copy-identity";
 import { CatalogResultRow, CatalogResultList, CatalogResultSummary } from "./catalog-result-row";
 import { DatasetVersionTag, PublicContentTag } from "./dataset-tags";
 import "./search-workspace.css";
-import { BookmarkPlusIcon } from "lucide-react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
 
 import {
@@ -13,13 +12,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import type { CatalogResultViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import { formatDatasetCitation } from "@/i18n/domain-vocabulary";
 import { CompareChoice } from "@/features/compare/selection";
-import { buildMemberFragment } from "@/features/collections/storage-v2";
+import { SaveDataset } from "@/features/collections/saved-datasets";
 
 import { CitationCopy } from "./citation-copy";
 import { groupSearchResults } from "./search-version-groups";
@@ -171,15 +169,11 @@ export function SearchResults({
                     copyLabel={labels.copyCitation}
                     failureLabel={labels.copyFailure}
                   />
-                  <Button asChild variant="ghost" size="icon">
-                    <Link
-                      aria-label={`${labels.collect}: ${item.name}`}
-                      title={labels.collect}
-                      href={`${localePath(locale, "collections")}${buildMemberFragment(item)}`}
-                    >
-                      <BookmarkPlusIcon aria-hidden="true" />
-                    </Link>
-                  </Button>
+                  <SaveDataset
+                    identity={{ kind: item.kind, ref: item.ref }}
+                    name={item.name}
+                    iconOnly
+                  />
                 </div>
                 {item.brand && (
                   <Badge variant="outline" aria-label={brandText("dataBrand")}>

@@ -306,13 +306,13 @@ test("keeps the local collection local and shares member IDs only", async ({ con
   await page.goto("/en/collections");
   await page.locator(".collection-add-shell > summary").click();
   await page.getByLabel("Add by version ID").fill(processRef);
-  await page.getByRole("button", { name: "Add to collection" }).click();
+  await page.getByRole("button", { name: "Save dataset" }).click();
   await page.getByLabel("Notes or selection rationale").fill("private local note");
   await page.reload();
   await expect(page.getByRole("button", { name: "Copy version ID" })).toBeVisible();
   await expect(page.getByLabel("Notes or selection rationale")).toHaveValue("private local note");
 
-  await page.getByRole("button", { name: "Copy collection link" }).click();
+  await page.getByRole("button", { name: "Share datasets", exact: true }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   expect(shared).toContain("#collection=");
   expect(shared).not.toContain("private local note");

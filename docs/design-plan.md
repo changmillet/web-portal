@@ -23,8 +23,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-10-11
-lastReviewedCommit: e4410a69c7db32921c4d4e103489091990603d1e
-lastReviewedNote: "Portal #145: brand-owned information pages, Collections naming and scope-keyed static region/source snapshot; no database migration or new sharing semantics."
+lastReviewedCommit: 7f66e19ccc06c076f367a78bc8c4d0ba635b986b
+lastReviewedNote: "Portal #147: reviewed secondary Saved entry, inline persistence and sharing terminology; carries forward #145: brand-owned information pages, Collections naming and scope-keyed static region/source snapshot; no database migration or new sharing semantics."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -1530,7 +1530,7 @@ MapLibre 替换生产 SVG 展示，提供地球、平面和列表三种模式。
 
 Atlas 面向 UNEP 的全球生命周期评价数据发现场景；对外不出现 GLAD 历史名称。Atlas 的 About the data、About us（保留 `/team`）、Community 与数据库介绍使用独立四语内容和机构版式，机构介绍依据 [UNEP Life Cycle Initiative](https://www.unep.org/topics/finance-and-economic-transformations/driving-transformation-science-and-knowledge/life-cycle)。不声明未提供的个人成员、合作方、联系方式或数据提交功能。Tiangong 保留原有团队与社区事实。
 
-用户侧 Shortlist 更名为 Collections / Data collections（中文“数据清单”）；现有单清单、存储键、版本标识、分享编码与导入兼容性保持不变。界面说明强调整理与分享具体版本；不新增用户账户、云同步或多清单管理。下载文件为当前品牌的 `atlas-collection.json` 或 `tiangong-collection.json`。
+用户侧采用 Saved datasets / 已保存的数据集，入口位于搜索与浏览工具区；现有单清单、存储键、版本标识、分享编码与导入兼容性保持不变。界面说明强调整理与分享具体版本；不新增用户账户、云同步或多清单管理。下载文件为当前品牌的 `atlas-collection.json` 或 `tiangong-collection.json`。
 
 首页 Region / Source 数量为开发时只读查询取得的静态快照，配置位于 `src/config/catalog-coverage.ts`。2026-10-11 09:03:49 UTC，在生产数据库只读事务中以 `portal_display_executor` 角色调用 `private.portal_display_begin_request_v1` 设置空过滤条件和显式数据品牌范围，再对 RLS 可见的 `private.display_catalog_facet_rows_v1`（`facet_contract_version = 1`）分别统计 `count(distinct facet_geography)` 与 `count(distinct facet_source)`。沿用 facet 值约束：非空、非纯空白、长度不超过 128 字符和 512 字节。事务以 ROLLBACK 结束，无数据库变更。
 
@@ -1540,3 +1540,7 @@ Atlas 面向 UNEP 的全球生命周期评价数据发现场景；对外不出�
 | `bafu,tiangong_lca,uslci,worldsteel` |  226 |   38 |
 
 地区数包含真实数据记录中的国家、次国家地区、全球及跨地区代码；排除空值，不计导航合成父节点，已检查快照无 unknown/未定位占位值。来源数统计 source facet 的不同值，不是品牌数或合作机构数。按数据 scope identity 匹配快照，不根据视觉品牌推断权限或数量；未测量范围不借用其他范围数字。页面显示快照日期，后续数据更新可人工刷新配置。过程与流数量继续显示原有公共版本总数，保留动态读取和失败状态。本次不增加数据库表、迁移、RPC 或定时任务。
+
+### 保存数据的次级入口（Portal #147）
+
+两品牌的主导航不再显示 Collections。搜索、过程/流、地区与来源浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。

@@ -1,5 +1,6 @@
 import type { ReactNode, Ref } from "react";
 import "./search-workspace.css";
+import { SavedDatasetsLink } from "@/features/collections/saved-datasets";
 
 /** @import import { CatalogResultsToolbar } from "@/features/catalog/catalog-results-toolbar"; */
 export function CatalogResultsToolbar({
@@ -32,7 +33,10 @@ export function CatalogResultsToolbar({
         )}
         {scope}
       </div>
-      <div className="catalog-results-toolbar-actions">{actions}</div>
+      <div className="catalog-results-toolbar-actions">
+        {actions}
+        <SavedDatasetsLink />
+      </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import type { CatalogCoverage } from "@/config/catalog-coverage";
 import { CatalogSearchInput } from "@/features/catalog/catalog-search-input";
 import { CatalogSearchTeaser } from "./catalog-search-teaser";
 import { KeywordSearchForm } from "@/features/catalog/keyword-search-form";
@@ -17,10 +18,12 @@ export async function CatalogSearchEntry({
   number,
   kind = "process",
   counts,
+  coverage,
 }: {
   locale: PortalLocale;
   number?: string;
   kind?: "process" | "flow";
+  coverage?: CatalogCoverage | null;
   counts?: { process: number; flow: number } | null;
 }) {
   const t = await getTranslations({ locale, namespace: "BrandHome" });
@@ -88,12 +91,20 @@ export async function CatalogSearchEntry({
                     : navigation("countUnavailable")}
                 </span>
               )}
+              {(dimension === "region" || dimension === "source") && coverage && (
+                <span>{new Intl.NumberFormat(locale).format(coverage[dimension])}</span>
+              )}
               <span>{catalog(description)}</span>
             </span>
             {number ? <ArrowUpRight aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
           </Link>
         ))}
       </nav>
+      {coverage && (
+        <p className="text-muted-foreground mb-6 text-sm">
+          {t("coverageNote", { date: coverage.asOf })}
+        </p>
+      )}
       {!number && (
         <Link
           className="catalog-explore-toggle"

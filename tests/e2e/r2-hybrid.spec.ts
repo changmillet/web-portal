@@ -150,14 +150,14 @@ test("shares collection notes only after preview and second confirmation", async
   await page.goto("/en/collections");
   await page.locator(".collection-add-shell > summary").click();
   await page.getByLabel("Add by version ID").fill(processRef);
-  await page.getByRole("button", { name: "Add to shortlist" }).click();
+  await page.getByRole("button", { name: "Add to collection" }).click();
   await page.locator(".collection-details > summary").click();
-  await page.getByLabel("Shortlist name").fill("Private research name");
+  await page.getByLabel("Collection name").fill("Private research name");
   await page.getByLabel("Purpose or research question").fill("Private purpose");
   await page.getByLabel("Notes or selection rationale").fill("Private local note");
   await page.evaluate(() => navigator.clipboard.writeText("sentinel"));
 
-  await page.getByRole("button", { name: "Share shortlist and notes" }).click();
+  await page.getByRole("button", { name: "Share collection and notes" }).click();
   await expect(page.getByRole("heading", { name: "Review before sharing" })).toBeVisible();
   await expect(
     page
@@ -175,10 +175,10 @@ test("shares collection notes only after preview and second confirmation", async
   try {
     const receiver = await receiverContext.newPage();
     await receiver.goto(shared);
-    await expect(receiver.getByRole("heading", { name: "Review shortlist import" })).toBeVisible();
-    await expect(receiver.getByLabel("Shortlist name")).toHaveValue("");
-    await receiver.getByRole("button", { name: "Add shared shortlist" }).click();
-    await expect(receiver.getByLabel("Shortlist name")).toHaveValue("Private research name");
+    await expect(receiver.getByRole("heading", { name: "Review collection import" })).toBeVisible();
+    await expect(receiver.getByLabel("Collection name")).toHaveValue("");
+    await receiver.getByRole("button", { name: "Add shared collection" }).click();
+    await expect(receiver.getByLabel("Collection name")).toHaveValue("Private research name");
     await expect(receiver.getByLabel("Purpose or research question")).toHaveValue(
       "Private purpose",
     );

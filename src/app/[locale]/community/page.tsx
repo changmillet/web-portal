@@ -1,3 +1,5 @@
+import { brandConfig } from "@/server/brand";
+import { AtlasInformationPage } from "@/sites/atlas/information-page";
 import type { Metadata } from "next";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -24,5 +26,7 @@ export default async function CommunityPage({ params }: PageProps<"/[locale]/com
   const { locale } = await params;
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
+  if (brandConfig.site === "atlas")
+    return <AtlasInformationPage locale={locale} page="community" />;
   return <CommunityPageView labels={(await getMessages({ locale })).Community} locale={locale} />;
 }

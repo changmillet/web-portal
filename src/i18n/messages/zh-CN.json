@@ -9,7 +9,7 @@
     "methodology": "数据说明",
     "team": "团队",
     "community": "社区",
-    "collections": "候选清单",
+    "collections": "数据清单",
     "search": "搜索",
     "process": "过程",
     "flow": "流",
@@ -49,7 +49,7 @@
     "methodologyCompact": "数据说明",
     "teamCompact": "团队",
     "communityCompact": "社区",
-    "collectionsCompact": "清单",
+    "collectionsCompact": "数据清单",
     "catalog": "数据目录",
     "catalogCompact": "目录",
     "loading": "正在加载…",
@@ -211,7 +211,7 @@
     "flowTitle": "流数据集",
     "regionTitle": "按地区浏览",
     "sourceTitle": "按来源浏览",
-    "catalogDescription": "浏览数据集，了解适用范围，将相关版本加入候选清单；过程版本还可加入比较。",
+    "catalogDescription": "浏览数据集，了解适用范围，将相关版本加入数据清单；过程版本还可加入比较。",
     "countVersions": "{count} 个公开版本"
   },
   "Detail": {
@@ -237,7 +237,7 @@
     "provenance": "来源追溯",
     "versions": "版本",
     "compare": "加入比较",
-    "collect": "加入候选清单",
+    "collect": "加入数据清单",
     "citation": "引用",
     "citationUnavailable": "数据集记录加载后即可生成版本引用。",
     "copyCitation": "复制引用",
@@ -356,15 +356,15 @@
     "attentionFields": "需要关注的字段（{count}）"
   },
   "Collections": {
-    "title": "候选清单",
-    "description": "整理待选用的数据版本，记录用途和选择理由。清单保存在当前浏览器，可导出备份。",
+    "title": "数据清单",
+    "description": "整理选中的数据集版本，添加备注，并与他人分享。清单保存在当前浏览器，可导出备份留存。",
     "warningTitle": "仅保存在此浏览器",
     "warningDescription": "清单不会自动同步到其他设备，清除浏览数据可能删除清单。请导出备份。",
     "researchName": "清单名称",
     "purpose": "用途或研究问题",
     "memberRef": "按版本标识添加",
     "memberPlaceholder": "uuid@version",
-    "add": "加入候选清单",
+    "add": "加入清单",
     "candidate": "待评估",
     "selected": "已采用",
     "excluded": "已排除",
@@ -378,7 +378,7 @@
     "shareDisclosure": "获得链接的人可查看下列清单名称、用途、选择状态和备注。请确认没有机密内容。",
     "shareConfirm": "确认并复制链接",
     "shareCancel": "取消",
-    "empty": "清单还没有数据集。可在数据集页面将版本加入候选清单，也可展开“加入候选清单”，粘贴版本标识。",
+    "empty": "清单还没有数据集。可在数据集页面将版本加入清单，也可展开“加入清单”，粘贴版本标识。",
     "saved": "已保存到此浏览器",
     "imported": "已导入清单",
     "shared": "已复制清单链接",
@@ -440,7 +440,7 @@
     "searchHelp": "如何按需求描述搜索",
     "searchHelpBody": "描述需要的产品、地区、时间和技术。检索会先展示关键词结果，完成需求匹配后提示更新；匹配的是目录中已有的数据集，是否适用仍需结合详情判断。",
     "selectionHelp": "保存与对比版本",
-    "selectionHelpBody": "候选清单可保存过程与流的具体版本和备注，导出后可备份或迁移。比较支持 2–4 个过程版本，可核对范围与方法；选用时还需结合系统边界和研究目的判断。"
+    "selectionHelpBody": "数据清单可保存过程与流的具体版本和备注，导出后可备份或迁移。比较支持 2–4 个过程版本，可核对范围与方法；选用时还需结合系统边界和研究目的判断。"
   },
   "CatalogReference": {
     "catalog": "数据目录",
@@ -457,9 +457,9 @@
     "relevance": "默认顺序",
     "yearDescending": "参考年：从新到旧",
     "back": "返回搜索结果",
-    "saved": "已加入候选清单",
-    "unsave": "从候选清单移除",
-    "removed": "已从候选清单移除",
+    "saved": "已加入数据清单",
+    "unsave": "从数据清单移除",
+    "removed": "已从数据清单移除",
     "shortlistEmpty": "将感兴趣的数据集加入清单，稍后一起核对。",
     "sessionOnly": "本次样板中的选择只在当前预览中保留。",
     "selectedCount": "已选 {count} / 4",
@@ -620,7 +620,8 @@
     "understandingDescription": "数据集描述了什么活动？适用于哪个地区和时期？选用前，结合研究目的核对这些信息。",
     "platformTitle": "从数据查找，走向建模与分析。",
     "platformDescription": "在数据目录查阅记录，在天工 LCA 平台开展生命周期建模与环境影响评价。",
-    "databaseAction": "了解天工 LCA 数据库"
+    "databaseAction": "了解天工 LCA 数据库",
+    "coverageNote": "地区与来源数量截至 {date}。"
   },
   "Navigation": {
     "classification": "按分类浏览",

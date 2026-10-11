@@ -17,8 +17,8 @@ checkPaths:
   - docs/ui-system.md
   - .docpact/config.yaml
 lastReviewedAt: 2026-10-11
-lastReviewedCommit: 0e4db91f6a6672676f28ce36d1c42c1a584c93cd
-lastReviewedNote: "Portal #143: reviewed the local Atlas all-brand shortcut; existing backend configuration, normal dev defaults, ownership and delivery requirements are unchanged."
+lastReviewedCommit: 8bd7f3d36e632b6acc948dab51b10764ac3f2e33
+lastReviewedNote: "Portal #145: reviewed independent brand content, collection naming and static scope coverage; repository ownership and delivery requirements remain unchanged."
 related:
   - docs/development.md
   - docs/ui-system.md

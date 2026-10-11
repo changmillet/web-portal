@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-10
-lastReviewedCommit: e4410a69c7db32921c4d4e103489091990603d1e
+lastReviewedAt: 2026-10-11
+lastReviewedCommit: 8bd7f3d36e632b6acc948dab51b10764ac3f2e33
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #141: omitted data-brand configuration defaults to Tiangong LCA; explicit invalid inputs and build/runtime scope drift still fail. Hosted release and CSP/ISR evidence remain independently required."
+lastReviewedNote: "Portal #145: existing Storybook CLI review and production browser workflow cover both branded page compositions; no toolchain changes."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

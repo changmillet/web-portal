@@ -1,6 +1,7 @@
 import type { PortalLocale } from "@/i18n/routing";
 
 type AtlasCopy = {
+  coverageNote: string;
   name: string;
   descriptor: string;
   eyebrow: string;
@@ -35,11 +36,12 @@ type AtlasCopy = {
 };
 export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
   en: {
+    coverageNote: "Region and source counts as of",
     name: "Atlas",
-    descriptor: "The Nexus for LCA Data",
+    descriptor: "Your Map to LCA Data",
     eyebrow: "Explore data for life cycle assessment",
-    title: "LCA data.",
-    emphasis: "Your research starts here.",
+    title: "Explore the world",
+    emphasis: "of LCA data.",
     description:
       "Find process and flow datasets for your life cycle assessment. Explore by region or source, review their scope and keep the versions you need.",
     explore: "Explore the catalog",
@@ -61,23 +63,24 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "A dataset’s name is only a starting point. Review the activity, geography, period and method it describes before using it in your assessment.",
     read: "Explore datasets",
     compare: "Compare process datasets",
-    collect: "Organize your shortlist",
+    collect: "Organize and share a collection",
     readDescription: "Open a dataset to review its scope, source, license and available results.",
     compareDescription:
       "Select 2–4 process versions and compare their scope and methods side by side.",
     collectDescription:
-      "Save process and flow versions with your notes in this browser. Export a backup to keep them.",
+      "Collect process and flow versions, add notes and share your selections with others. Export a backup to keep them.",
     footer: "A starting point for your next life cycle assessment.",
-    dataCredit: "Explore the TianGong LCA public catalog with Atlas.",
+    dataCredit: "Atlas · A UNEP platform for life cycle data discovery.",
     unavailable: "Totals temporarily unavailable",
     metadataTitle: "Atlas — Life Cycle Assessment Data",
   },
   "zh-CN": {
+    coverageNote: "地区与来源数量截至",
     name: "Atlas",
-    descriptor: "汇聚生命周期评价数据",
+    descriptor: "探索生命周期评价数据的地图",
     eyebrow: "发现适用于生命周期评价的数据",
     title: "探索生命周期评价数据。",
-    emphasis: "找到研究的起点。",
+    emphasis: "发现世界，连接数据。",
     description: "查找过程与流数据集，按地区和来源浏览，了解适用范围，整理研究所需的数据版本。",
     explore: "探索数据目录",
     guide: "阅读数据使用说明",
@@ -97,21 +100,22 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "数据集名称只是起点。了解它描述的活动、地区、时间和方法，再判断是否适合你的研究。",
     read: "查阅数据集",
     compare: "比较过程数据",
-    collect: "整理候选清单",
+    collect: "整理与分享数据清单",
     readDescription: "打开数据集，查看适用范围、来源、许可和可用结果。",
     compareDescription: "选择 2–4 个过程版本，并列核对范围与方法。",
-    collectDescription: "在当前浏览器保存过程与流的具体版本和备注，导出备份以便留存。",
+    collectDescription: "整理过程与流的具体版本，添加备注，与他人分享数据清单，并导出备份留存。",
     footer: "为下一次生命周期评价，找到数据的起点。",
-    dataCredit: "通过 Atlas 探索天工 LCA 公开数据目录。",
+    dataCredit: "Atlas · UNEP 生命周期评价数据发现平台。",
     unavailable: "数量暂时无法获取",
     metadataTitle: "Atlas — 生命周期评价数据",
   },
   de: {
+    coverageNote: "Regions- und Quellenzahlen vom",
     name: "Atlas",
-    descriptor: "Ökobilanzdaten an einem Ort",
+    descriptor: "Ihre Karte zu Ökobilanzdaten",
     eyebrow: "Daten für Ihre Ökobilanz entdecken",
-    title: "Ökobilanzdaten entdecken.",
-    emphasis: "Hier beginnt Ihre Recherche.",
+    title: "Die Welt der Ökobilanzdaten.",
+    emphasis: "Entdecken Sie neue Perspektiven.",
     description:
       "Finden Sie Prozess- und Flussdatensätze für Ihre Ökobilanz. Suchen Sie nach Region oder Quelle, prüfen Sie den Geltungsbereich und speichern Sie passende Versionen.",
     explore: "Katalog erkunden",
@@ -134,24 +138,25 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "Der Name eines Datensatzes ist nur der Anfang. Prüfen Sie die beschriebene Aktivität, Region, Zeitspanne und Methode, bevor Sie ihn verwenden.",
     read: "Datensätze erkunden",
     compare: "Prozessdaten vergleichen",
-    collect: "Auswahlliste verwalten",
+    collect: "Datensammlung erstellen und teilen",
     readDescription:
       "Geltungsbereich, Quelle, Lizenz und verfügbare Ergebnisse eines Datensatzes prüfen.",
     compareDescription:
       "2–4 Prozessversionen auswählen und ihre Geltungsbereiche und Methoden gegenüberstellen.",
     collectDescription:
-      "Prozess- und Flussversionen mit Notizen in diesem Browser speichern und als Sicherung exportieren.",
+      "Prozess- und Flussversionen mit Notizen sammeln, mit anderen teilen und als Sicherung exportieren.",
     footer: "Der Einstieg in Ihre nächste Ökobilanz.",
-    dataCredit: "Mit Atlas den öffentlichen TianGong LCA-Katalog erkunden.",
+    dataCredit: "Atlas · Eine UNEP-Plattform zur Erkundung von Ökobilanzdaten.",
     unavailable: "Anzahl vorübergehend nicht verfügbar",
     metadataTitle: "Atlas — Daten für Ökobilanzen",
   },
   fr: {
+    coverageNote: "Nombre de régions et de sources au",
     name: "Atlas",
-    descriptor: "Le carrefour des données d’ACV",
+    descriptor: "Votre carte des données d’ACV",
     eyebrow: "Explorer les données pour l’analyse du cycle de vie",
-    title: "Données d’ACV.",
-    emphasis: "Votre recherche commence ici.",
+    title: "Explorez le monde",
+    emphasis: "des données d’ACV.",
     description:
       "Trouvez des jeux de données de processus et de flux pour votre ACV. Explorez le catalogue par région ou source, examinez le périmètre et conservez les versions utiles.",
     explore: "Explorer le catalogue",
@@ -173,15 +178,15 @@ export const atlasCopy: Record<PortalLocale, AtlasCopy> = {
       "Le nom d’un jeu de données n’est qu’un point de départ. Examinez l’activité, la région, la période et la méthode décrites avant de l’utiliser.",
     read: "Explorer les jeux de données",
     compare: "Comparer les processus",
-    collect: "Organiser votre sélection",
+    collect: "Organiser et partager une collection",
     readDescription:
       "Consulter le périmètre, la source, la licence et les résultats disponibles d’un jeu de données.",
     compareDescription:
       "Sélectionner 2 à 4 versions de processus et comparer leurs périmètres et méthodes.",
     collectDescription:
-      "Conserver les versions de processus et de flux avec vos notes dans ce navigateur, puis exporter une sauvegarde.",
+      "Rassembler les versions de processus et de flux avec vos notes, partager votre collection et exporter une sauvegarde.",
     footer: "Le point de départ de votre prochaine ACV.",
-    dataCredit: "Explorer le catalogue public TianGong LCA avec Atlas.",
+    dataCredit: "Atlas · Une plateforme du PNUE pour découvrir les données d’ACV.",
     unavailable: "Nombre temporairement indisponible",
     metadataTitle: "Atlas — Données pour l’analyse du cycle de vie",
   },

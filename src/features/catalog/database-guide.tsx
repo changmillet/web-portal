@@ -1,3 +1,5 @@
+import type { SiteId } from "@/sites/config";
+import { atlasInformation, lifeCycleInitiativeUrl } from "@/sites/atlas/information";
 import { ArrowRightIcon, ExternalLinkIcon } from "lucide-react";
 
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
@@ -19,12 +21,15 @@ export function DatabaseGuide({
   labels,
   common,
   summary,
+  site = "tiangong",
 }: {
   locale: PortalLocale;
   labels: Dictionary["DatabaseGuide"];
   common: Dictionary["Common"];
+  site?: SiteId;
   summary: PublicCatalogSummary | null;
 }) {
+  const atlas = atlasInformation[locale];
   const resources = publicResources(locale);
   const number = new Intl.NumberFormat(locale);
   return (
@@ -118,8 +123,11 @@ export function DatabaseGuide({
             ))}
           </dl>
           <div className="flex flex-wrap gap-5">
-            <a className="text-foreground underline underline-offset-4" href={resources.dataGuide}>
-              {labels.guideAction}
+            <a
+              className="text-foreground underline underline-offset-4"
+              href={site === "atlas" ? lifeCycleInitiativeUrl : resources.dataGuide}
+            >
+              {site === "atlas" ? atlas.officialAction : labels.guideAction}
             </a>
             <Link
               className="text-foreground underline underline-offset-4"
@@ -138,34 +146,40 @@ export function DatabaseGuide({
             <p className="leading-7">{labels.accessBody}</p>
           </div>
           <div className="flex max-w-prose flex-col items-start gap-3">
-            <h2 className="font-heading text-2xl font-semibold">{labels.distributionTitle}</h2>
-            <p className="leading-7">{labels.distributionBody}</p>
+            <h2 className="font-heading text-2xl font-semibold">
+              {site === "atlas" ? atlas.team.title : labels.distributionTitle}
+            </h2>
+            <p className="leading-7">
+              {site === "atlas" ? atlas.team.description : labels.distributionBody}
+            </p>
             <Button asChild variant="outline">
-              <a href={resources.lcdn}>
-                {labels.distributionAction}
+              <a href={site === "atlas" ? lifeCycleInitiativeUrl : resources.lcdn}>
+                {site === "atlas" ? atlas.officialAction : labels.distributionAction}
                 <ExternalLinkIcon data-icon="inline-end" />
               </a>
             </Button>
           </div>
         </section>
-        <nav className="flex flex-col gap-5" aria-labelledby="resources-title">
-          <h2 id="resources-title" className="font-heading text-2xl font-semibold">
-            {labels.resourcesTitle}
-          </h2>
-          <div className="grid gap-7 md:grid-cols-3">
-            {(["docs", "tidas", "pcr"] as const).map((key) => (
-              <div key={key} className="flex flex-col gap-2">
-                <a
-                  className="text-foreground font-semibold underline underline-offset-4"
-                  href={resources[key]}
-                >
-                  {common[`${key}Resource`]}
-                </a>
-                <p className="text-muted-foreground leading-7">{labels[`${key}Body`]}</p>
-              </div>
-            ))}
-          </div>
-        </nav>
+        {site === "tiangong" && (
+          <nav className="flex flex-col gap-5" aria-labelledby="resources-title">
+            <h2 id="resources-title" className="font-heading text-2xl font-semibold">
+              {labels.resourcesTitle}
+            </h2>
+            <div className="grid gap-7 md:grid-cols-3">
+              {(["docs", "tidas", "pcr"] as const).map((key) => (
+                <div key={key} className="flex flex-col gap-2">
+                  <a
+                    className="text-foreground font-semibold underline underline-offset-4"
+                    href={resources[key]}
+                  >
+                    {common[`${key}Resource`]}
+                  </a>
+                  <p className="text-muted-foreground leading-7">{labels[`${key}Body`]}</p>
+                </div>
+              ))}
+            </div>
+          </nav>
+        )}
       </div>
     </PortalPage>
   );

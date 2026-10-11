@@ -1,7 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { atlasCopy } from "../../src/sites/atlas/copy";
+import { lifeCycleInitiativeUrl } from "../../src/sites/atlas/information";
+import { readSiteId } from "../../src/sites/config";
 import { createHash } from "node:crypto";
 import en from "../../src/i18n/messages/en.json" with { type: "json" };
 
+const site = readSiteId();
 const processId = "11111111-1111-1111-1111-111111111111";
 const processRef = `${processId}@01.00.000`;
 const flowId = "22222222-2222-2222-2222-222222222222";
@@ -15,12 +19,21 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.goto("/zh-CN");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
-  await expect(page).toHaveTitle("天工 LCA 生命周期评价数据库");
-  await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
-    "href",
-    "https://lca.tiangong.earth",
-  );
+  if (site === "atlas") {
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(atlasCopy["zh-CN"].title);
+    await expect(page).toHaveTitle(atlasCopy["zh-CN"].metadataTitle);
+    await expect(page.getByRole("link", { name: /UNEP · Life Cycle Initiative/ })).toHaveAttribute(
+      "href",
+      lifeCycleInitiativeUrl,
+    );
+  } else {
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("天工 LCA 生命周期评价数据库");
+    await expect(page).toHaveTitle("天工 LCA 生命周期评价数据库");
+    await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
+      "href",
+      "https://lca.tiangong.earth",
+    );
+  }
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/zh-CN$/);
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
     "href",
@@ -45,8 +58,12 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
 
   await page.getByRole("radio", { name: "深色" }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
-  await expect(page.locator("[data-brand-dark-logo]").first()).toBeVisible();
-  await expect(page.locator("[data-brand-light-logo]").first()).toBeHidden();
+  await expect(
+    page.locator(site === "atlas" ? ".atlas-logo-dark" : "[data-brand-dark-logo]").first(),
+  ).toBeVisible();
+  await expect(
+    page.locator(site === "atlas" ? ".atlas-logo-light" : "[data-brand-light-logo]").first(),
+  ).toBeHidden();
   await page.reload();
   await expect(page.locator("html")).toHaveClass(/dark/);
 
@@ -54,32 +71,40 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.getByRole("option", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "TianGong Life Cycle Assessment Database",
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    site === "atlas" ? atlasCopy.en.title : "TianGong Life Cycle Assessment Database",
   );
-  await expect(page).toHaveTitle("TianGong Life Cycle Assessment Database");
+  await expect(page).toHaveTitle(
+    site === "atlas" ? atlasCopy.en.metadataTitle : "TianGong Life Cycle Assessment Database",
+  );
   const englishHtml = await (await page.request.get("/en")).text();
   expect(englishHtml).toMatch(/<html[^>]*\slang="en"/u);
-  await expect(page.getByText("Catalog overview", { exact: true })).toBeVisible();
   await expect(page.getByText("Process datasets", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Flow datasets", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Total", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: /UUID Electricity, medium voltage/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /CAS Carbon dioxide/ })).toBeVisible();
+  if (site === "tiangong") {
+    await expect(page.getByText("Catalog overview", { exact: true })).toBeVisible();
+    await expect(page.getByText("Total", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /UUID Electricity, medium voltage/ }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /CAS Carbon dioxide/ })).toBeVisible();
+  } else {
+    await expect(page.getByRole("heading", { name: atlasCopy.en.index })).toBeVisible();
+  }
   await page.getByRole("combobox", { name: "Language" }).click();
   await page.getByRole("option", { name: "Deutsch" }).click();
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "TianGong Datenbank für Ökobilanzen",
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    site === "atlas" ? atlasCopy.de.title : "TianGong Datenbank für Ökobilanzen",
   );
 
   await page.getByRole("combobox", { name: "Sprache" }).click();
   await page.getByRole("option", { name: "Français" }).click();
   await expect(page).toHaveURL(/\/fr$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "TianGong Base de données d’analyse du cycle de vie",
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    site === "atlas" ? atlasCopy.fr.title : "TianGong Base de données d’analyse du cycle de vie",
   );
   await expect(page.getByRole("contentinfo")).not.toContainText(
     /lecture seule|aucun compte requis/i,
@@ -281,13 +306,13 @@ test("keeps the local collection local and shares member IDs only", async ({ con
   await page.goto("/en/collections");
   await page.locator(".collection-add-shell > summary").click();
   await page.getByLabel("Add by version ID").fill(processRef);
-  await page.getByRole("button", { name: "Add to shortlist" }).click();
+  await page.getByRole("button", { name: "Add to collection" }).click();
   await page.getByLabel("Notes or selection rationale").fill("private local note");
   await page.reload();
   await expect(page.getByRole("button", { name: "Copy version ID" })).toBeVisible();
   await expect(page.getByLabel("Notes or selection rationale")).toHaveValue("private local note");
 
-  await page.getByRole("button", { name: "Copy shortlist link" }).click();
+  await page.getByRole("button", { name: "Copy collection link" }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   expect(shared).toContain("#collection=");
   expect(shared).not.toContain("private local note");
@@ -302,18 +327,18 @@ test("quarantines corrupt local collection data until the user explicitly clears
   });
   await page.goto("/en/collections");
   await expect(
-    page.getByRole("button", { name: "Export raw shortlist data for recovery" }),
+    page.getByRole("button", { name: "Export raw collection data for recovery" }),
   ).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("tiangong.portal.collections.v1"))).toBe(
     "{corrupt-json",
   );
-  await page.getByRole("button", { name: "Clear the unreadable local shortlist" }).click();
+  await page.getByRole("button", { name: "Clear the unreadable local collection" }).click();
   expect(await page.evaluate(() => localStorage.getItem("tiangong.portal.collections.v1"))).toBe(
     "{corrupt-json",
   );
   await page.getByRole("button", { name: "Confirm clearing saved content" }).click();
   await expect(
-    page.getByRole("button", { name: "Export raw shortlist data for recovery" }),
+    page.getByRole("button", { name: "Export raw collection data for recovery" }),
   ).toBeHidden();
 });
 
@@ -325,11 +350,18 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
   });
-  await expect(page.locator(".catalog-search-teaser")).toBeVisible();
-  await expect(page.locator('header a[href="https://lca.tiangong.earth"]')).toBeHidden();
-  await expect(
-    page.getByRole("contentinfo").getByRole("link", { name: "Open the LCA platform" }),
-  ).toBeVisible();
+  if (site === "atlas") {
+    await expect(page.getByRole("link", { name: atlasCopy.en.explore, exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", { name: /Life Cycle Initiative/ }),
+    ).toBeVisible();
+  } else {
+    await expect(page.locator(".catalog-search-teaser")).toBeVisible();
+    await expect(page.locator('header a[href="https://lca.tiangong.earth"]')).toBeHidden();
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", { name: "Open the LCA platform" }),
+    ).toBeVisible();
+  }
   const layout = await page.evaluate(async () => {
     const root = document.documentElement;
     const initialClientWidth = root.clientWidth;

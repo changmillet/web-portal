@@ -9,7 +9,7 @@ import "./atlas.css";
 /** Atlas editorial entrance, consuming the same catalog DTOs as TianGong.
  * @import import { AtlasHome } from "@/sites/atlas/home";
  */
-export function AtlasHome({ locale, counts }: BrandHomeProps) {
+export function AtlasHome({ locale, counts, coverage }: BrandHomeProps) {
   const copy = atlasCopy[locale];
   const format = new Intl.NumberFormat(locale);
   const dimensions = [
@@ -20,8 +20,18 @@ export function AtlasHome({ locale, counts }: BrandHomeProps) {
       count: counts?.process,
     },
     { id: "flow", title: copy.flow, description: copy.flowDescription, count: counts?.flow },
-    { id: "region", title: copy.region, description: copy.regionDescription },
-    { id: "source", title: copy.source, description: copy.sourceDescription },
+    {
+      id: "region",
+      title: copy.region,
+      description: copy.regionDescription,
+      count: coverage?.region,
+    },
+    {
+      id: "source",
+      title: copy.source,
+      description: copy.sourceDescription,
+      count: coverage?.source,
+    },
   ];
   return (
     <main id="main-content" className="atlas-home" lang={locale}>
@@ -99,6 +109,11 @@ export function AtlasHome({ locale, counts }: BrandHomeProps) {
             </Link>
           ))}
         </nav>
+        {coverage && (
+          <p className="atlas-coverage-note">
+            {copy.coverageNote} <time dateTime={coverage.asOf}>{coverage.asOf}</time>
+          </p>
+        )}
       </section>
       <section className="atlas-perspective">
         <div className="site-shell-container atlas-perspective-grid">

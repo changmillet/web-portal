@@ -6,6 +6,7 @@ import { CatalogCopyIdentity } from "@/features/catalog/catalog-copy-identity";
 
 import { DownloadIcon, EyeIcon, LinkIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
+import { usePresentation } from "@/sites/presentation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -86,6 +87,7 @@ export function CollectionsWorkspace({
   common: CommonLabels;
   locale: PortalLocale;
 }) {
+  const site = usePresentation();
   const versionLabel = useTranslations("Search")("version");
   const [state, setState] = useState<CollectionStateV2>(emptyCollectionStateV2);
   const [newRef, setNewRef] = useState("");
@@ -285,7 +287,7 @@ export function CollectionsWorkspace({
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap gap-2">
             <Button
-              onClick={() => download(corrupt.raw, "tiangong-portal-unreadable-shortlist.json")}
+              onClick={() => download(corrupt.raw, `${site}-unreadable-collection.json`)}
               type="button"
               variant="outline"
             >
@@ -371,9 +373,7 @@ export function CollectionsWorkspace({
           <div className="flex flex-wrap gap-2">
             <Button
               disabled={!hydrated || Boolean(corrupt)}
-              onClick={() =>
-                download(JSON.stringify(state, null, 2), "tiangong-portal-shortlist.json")
-              }
+              onClick={() => download(JSON.stringify(state, null, 2), `${site}-collection.json`)}
               type="button"
               variant="outline"
             >

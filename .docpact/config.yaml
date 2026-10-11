@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-10-11"
-lastReviewedCommit: "0e4db91f6a6672676f28ce36d1c42c1a584c93cd"
-lastReviewedNote: "Portal #143: reviewed the local Atlas all-brand shortcut; existing backend configuration, normal dev defaults, ownership and delivery requirements are unchanged."
+lastReviewedCommit: "8bd7f3d36e632b6acc948dab51b10764ac3f2e33"
+lastReviewedNote: "Portal #145: reviewed independent brand content, collection naming and static scope coverage; repository ownership and delivery requirements remain unchanged."
 
 catalog:
   repos:
@@ -364,6 +364,10 @@ rules:
     scope: repo
     repo: portal
     triggers:
+      - path: src/config/catalog-coverage.ts
+        kind: catalog-coverage-snapshot
+      - path: tests/unit/catalog-coverage.test.ts
+        kind: catalog-coverage-check
       - path: src/config/data-brands.ts
         kind: deployment-data-scope
       - path: tests/unit/data-brands.test.ts

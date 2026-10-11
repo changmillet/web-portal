@@ -55,7 +55,7 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ["Foundations", "Primitives", "Shell", "Catalog", "Compare", "Shortlist"],
+        order: ["Foundations", "Primitives", "Shell", "Catalog", "Compare", "Collections"],
       },
     },
   },

@@ -1,3 +1,4 @@
+import { brandConfig } from "@/server/brand";
 import type { Metadata } from "next";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -40,6 +41,7 @@ export default async function DatabasePage({ params }: PageProps<"/[locale]/lca-
   }
   return (
     <DatabaseGuide
+      site={brandConfig.site}
       locale={locale}
       labels={messages.DatabaseGuide}
       common={messages.Common}

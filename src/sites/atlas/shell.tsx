@@ -9,6 +9,7 @@ import { localePath, type PortalLocale } from "@/i18n/routing";
 import { readBrandConfig, type BrandConfig } from "@/config/brand";
 import { AtlasLogo } from "./logo";
 export { AtlasLogo } from "./logo";
+import { lifeCycleInitiativeUrl } from "./information";
 import { atlasCopy } from "./copy";
 import "@/components/shell/site-shell.css";
 import "./atlas.css";
@@ -84,7 +85,6 @@ export async function AtlasFooter({
   brand?: BrandConfig;
 }) {
   const copy = atlasCopy[locale];
-  const t = await getTranslations({ locale, namespace: "Common" });
   return (
     <footer className="atlas-footer">
       <div className="site-shell-container">
@@ -106,7 +106,7 @@ export async function AtlasFooter({
         </div>
         <div className="atlas-footer-bottom">
           <p>{copy.dataCredit}</p>
-          <a href="https://lca.tiangong.earth">{t("externalLca")} ↗</a>
+          <a href={lifeCycleInitiativeUrl}>UNEP · Life Cycle Initiative ↗</a>
         </div>
       </div>
     </footer>

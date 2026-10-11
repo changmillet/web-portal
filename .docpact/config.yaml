@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-10-10"
-lastReviewedCommit: "38ee06a68db83a346d6e3660afd6e68a74b8c854"
-lastReviewedNote: "Portal #141: omitted data-brand configuration defaults to Tiangong LCA; explicit invalid inputs and build/runtime scope drift still fail. Hosted release and CSP/ISR evidence remain independently required."
+lastReviewedAt: "2026-10-11"
+lastReviewedCommit: "0e4db91f6a6672676f28ce36d1c42c1a584c93cd"
+lastReviewedNote: "Portal #143: reviewed the local Atlas all-brand shortcut; existing backend configuration, normal dev defaults, ownership and delivery requirements are unchanged."
 
 catalog:
   repos:

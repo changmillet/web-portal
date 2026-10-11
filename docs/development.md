@@ -59,6 +59,8 @@ The public `lca-database` entry is exercised by `tests/e2e/database-guide.spec.t
 
 ## Brand presentations
 
+For the local Atlas preview with all four data brands, run `pnpm local:atlas`. The shortcut sets `PORTAL_BRAND=atlas`, `PORTAL_DATA_BRANDS=tiangong_lca,bafu,uslci,worldsteel` and `SITE_URL=http://localhost:3000` for both the existing `dev` script and its `predev` asset generation. It listens only on `127.0.0.1:3000` and retains the backend configuration from `.env.local` without editing it. Stop an existing server on that port before starting the shortcut. Use ordinary `pnpm dev` for custom scope or port settings.
+
 Use `PORTAL_BRAND=atlas pnpm dev` or `PORTAL_BRAND=atlas pnpm build` for Atlas; omit the selector for TianGong. Remove explicit TianGong brand overrides from the environment when using Atlas defaults. The brand CSS generator and Next configuration use the same validated selector. `PORTAL_BRAND` is bound into Next's build configuration; changing a running process variable does not switch an already built site's identity. Build each deployment independently and keep its CSS, HTML and server bundle together. Do not run two brand builds concurrently in the same checkout: generated CSS and `.next` are shared build outputs.
 
 Use the same exact source commit for paired brand releases, with separate public origins, build outputs and deployment receipts. Backend connection/feature settings must be verified independently of branding. Adding a brand means extending the closed selector, its presentation modules and localized copy, and the two-brand test matrix; do not fork routes, business rules or server adapters.

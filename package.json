@@ -11,6 +11,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "local:atlas": "node scripts/local-atlas.mjs",
     "build": "next build",
     "start": "next start",
     "storybook": "storybook dev -p 6006 --host 127.0.0.1 --exact-port --no-open",

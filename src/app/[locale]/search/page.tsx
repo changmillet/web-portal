@@ -1,6 +1,7 @@
 import { SavedDatasetsLink } from "@/features/collections/saved-datasets";
 import { readPortalServerBrandScope } from "@/server/data/environment";
 import { dataBrandNames } from "@/config/data-brands";
+import { catalogCoverage } from "@/config/catalog-coverage";
 import { CatalogFacetResults } from "@/features/catalog/catalog-facet-results";
 import { CatalogKindSwitch } from "@/features/catalog/catalog-kind-switch";
 import { CatalogPagination } from "@/features/catalog/catalog-pagination";
@@ -437,6 +438,7 @@ export default async function SearchPage({
                     locale={locale}
                     kind={parsedSearch.kind}
                     counts={navigation?.totals ?? null}
+                    coverage={catalogCoverage(readPortalServerBrandScope())}
                   />
                 </>
               ) : (

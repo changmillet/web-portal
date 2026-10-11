@@ -621,7 +621,8 @@
     "platformTitle": "From finding data to modeling and analysis.",
     "platformDescription": "Explore datasets in the catalog, then use the TianGong LCA platform for life cycle modeling and impact assessment.",
     "databaseAction": "Explore the TianGong LCA database",
-    "coverageNote": "Region and source counts as of {date}."
+    "regionCount": "{count} geographies",
+    "sourceCount": "{count} sources"
   },
   "Navigation": {
     "classification": "Browse categories",

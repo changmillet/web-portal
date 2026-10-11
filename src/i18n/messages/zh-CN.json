@@ -621,7 +621,8 @@
     "platformTitle": "从数据查找，走向建模与分析。",
     "platformDescription": "在数据目录查阅记录，在天工 LCA 平台开展生命周期建模与环境影响评价。",
     "databaseAction": "了解天工 LCA 数据库",
-    "coverageNote": "地区与来源数量截至 {date}。"
+    "regionCount": "{count} 个地区",
+    "sourceCount": "{count} 个来源"
   },
   "Navigation": {
     "classification": "按分类浏览",

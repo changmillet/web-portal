@@ -621,7 +621,8 @@
     "platformTitle": "Von der Datensuche zur Modellierung und Analyse.",
     "platformDescription": "Erkunden Sie Datensätze im Katalog und nutzen Sie die TianGong LCA-Plattform für Lebenszyklusmodellierung und Wirkungsabschätzung.",
     "databaseAction": "Die TianGong-Ökobilanz-Datenbank entdecken",
-    "coverageNote": "Regions- und Quellenzahlen vom {date}."
+    "regionCount": "{count} Regionen",
+    "sourceCount": "{count} Quellen"
   },
   "Navigation": {
     "classification": "Kategorien durchsuchen",

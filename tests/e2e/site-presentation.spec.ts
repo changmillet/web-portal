@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { atlasInformation, lifeCycleInitiativeUrl } from "../../src/sites/atlas/information";
+import { catalogCoverage } from "../../src/config/catalog-coverage";
+import { readPortalDataBrandScope } from "../../src/config/data-brands";
+import { siteMessages } from "../../src/sites/messages";
 import { atlasCopy } from "../../src/sites/atlas/copy";
 import { locales } from "../../src/i18n/routing";
 import en from "../../src/i18n/messages/en.json" with { type: "json" };
@@ -34,6 +38,15 @@ test.describe("site presentation", () => {
         expect(structured).toContain('"name":"Atlas"');
         expect(structured).not.toContain('"@type":"Organization"');
         await expect(page.locator(".brand-cinematic-hero")).toHaveCount(0);
+      }
+      const coverage = catalogCoverage(readPortalDataBrandScope(process.env));
+      if (coverage) {
+        const index = page.locator(site === "atlas" ? ".atlas-index-grid" : ".brand-catalog-index");
+        for (const dimension of ["region", "source"] as const) {
+          await expect(index.locator(`a[href$="explore=${dimension}"]`)).toContainText(
+            String(coverage[dimension]),
+          );
+        }
       }
       const manifest = await (await page.request.get("/manifest.webmanifest")).json();
       expect(manifest.name).toContain(identity);
@@ -77,6 +90,60 @@ test.describe("site presentation", () => {
       }
     });
   }
+
+  for (const locale of locales) {
+    test(`${site} ${locale} informational pages retain their own identity`, async ({
+      page,
+    }, testInfo) => {
+      const messages = siteMessages(dictionaries[locale], locale, site);
+      for (const path of ["team", "community", "methodology", "lca-database"]) {
+        await page.goto(`/${locale}/${path}`);
+        await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+        if (site === "atlas") {
+          await expect(page.locator("body")).not.toContainText(/tiangong|天工|\bGLAD\b/i);
+          await expect(
+            page.locator('a[href*="tiangong"], a[href^="mailto:"], img[src*="team"]'),
+          ).toHaveCount(0);
+          await expect(
+            page.getByRole("contentinfo").getByRole("link", { name: /Life Cycle Initiative/ }),
+          ).toHaveAttribute("href", lifeCycleInitiativeUrl);
+          if (path === "team")
+            await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+              atlasInformation[locale].team.title,
+            );
+        } else if (path === "team") {
+          await expect(page.locator('a[href="mailto:contact@tiangong.earth"]')).toBeVisible();
+          await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.Team.kicker);
+        }
+        for (const width of [390, 1440]) {
+          await page.setViewportSize({ width, height: 900 });
+          expect(
+            await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+          ).toBe(true);
+          if (locale === "en")
+            await page.screenshot({
+              path: testInfo.outputPath(`${site}-${path}-${width}.png`),
+              fullPage: true,
+            });
+        }
+        expect(
+          (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze())
+            .violations,
+        ).toEqual([]);
+      }
+    });
+  }
+
+  test(`${site} exports a collection under its own brand`, async ({ page }) => {
+    await page.goto("/en/collections");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Data collections");
+    await page.locator(".collection-add-shell > summary").click();
+    await page.getByPlaceholder("uuid@version").fill(processRef);
+    await page.getByRole("button", { name: "Add to collection", exact: true }).click();
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Export collection", exact: true }).click();
+    expect((await downloadPromise).suggestedFilename()).toBe(`${site}-collection.json`);
+  });
 
   test(`${site} preserves public exact-version detail and catalog actions`, async ({ page }) => {
     await page.goto("/en/search?v=1&kind=process&q=electricity");

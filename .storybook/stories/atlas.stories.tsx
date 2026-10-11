@@ -39,7 +39,12 @@ const meta = {
   tags: ["!autodocs"],
   parameters: { pageLayout: true },
   globals: { site: "atlas", locale: "en", viewport: { value: "desktop", isRotated: false } },
-  args: { locale: "en", summary: null, counts: { process: 12480, flow: 3860 } },
+  args: {
+    coverage: { region: 226, source: 38, asOf: "2026-10-11" },
+    locale: "en",
+    summary: null,
+    counts: { process: 12480, flow: 3860 },
+  },
   beforeEach({ globals }) {
     usePathname.mockReturnValue(`/${storyLocale(globals)}`);
     return () => usePathname.mockReset();
@@ -66,6 +71,7 @@ const meta = {
       "href",
       `/${locale}/search?v=1`,
     );
+    await expect(canvasElement.textContent).not.toMatch(/tiangong|天工|\bGLAD\b/i);
     await expect(canvasElement.querySelector(".brand-cinematic-hero")).toBeNull();
     await expect(
       canvas.getByRole("link", { name: dictionaries[locale].Common.databases }),

@@ -34,7 +34,7 @@ const summaries = http.post("*/internal/dataset-summaries", async ({ request }) 
 });
 
 const meta = {
-  title: "Shortlist/Workspace",
+  title: "Collections/Workspace",
   component: CollectionsWorkspace,
   subcomponents: { CollectionsPageView },
   tags: ["!autodocs"],
@@ -299,4 +299,13 @@ export const MobileGermanImport: Story = {
 export const DarkFrenchSharing: Story = {
   ...CancelSharingNotes,
   globals: { ...mobileGlobals, locale: "fr", theme: "dark" },
+};
+
+export const Atlas: Story = {
+  globals: { site: "atlas", locale: "en" },
+  parameters: { populated: true },
+};
+export const AtlasMobileDark: Story = {
+  globals: { site: "atlas", locale: "fr", theme: "dark", ...mobileGlobals },
+  parameters: { populated: true },
 };

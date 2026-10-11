@@ -39,7 +39,9 @@ describe("deployment-owned site presentation", () => {
       expect(atlas.BrandHome.metadataTitle).toBe(atlasCopy[locale].metadataTitle);
       expect(Object.keys(atlas)).toEqual(Object.keys(base));
       expect(Object.keys(atlas.BrandHome)).toEqual(Object.keys(base.BrandHome));
-      expect(atlas.Team).toBe(base.Team);
+      expect(atlas.Team.metadataTitle).not.toBe(base.Team.metadataTitle);
+      expect(atlas.Methodology.description).toMatch(/UNEP|PNUE/);
+      expect(atlas.DatabaseGuide.description).not.toMatch(/tiangong|天工/i);
       expect(atlas.Detail).toBe(base.Detail);
       expect(atlas.Compare).toBe(base.Compare);
       expect(siteMessages(base, locale, "tiangong")).toBe(base);

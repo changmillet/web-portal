@@ -44,7 +44,7 @@ const meta = {
       },
     },
   },
-  args: { summary, locale: "zh-CN" },
+  args: { coverage: { region: 154, source: 35, asOf: "2026-10-11" }, summary, locale: "zh-CN" },
   globals: { viewport: { value: "desktop", isRotated: false } },
   beforeEach({ globals }) {
     const key = "tiangong.portal.theme.v1";

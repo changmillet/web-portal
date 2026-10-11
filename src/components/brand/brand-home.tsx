@@ -1,3 +1,4 @@
+import type { CatalogCoverage } from "@/config/catalog-coverage";
 import type { ReactNode } from "react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
 import { getTranslations } from "next-intl/server";
@@ -16,6 +17,7 @@ import "./brand-home.css";
 export type BrandHomeProps = {
   locale: PortalLocale;
   summary: PublicCatalogSummary | null;
+  coverage?: CatalogCoverage | null;
   counts?: { process: number; flow: number } | null;
   /** Optional isolated-review replacement for the production first-screen hero. */
   hero?: ReactNode;
@@ -25,7 +27,7 @@ export type BrandHomeProps = {
  * The public brand entrance, with server-rendered search, catalog and product navigation.
  * @import import { BrandHome } from "@/components/brand/brand-home";
  */
-export async function BrandHome({ locale, summary, hero, counts }: BrandHomeProps) {
+export async function BrandHome({ locale, summary, hero, counts, coverage }: BrandHomeProps) {
   const [t, catalog] = await Promise.all([
     getTranslations({ locale, namespace: "BrandHome" }),
     getTranslations({ locale, namespace: "Home" }),
@@ -63,7 +65,7 @@ export async function BrandHome({ locale, summary, hero, counts }: BrandHomeProp
         aria-labelledby="explore-title"
       >
         <div className="brand-container">
-          {await CatalogSearchEntry({ locale, number: "02", counts })}
+          {await CatalogSearchEntry({ locale, number: "02", counts, coverage })}
           <p className="mb-6">
             <Link
               className="text-foreground underline underline-offset-4"

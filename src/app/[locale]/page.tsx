@@ -1,3 +1,5 @@
+import { catalogCoverage } from "@/config/catalog-coverage";
+import { readPortalServerBrandScope } from "@/server/data/environment";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -63,7 +65,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           __html: JSON.stringify(portalWebsiteJsonLd()).replace(/</g, "\\u003c"),
         }}
       />
-      <SiteHome locale={locale} summary={summary} counts={navigation?.totals ?? null} />
+      <SiteHome
+        locale={locale}
+        summary={summary}
+        counts={navigation?.totals ?? null}
+        coverage={catalogCoverage(readPortalServerBrandScope())}
+      />
     </>
   );
 }

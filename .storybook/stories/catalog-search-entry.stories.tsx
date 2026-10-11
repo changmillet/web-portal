@@ -22,7 +22,11 @@ const meta = {
     CatalogSearchInput,
     SearchResults,
   },
-  args: { locale: "zh-CN", counts: { process: 17299, flow: 83012 } },
+  args: {
+    coverage: { region: 154, source: 35, asOf: "2026-10-11" },
+    locale: "zh-CN",
+    counts: { process: 17299, flow: 83012 },
+  },
   parameters: { pageLayout: true },
   play: async ({ args, canvasElement }) => {
     if (args.number) {

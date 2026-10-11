@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-10-10
-lastReviewedCommit: ed8596e8f474bff3b1f737fe1e3d441591371444
-lastReviewedNote: "Portal #139: reviewed exact Database contract snapshot, deployment-scope parser and routing; approved display policy is documented, with live cutover still pending."
+lastReviewedAt: 2026-10-11
+lastReviewedCommit: 8bd7f3d36e632b6acc948dab51b10764ac3f2e33
+lastReviewedNote: "Portal #145: reviewed independent brand content, collection naming and static scope coverage; repository ownership and delivery requirements remain unchanged."
 related:
   - docs/development.md
   - docs/ui-system.md
@@ -28,7 +28,7 @@ related:
 
 # tiangong-lca-portal
 
-天工 LCA 公共数据门户 —— 面向生命周期评价研究与实践的匿名、只读数据目录。
+面向生命周期评价研究与实践的匿名、只读数据目录。共享实现支持 Tiangong LCA 与 Atlas 两套独立品牌内容；Atlas 介绍 UNEP 的 Life Cycle Initiative，Tiangong 保留自己的团队与社区。
 
 ## 定位
 
@@ -37,7 +37,7 @@ Portal 以数据发现为首要任务：
 - **数据库使用入口**：`/:locale/lca-database` 介绍记录种类、数据选择、版本引用与获取条件，并连接使用文档、TIDAS、PCR 和 ILCD 分发节点。
 - **搜索与浏览优先**：按名称、UUID、CAS 号、分类、对象类型、地区或来源进入公开目录。
 - **使用背景完整**：记录页同时提供版本、适用范围、来源、许可、方法、质量与可用结果，缺失内容不补写或补零。
-- **匿名只读**：无需注册即可使用公共查询、详情、比较、引用与本地候选清单；浏览器不持有 Supabase 或 HMAC 凭据。
+- **匿名只读**：无需注册即可使用公共查询、详情、比较、引用与本地数据清单；浏览器不持有 Supabase 或 HMAC 凭据。
 - **谨慎比较**：只有现有公开字段中的功能单位、方法、地区、时间和 publication 背景满足条件时，才并列展示数值；系统边界与研究适用性仍需使用者核对，不能把字段一致当作科学审查结论。
 
 ## 技术形态

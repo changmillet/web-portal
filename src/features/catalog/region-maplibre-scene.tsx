@@ -212,9 +212,10 @@ function parseGeometry(value: unknown): RegionMapGeometry {
   return value as unknown as RegionMapGeometry;
 }
 
-/** Anonymous, same-origin, public reads only; the raw bytes stay capped like the SVG pipeline. */
+/** Public static geometry only. Keep same-origin infrastructure preview cookies;
+ * the caller rejects foreign origins and the raw bytes stay capped like the SVG pipeline. */
 async function fetchGeometry(url: string, signal: AbortSignal): Promise<RegionMapGeometry> {
-  const response = await fetch(url, { signal, credentials: "omit" });
+  const response = await fetch(url, { signal, credentials: "same-origin" });
   if (!response.ok) throw new Error(`Geometry unavailable: ${response.status}`);
   const text = await response.text();
   if (new TextEncoder().encode(text).length > MAX_GEOMETRY_BYTES)

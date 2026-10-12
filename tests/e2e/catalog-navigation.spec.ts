@@ -575,6 +575,58 @@ test("loads only the visible map level and serves the hashed map assets immutabl
   expect(foreign).toEqual([]);
 });
 
+test("protected preview geometry uses same-origin cookies and recovers after authorization", async ({
+  page,
+  context,
+}) => {
+  const allowed: string[] = [];
+  let denied = 0;
+  // Model an infrastructure preview gate, not a Portal user session. Read the
+  // browser's actual Cookie header; injecting it into route.continue hides regressions.
+  await page.route("**/maps/gl/*.json", async (route) => {
+    const cookie = await route.request().headerValue("cookie");
+    if (!cookie?.split(";").some((part) => part.trim() === "preview_fixture=allowed")) {
+      denied += 1;
+      await route.fulfill({
+        status: 401,
+        contentType: "text/html",
+        headers: { "cache-control": "no-store" },
+        body: "Preview authorization required",
+      });
+      return;
+    }
+    allowed.push(new URL(route.request().url()).pathname);
+    await route.continue();
+  });
+  await page.goto("/en/search?explore=region");
+  await expect(page.getByRole("button", { name: "Reload map", exact: true })).toBeVisible();
+  expect(denied).toBeGreaterThan(0);
+  await expect(
+    page.locator(".catalog-navigation-list").getByRole("link", { name: /China/ }),
+  ).toBeVisible();
+
+  await context.addCookies([
+    {
+      name: "preview_fixture",
+      value: "allowed",
+      url: new URL(page.url()).origin,
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
+  await page.getByRole("button", { name: "Reload map", exact: true }).click();
+  await expectLevel(page, "world");
+  expect(allowed).toContain(WORLD.url);
+  await showFlatMap(page);
+  await page.locator(".catalog-navigation-list").getByRole("link", { name: /China/ }).click();
+  await expectLevel(page, "geo:cn");
+  expect(allowed).toContain(CHINA.url);
+  await page.getByRole("radio", { name: "Region list", exact: true }).click();
+  await expect(
+    page.locator(".catalog-navigation-list").getByRole("link", { name: /CN-AH/ }),
+  ).toBeVisible();
+});
+
 test("legend, sources and explanation stay responsive while the map is shown", async ({ page }) => {
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });

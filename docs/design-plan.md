@@ -24,7 +24,7 @@ checkPaths:
   - edgeone.json
 lastReviewedAt: 2026-10-12
 lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
-lastReviewedNote: "Portal #151: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, and Atlas navigation progress contrast."
+lastReviewedNote: "Portal #151/#152: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, Atlas navigation progress contrast, and same-origin map geometry credentials for infrastructure-protected previews; Portal remains anonymous with unchanged CSP and map fallback behavior."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -1496,6 +1496,8 @@ Portal 已在 workspace delivery profile 中注册为 `portal`，所有新工作
 内部分类适配器请求上限 8 KiB，响应上限 64 KiB，只返回当前语言的标签和数量，不重复传递完整查询链接。它与 RSC 共用现有输入验证、标签和导航链接规则。POST envelope 不缓存为 CDN 页面，底层公共 navigation/search/facets 数据仍缓存 30 秒；客户端按类型、查询、筛选、语言、父节点及游标去重并短暂缓存，不持久化查询。所有大量导航链接关闭自动预取。原生分类/地区链接、范围入口和续页在无 JavaScript 下可用。
 
 MapLibre 替换生产 SVG 展示，提供地球、平面和列表三种模式。地球静止朝向东亚及西太平洋，平面世界以太平洋居中；世界、中国、省内城市共享相机，在推进时逐渐转为平面。首帧和减少动态效果直接定位；普通下钻动画约 850ms。手机默认列表，启用地图后协作手势保留页面滚动。名称、精确数量和操作使用水平 HTML，浅海色/陆地/行政线提供地理背景，不加光照、地形或自动旋转干扰数量填色。
+
+地图 GeoJSON 读取只允许同源 URL，使用 `credentials: "same-origin"` 保留部署平台已有的预览访问 Cookie；不创建 Portal 用户会话，不读取、复制或向其他来源转发 Cookie。公开站点仍支持无 Cookie 读取。保留响应体积、结构校验及失败后的列表与重试；不能通过放开跨源请求或关闭预览访问控制修复部署兼容问题。
 
 生产几何与自托管 ES worker 由 `scripts/maps/build-maplibre-maps.mjs` 从现有 receipted sources 离线生成，输出到散列命名的 `public/maps/gl`，与词表、身份、来源摘要和构建参数绑定。每层 GeoJSON 最多 150 KiB gzip；MapLibre 运行代码按需加载，用户已解除原有 30 KiB 增量限制，但首页 120 KiB、搜索页 250 KiB 首屏 JavaScript 预算仍然适用。首页和普通搜索不下载地图、worker 或图表；不使用第三方瓦片服务或 MapTiler 账号。生成器及 Mapshaper 不进入浏览器。
 

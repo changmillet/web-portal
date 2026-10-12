@@ -30,7 +30,7 @@ export async function FacetsPanel({
     getTranslations({ locale, namespace: "Search" }),
     getTranslations({ locale, namespace: "Common" }),
   ]);
-  const facetLabels = [t("objectType"), t("access"), t("region"), t("year"), t("source")];
+  const facetLabels = [t("objectType"), t("access"), t("region"), t("year")];
   return (
     <Card size="sm">
       <CardHeader data-facet-intro>
@@ -47,7 +47,10 @@ export async function FacetsPanel({
       <CardContent className="flex flex-col gap-4">
         {facets
           ? facets.groups
-              .filter((group) => group.id !== "brand" || allowedBrandCodes.length > 1)
+              .filter(
+                (group) =>
+                  group.id !== "source" && (group.id !== "brand" || allowedBrandCodes.length > 1),
+              )
               .map((group) => {
                 const normalizedGroup = group.id.toLowerCase().replaceAll(/[^a-z]/g, "");
                 const renderValue = (value: (typeof group.values)[number]) => {

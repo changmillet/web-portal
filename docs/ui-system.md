@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-11
-lastReviewedCommit: 7f66e19ccc06c076f367a78bc8c4d0ba635b986b
+lastReviewedAt: 2026-10-12
+lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #147: reviewed secondary Saved entry, inline persistence and sharing terminology; carries forward #145: reviewed independent Atlas institutional/community content, collection terminology, scoped static coverage counts, and four-locale responsive review; TianGong roster and shared scientific data remain unchanged."
+lastReviewedNote: "Portal #151: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, and Atlas navigation progress contrast."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -48,7 +48,9 @@ TianGong 的以下既有视觉要求继续适用于其展示层。Atlas 独立�
 
 Atlas header 使用“Your Map to LCA Data”及四语译文。首页、机构、社区与说明页面的站点介绍、页脚和外链不显示 Tiangong 或 GLAD；实际数据出处不受此约束。Atlas 资源入口指向 UNEP 官方 Life Cycle Initiative 介绍。
 
-两品牌共用 Saved datasets / 已保存的数据集的交互与存储；导出文件使用当前品牌前缀。保留现有单清单、旧分享链接、导入备份及明确确认后才分享备注的行为。首页与目录初始页的四个探索入口均显示数量：过程和流继续使用实时公共版本总数，地区与来源使用按数据范围匹配的静态快照。共享卡片的地区与来源数字带四语单位，快照日期仅保留于配置和开发记录，不在前台展示。
+两品牌共用 Saved datasets / 已保存的数据集的交互与存储；导出文件使用当前品牌前缀。保留现有单清单、旧分享链接、导入备份及明确确认后才分享备注的行为。首页与目录初始页的三个探索入口均显示数量：过程和流继续使用实时公共版本总数，地区使用按数据范围匹配的静态快照。共享卡片的地区数字带四语单位，快照日期仅保留于配置和开发记录，不在前台展示。
+
+目录探索仅提供 Process、Flow、地区入口；来源选择控件和 Sources 浏览入口不再展示，详情中的原始来源与出处保留，数据库品牌筛选保持独立。Atlas 顶部 loading 条使用独立 `--route-progress` 语义色，在浅深主题均采用 `--atlas-gold`，对应固定海军蓝 header；保留 150ms 延迟及减少动态效果。
 
 ## 设计方向
 
@@ -56,7 +58,7 @@ Atlas header 使用“Your Map to LCA Data”及四语译文。首页、机构�
 
 公开首页采用“精密科技”品牌方向：以滚动驱动的抽象工业影像建立 Tiangong LCA 识别，用明确标题和连续分区连接数据与产品平台。搜索、详情、浏览与清单继续采用“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先。品牌首页不覆盖这些数据任务页面的布局。
 
-可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
+可识别的核心元素是连续目录索引：Process、Flow、地区共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
 
 品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。目录任务页面不加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。品牌首页的几何与专属材质按下述已采纳组件要求实现；任何页面都不编造统计或产品能力。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
 
@@ -343,4 +345,4 @@ Header 与 Footer 的容器宽度、响应式边距及字体由 `src/components/
 
 ### 保存数据的次级入口（Portal #147）
 
-两品牌的主导航不再显示 Collections。搜索、过程/流、地区与来源浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。
+两品牌的主导航不再显示 Collections。搜索、过程/流与地区浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。

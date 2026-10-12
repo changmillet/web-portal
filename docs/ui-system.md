@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-12
-lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
+lastReviewedCommit: e9bb2450eafbdbec6ac548447f69fe40e671880a
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #151: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, and Atlas navigation progress contrast."
+lastReviewedNote: "Portal #155: reviewed Atlas desktop navigation horizontal inset and inter-link spacing; active underline, native navigation, keyboard focus and mobile scrolling remain unchanged."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -346,3 +346,5 @@ Header 与 Footer 的容器宽度、响应式边距及字体由 `src/components/
 ### 保存数据的次级入口（Portal #147）
 
 两品牌的主导航不再显示 Collections。搜索、过程/流与地区浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。
+
+Atlas 桌面页头导航的 hover 底色、焦点边界与可点击区域共用带左右内边距的链接盒子，编号和文字不贴边；按钮间隙与内部留白分别设置。当前页保留金色下划线，手机保留水平滚动与紧凑内边距。

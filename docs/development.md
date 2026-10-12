@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-10-12
-lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
+lastReviewedCommit: e9bb2450eafbdbec6ac548447f69fe40e671880a
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #147: saved-dataset browser scenarios cover both brands in CI; Storybook exercises inline saving, legacy storage and failure states. No toolchain changes."
+lastReviewedNote: "Portal #155: reviewed focused Atlas navigation hover/focus stories in light, dark and mobile German; existing Storybook workflow and toolchain remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

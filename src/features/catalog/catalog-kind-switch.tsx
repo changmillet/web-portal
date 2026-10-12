@@ -13,13 +13,13 @@ export function CatalogKindSwitch({
   counts?: { process: string; flow: string };
   value: string;
   label: string;
-  labels: { process: string; flow: string; region?: string; source?: string };
-  hrefs?: { process: string; flow: string; region?: string; source?: string };
+  labels: { process: string; flow: string; region?: string };
+  hrefs?: { process: string; flow: string; region?: string };
   onChange?: (kind: "process" | "flow") => void;
 }) {
   return (
     <fieldset aria-label={label} className="catalog-kind-switch flex flex-wrap gap-5">
-      {(["process", "flow", "region", "source"] as const)
+      {(["process", "flow", "region"] as const)
         .filter((kind) => labels[kind])
         .map((kind) =>
           hrefs ? (

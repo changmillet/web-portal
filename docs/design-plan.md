@@ -24,7 +24,7 @@ checkPaths:
   - edgeone.json
 lastReviewedAt: 2026-10-12
 lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
-lastReviewedNote: "Portal #152: reviewed same-origin geometry credentials for infrastructure-protected previews; Portal remains anonymous, with unchanged CSP, public data, map assets and fallback behavior."
+lastReviewedNote: "Portal #151/#152: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, Atlas navigation progress contrast, and same-origin map geometry credentials for infrastructure-protected previews; Portal remains anonymous with unchanged CSP and map fallback behavior."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -362,7 +362,7 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 首页采用滚动驱动的抽象工业影像作为品牌首屏，按三层组织：
 
 1. Tiangong LCA 品牌与三幕生命周期叙事；首屏不放操作按钮，目录与产品平台入口在后续实际内容区出现；
-2. 打字机示例作为数据目录入口，点击后进入可输入的搜索页；示例不自动提交或声称来自实时查询。Process、Flow、地区与来源四个入口进入同一目录结果布局；
+2. 打字机示例作为数据目录入口，点击后进入可输入的搜索页；示例不自动提交或声称来自实时查询。Process、Flow、地区三个入口进入同一目录结果布局；
 3. 数据的范围、来源、版本、引用与已发布结果说明，以及独立 LCA 平台入口。
 
 品牌影像是视觉隐喻，不提供数据覆盖、计算、排名或科学证据。首页不编造伙伴、统计或 AI 功能，也不以虚构数字补充。
@@ -373,9 +373,11 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 ### 7.2 搜索页
 
-结果采用共享单列记录行，筛选统一放入 Sheet，工具栏集中种类、筛选和排序。地区与来源展示聚合入口，点击后进入过滤后的记录列表；旧浏览路由保留兼容。精确版本选择托盘固定在下方，说明已选数量并可展开名称和版本；所有尺寸上限均为 4 个。导航使用不透明层，Sheet 位于导航之上，锚点滚动按实际导航高度留出空间。
+Sources 目录、首页/搜索/数据库指南入口及新来源筛选不再展示。旧 `browse/source` 跳转同语言数据目录，旧 `explore=source` 去掉探索维度并保留已验证的查询/筛选。已分享的显式 `source` 筛选仍可读取及移除，原始来源与出处继续在数据详情显示。Database 契约与数据不变。
 
-搜索按钮旁的图标菜单提供“关键词或编号”与“描述需求”两个模式，共用输入框和结果行。显式探索目录允许无关键词浏览；未选择探索、关键词为空且没有筛选时展示初始入口。关键词为空且没有任何显式筛选条件时才是未提交状态，不发起空查询 RPC，也不显示后端不可用；由地区或来源目录进入的 filter-only URL 是有效查询，必须展示命中结果。切换类型、筛选、普通查询和续页保留仍适用的条件；Flow 去掉 Process subtype。只有实际读取失败才显示不可用提示。
+结果采用共享单列记录行，筛选统一放入 Sheet，工具栏集中种类、筛选和排序。地区展示聚合入口，点击后进入过滤后的记录列表；旧浏览路由保留兼容。精确版本选择托盘固定在下方，说明已选数量并可展开名称和版本；所有尺寸上限均为 4 个。导航使用不透明层，Sheet 位于导航之上，锚点滚动按实际导航高度留出空间。
+
+搜索按钮旁的图标菜单提供“关键词或编号”与“描述需求”两个模式，共用输入框和结果行。显式探索目录允许无关键词浏览；未选择探索、关键词为空且没有筛选时展示初始入口。关键词为空且没有任何显式筛选条件时才是未提交状态，不发起空查询 RPC，也不显示后端不可用；由地区目录或旧来源分享链接进入的 filter-only URL 是有效查询，必须展示命中结果。切换类型、筛选、普通查询和续页保留仍适用的条件；Flow 去掉 Process subtype。只有实际读取失败才显示不可用提示。
 
 搜索流程：
 
@@ -1545,4 +1547,4 @@ Atlas 面向 UNEP 的全球生命周期评价数据发现场景；对外不出�
 
 ### 保存数据的次级入口（Portal #147）
 
-两品牌的主导航不再显示 Collections。搜索、过程/流、地区与来源浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。
+两品牌的主导航不再显示 Collections。搜索、过程/流与地区浏览的工具区提供书签图标和“已保存（数量）”；空列表仍可进入，存储不可读取时不编造零值。页面内部使用 Saved datasets / 已保存的数据集标题，主要分享动作使用 Share datasets / 分享数据集。结果和详情原地保存精确类型/版本，成功后显示已保存，点击已保存进入整理页面；写入失败不显示成功，不覆盖损坏数据。既有 `/collections` 路由、V1/V2 存储、备份和 fragment 分享协议保持兼容。新增功能不接入 KV、Redis 或后端存储。

@@ -163,7 +163,7 @@
 }
 .brand-catalog-index {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-block: 1px solid var(--brand-line);
 }
 .brand-catalog-link {

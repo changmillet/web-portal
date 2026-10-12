@@ -13,7 +13,7 @@ import { ArrowLeftIcon, ArrowRightIcon, SearchIcon, XIcon } from "lucide-react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { CatalogSearchEntry } from "@/components/brand/catalog-search-entry";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -112,19 +112,21 @@ export default async function SearchPage({
     inputInvalid = true;
   }
 
+  if (rawSearchParams.explore === "source") redirect(searchHref(locale, parsedSearch, null));
+
   const dimension =
     typeof rawSearchParams.explore === "string" &&
-    ["process", "flow", "region", "source"].includes(rawSearchParams.explore)
+    ["process", "flow", "region"].includes(rawSearchParams.explore)
       ? rawSearchParams.explore
       : parsedSearch.kind;
   if (dimension === "process" || dimension === "flow")
     parsedSearch = { ...parsedSearch, kind: dimension };
-  const aggregateView = dimension === "region" || dimension === "source";
+  const aggregateView = dimension === "region";
   const query = parsedSearch.query;
   const hasQuery =
     Boolean(
       rawSearchParams.explore &&
-      ["process", "flow", "region", "source"].includes(String(rawSearchParams.explore)),
+      ["process", "flow", "region"].includes(String(rawSearchParams.explore)),
     ) ||
     Boolean(browseKind) ||
     rawSearchParams.kind === "process" ||
@@ -137,7 +139,6 @@ export default async function SearchPage({
     getTranslations({ locale, namespace: "Common" }),
     getTranslations({ locale, namespace: "CatalogReference" }),
   ]);
-  const home = await getTranslations({ locale, namespace: "Home" });
   const navigationT = await getTranslations({ locale, namespace: "Navigation" });
   const hierarchyDimension = dimension === "region" ? "geography" : "classification";
   const parentNodeId =
@@ -149,21 +150,20 @@ export default async function SearchPage({
     typeof rawNavCursor === "string" && /^[A-Za-z0-9_-]{1,4096}$/u.test(rawNavCursor)
       ? rawNavCursor
       : null;
-  const navigationPromise: Promise<PublicNavigation | null> =
-    inputInvalid || dimension === "source"
-      ? Promise.resolve(null)
-      : getPublicNavigation({
-          kind: hasQuery ? parsedSearch.kind : "all",
-          query: parsedSearch.query,
-          filters: hierarchyFilters(parsedSearch, hierarchyDimension),
-          dimension: hierarchyDimension,
-          parentNodeId,
-          cursor: navCursor,
-          limit: hierarchyDimension === "geography" ? 500 : 50,
-        }).catch((error: unknown) => {
-          if (error instanceof PortalDataError) return null;
-          throw error;
-        });
+  const navigationPromise: Promise<PublicNavigation | null> = inputInvalid
+    ? Promise.resolve(null)
+    : getPublicNavigation({
+        kind: hasQuery ? parsedSearch.kind : "all",
+        query: parsedSearch.query,
+        filters: hierarchyFilters(parsedSearch, hierarchyDimension),
+        dimension: hierarchyDimension,
+        parentNodeId,
+        cursor: navCursor,
+        limit: hierarchyDimension === "geography" ? 500 : 50,
+      }).catch((error: unknown) => {
+        if (error instanceof PortalDataError) return null;
+        throw error;
+      });
   const classificationPromise =
     !inputInvalid && !aggregateView && hasQuery
       ? navigationPromise.then((page) => classificationSeeds(locale, parsedSearch, page, navCursor))
@@ -223,10 +223,7 @@ export default async function SearchPage({
         (hasNavigationFilters(parsedSearch.filters) ? getPublicBrowseFacets : getPublicFacets)(
           {
             filters: parsedSearch.filters,
-            kind:
-              dimension === "source" && !parsedSearch.filters.processSubtype
-                ? "all"
-                : parsedSearch.kind,
+            kind: parsedSearch.kind,
             query,
           },
           undefined,
@@ -481,13 +478,11 @@ export default async function SearchPage({
                                 process: common("process"),
                                 flow: common("flow"),
                                 region: t("region"),
-                                source: home("browseSource"),
                               }}
                               hrefs={{
                                 process: facetHref(locale, parsedSearch, "kind", "process")!,
                                 flow: facetHref(locale, parsedSearch, "kind", "flow")!,
                                 region: `${searchHref(locale, parsedSearch, null)}&explore=region`,
-                                source: `${searchHref(locale, parsedSearch, null)}&explore=source`,
                               }}
                             />
                           </>
@@ -622,15 +617,6 @@ export default async function SearchPage({
                               />
                             )}
                           </RegionExplorer>
-                        ) : aggregateView ? (
-                          <CatalogFacetResults
-                            dimension={dimension}
-                            facets={facets}
-                            locale={locale}
-                            input={parsedSearch}
-                            emptyLabel={t("emptyDescription")}
-                            moreLabel={t("filtersDescription")}
-                          />
                         ) : (
                           <CompareSelectionForm action={localePath(locale, "compare")}>
                             <input name="v" type="hidden" value="1" />

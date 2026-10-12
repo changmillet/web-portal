@@ -22,16 +22,20 @@ test.describe("site presentation", () => {
       await page.goto(`/${locale}/search?v=1`);
       const coverage = catalogCoverage(readPortalDataBrandScope(process.env));
       const index = page.locator(".brand-catalog-index");
-      await expect(index.getByRole("link")).toHaveCount(4);
-      for (const dimension of ["region", "source"] as const) {
+      await expect(index.getByRole("link")).toHaveCount(3);
+      await expect(page.locator('a[href*="explore=source"], a[href*="browse/source"]')).toHaveCount(
+        0,
+      );
+      for (const dimension of ["region"] as const) {
         const card = index.locator(`a[href$="explore=${dimension}"]`);
         await expect(card).toHaveAttribute("href", `/${locale}/search?v=1&explore=${dimension}`);
         // The shared component story already supplies coverage; this must exercise the route.
         if (coverage) {
           await expect(card).toContainText(
-            dictionaries[locale].BrandHome[
-              dimension === "region" ? "regionCount" : "sourceCount"
-            ].replace("{count}", new Intl.NumberFormat(locale).format(coverage[dimension])),
+            dictionaries[locale].BrandHome["regionCount"].replace(
+              "{count}",
+              new Intl.NumberFormat(locale).format(coverage[dimension]),
+            ),
           );
         }
       }
@@ -77,7 +81,7 @@ test.describe("site presentation", () => {
       if (coverage) {
         await expect(page.getByText(coverage.asOf, { exact: false })).toHaveCount(0);
         const index = page.locator(site === "atlas" ? ".atlas-index-grid" : ".brand-catalog-index");
-        for (const dimension of ["region", "source"] as const) {
+        for (const dimension of ["region"] as const) {
           await expect(index.locator(`a[href$="explore=${dimension}"]`)).toContainText(
             String(coverage[dimension]),
           );
@@ -224,3 +228,29 @@ test.describe("site presentation", () => {
     }
   });
 });
+
+for (const locale of locales) {
+  test(`${site} ${locale} retires source discovery`, async ({ page, request }) => {
+    await page.goto(`/${locale}/browse/source`);
+    await expect(page).toHaveURL(new RegExp(`/${locale}/search\\?v=1$`));
+    await page.goto(`/${locale}/search?v=1&explore=source&kind=flow&source=legacy-source`);
+    await expect(page).not.toHaveURL(/explore=source/);
+    await expect(page).toHaveURL(/kind=flow/);
+    await expect(page).toHaveURL(/source=legacy-source/);
+    const removeSource = page.getByRole("link", {
+      name: `${dictionaries[locale].Common.clear}: ${dictionaries[locale].Search.source}`,
+      exact: true,
+    });
+    await expect(removeSource).toContainText("legacy-source");
+    await removeSource.click();
+    await expect(page).not.toHaveURL(/source=/);
+    await expect(page).toHaveURL(/kind=flow/);
+    await expect(page.locator(".catalog-kind-switch a")).toHaveCount(3);
+    await page.getByRole("button", { name: dictionaries[locale].Search.facets }).click();
+    await expect(
+      page.getByRole("dialog").getByText(dictionaries[locale].Search.source, { exact: true }),
+    ).toHaveCount(0);
+    const sitemap = await request.get("/sitemap.xml");
+    expect(await sitemap.text()).not.toContain("/browse/source");
+  });
+}

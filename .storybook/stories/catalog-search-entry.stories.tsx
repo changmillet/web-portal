@@ -36,12 +36,12 @@ const meta = {
     } else {
       await expect(canvasElement.querySelector("input[type=search]")).toBeVisible();
     }
+    await expect(canvasElement.querySelector('a[href*="explore=source"]')).toBeNull();
     const index = canvasElement.querySelector(".brand-catalog-index");
     if (index && args.coverage) {
       const locale = storyLocale(globals);
-      for (const dimension of ["region", "source"] as const) {
-        const label =
-          dictionaries[locale].BrandHome[dimension === "region" ? "regionCount" : "sourceCount"];
+      for (const dimension of ["region"] as const) {
+        const label = dictionaries[locale].BrandHome["regionCount"];
         await expect(index.querySelector(`a[href$="explore=${dimension}"]`)).toHaveTextContent(
           label.replace("{count}", new Intl.NumberFormat(locale).format(args.coverage[dimension])),
         );
@@ -106,13 +106,11 @@ export const ExploringProcesses: Story = {
                   process: m.Common.process,
                   flow: m.Common.flow,
                   region: m.Search.region,
-                  source: m.Search.source,
                 }}
                 hrefs={{
                   process: "?explore=process",
                   flow: "?explore=flow",
                   region: "?explore=region",
-                  source: "?explore=source",
                 }}
               />
             }

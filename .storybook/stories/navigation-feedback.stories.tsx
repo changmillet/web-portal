@@ -1,3 +1,4 @@
+import { AtlasHeader } from "@/sites/atlas/shell";
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect } from "storybook/test";
@@ -79,7 +80,7 @@ export const Waiting: Story = {
       "data-pending",
       "true",
     );
-    for (const element of [control, canvas.getByRole("link")]) {
+    for (const element of [control, canvas.getByRole("link", { name: t.catalogCompact })]) {
       await expect(window.getComputedStyle(element, "::after").content).toBe("none");
     }
   },
@@ -96,3 +97,28 @@ export const CancelAndRetry: Story = {
   },
 };
 export const GermanDark: Story = { ...Waiting, globals: { theme: "dark", locale: "de" } };
+
+export const AtlasWaiting: Story = {
+  ...Waiting,
+  globals: { site: "atlas", locale: "en", theme: "light" },
+  parameters: { initialPending: true, pageLayout: true },
+  loaders: [
+    async ({ globals }) => ({ header: await AtlasHeader({ locale: storyLocale(globals) }) }),
+  ],
+  render: (args, context) => (
+    <>
+      {context.loaded.header}
+      {meta.render(args, context)}
+    </>
+  ),
+  play: async (context) => {
+    await Waiting.play?.(context);
+    const bar = context.canvasElement.querySelector(".portal-route-progress > span");
+    await expect(bar).not.toBeNull();
+    await expect(getComputedStyle(bar!).backgroundColor).toBe("rgb(232, 188, 71)");
+  },
+};
+export const AtlasWaitingDark: Story = {
+  ...AtlasWaiting,
+  globals: { site: "atlas", locale: "en", theme: "dark" },
+};

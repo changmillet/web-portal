@@ -170,8 +170,9 @@ describe("base sitemap", () => {
     const entries = sitemap();
     const urls = entries.map((entry) => entry.url);
 
-    expect(entries).toHaveLength(9 * locales.length);
+    expect(entries).toHaveLength(8 * locales.length);
     expect(new Set(urls).size).toBe(urls.length);
+    expect(urls.some((url) => url.endsWith("/browse/source"))).toBe(false);
     expect(urls).not.toContain(`${siteOrigin}/`);
     for (const locale of locales) expect(urls).toContain(`${siteOrigin}${localePath(locale)}`);
   });

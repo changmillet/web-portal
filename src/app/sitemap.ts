@@ -12,7 +12,6 @@ const staticPaths = [
   "browse/process",
   "browse/flow",
   "browse/region",
-  "browse/source",
 ] as const;
 
 function siteUrl(path: string): string {

@@ -375,7 +375,6 @@ export function HybridSearchPanel({
                 {(
                   [
                     ["geography", labels.filterGeography],
-                    ["source", labels.filterSource],
                     ["classification", labels.filterClassification],
                   ] as const
                 ).map(([key, label]) => (

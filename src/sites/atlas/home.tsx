@@ -26,12 +26,6 @@ export function AtlasHome({ locale, counts, coverage }: BrandHomeProps) {
       description: copy.regionDescription,
       count: coverage?.region,
     },
-    {
-      id: "source",
-      title: copy.source,
-      description: copy.sourceDescription,
-      count: coverage?.source,
-    },
   ];
   return (
     <main id="main-content" className="atlas-home" lang={locale}>

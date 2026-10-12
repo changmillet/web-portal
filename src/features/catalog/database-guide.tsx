@@ -62,12 +62,6 @@ export function DatabaseGuide({
               >
                 {labels.regionAction}
               </Link>
-              <Link
-                className="text-foreground underline underline-offset-4"
-                href={localePath(locale, "browse/source")}
-              >
-                {labels.sourceAction}
-              </Link>
             </div>
           </div>
           <aside

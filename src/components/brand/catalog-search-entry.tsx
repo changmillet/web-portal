@@ -35,7 +35,6 @@ export async function CatalogSearchEntry({
     ["process", "browseProcess", "browseProcessDescription", Database],
     ["flow", "browseFlow", "browseFlowDescription", Shapes],
     ["region", "browseRegion", "browseRegionDescription", MapPin],
-    ["source", "browseSource", "browseSourceDescription", Database],
   ] as const;
   return (
     <div className="catalog-search-entry">
@@ -91,9 +90,9 @@ export async function CatalogSearchEntry({
                     : navigation("countUnavailable")}
                 </span>
               )}
-              {(dimension === "region" || dimension === "source") && coverage && (
+              {dimension === "region" && coverage && (
                 <span>
-                  {t(dimension === "region" ? "regionCount" : "sourceCount", {
+                  {t("regionCount", {
                     count: new Intl.NumberFormat(locale).format(coverage[dimension]),
                   })}
                 </span>

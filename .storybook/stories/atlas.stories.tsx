@@ -149,3 +149,40 @@ export const FrenchDarkRecords: Story = {
   ...CatalogRecords,
   globals: { locale: "fr", theme: "dark" },
 };
+
+export const HeaderNavigation: Story = {
+  beforeEach({ globals }) {
+    usePathname.mockReturnValue(`/${storyLocale(globals)}/search`);
+    return () => usePathname.mockReset();
+  },
+  render: (_, { loaded, globals }) => (
+    <>
+      {loaded.header}
+      <main id="main-content" className="site-shell-container portal-page">
+        <h1>{dictionaries[storyLocale(globals)].Common.catalog}</h1>
+      </main>
+    </>
+  ),
+  play: async ({ canvas, userEvent, globals }) => {
+    const labels = dictionaries[storyLocale(globals)].Common;
+    const active = canvas.getByRole("link", { name: labels.catalog });
+    const methodology = canvas.getByRole("link", { name: labels.methodology });
+    await expect(active).toHaveAttribute("aria-current", "page");
+    await userEvent.hover(methodology);
+    await expect(methodology).not.toHaveAttribute("aria-current");
+    await userEvent.unhover(methodology);
+    active.focus();
+    await userEvent.tab();
+    await userEvent.tab();
+    await expect(methodology).toHaveFocus();
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth + 1);
+  },
+};
+export const HeaderNavigationDark: Story = {
+  ...HeaderNavigation,
+  globals: { theme: "dark" },
+};
+export const HeaderNavigationMobile: Story = {
+  ...HeaderNavigation,
+  globals: { locale: "de", viewport: { value: "mobile", isRotated: false } },
+};

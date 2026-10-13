@@ -1,6 +1,13 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import en from "../../src/i18n/messages/en.json" with { type: "json" };
+
+async function setSmartMatching(page: Page, enabled: boolean) {
+  const toggle = page.getByRole("button", { name: en.Search.smartMatch });
+  await expect(toggle).toBeEnabled();
+  if ((await toggle.getAttribute("aria-pressed")) !== String(enabled)) await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", String(enabled));
+}
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 const fixtureOrigin = `http://127.0.0.1:${process.env.PORTAL_FIXTURE_PORT ?? "4328"}`;
@@ -12,7 +19,7 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/search?v=1");
-  await page.getByRole("checkbox", { name: "Smart matching" }).check();
+  await setSmartMatching(page, true);
   const bffResponsePromise = page.waitForResponse(
     (response) =>
       response.url().endsWith("/internal/hybrid") && response.request().method() === "POST",
@@ -76,7 +83,7 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 
 test("automatically returns lexical cards for a fixed Hybrid guard rejection", async ({ page }) => {
   await page.goto("/en/search?v=1");
-  await page.getByRole("checkbox", { name: "Smart matching" }).check();
+  await setSmartMatching(page, true);
   const query = "fixture:guard_unavailable";
   await page.getByLabel("Data need").fill(query);
   await page.getByRole("button", { name: "Search", exact: true }).click();
@@ -104,7 +111,7 @@ test("keeps early selections stable until a late update is accepted and exposes 
     await route.fulfill({ response });
   });
   await page.goto("/en/search?v=1");
-  await page.getByRole("checkbox", { name: "Smart matching" }).check();
+  await setSmartMatching(page, true);
   await page.getByLabel("Data need").fill("electricity for an industrial site");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   const firstSelection = page.getByRole("checkbox", { name: /^Select for comparison /u }).first();
@@ -198,7 +205,7 @@ for (const mode of ["keyword", "description"] as const) {
     await drawer.getByLabel(en.Hybrid.filterYearTo).fill("2022");
     await drawer.getByRole("button", { name: en.Search.applyFilters }).click();
     await expect(drawer).toBeHidden();
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).check();
+    await setSmartMatching(page, true);
     await page.getByRole("searchbox", { name: en.Hybrid.queryLabel }).fill("Electricity in China");
     if (mode === "description") {
       const submitted = page.waitForRequest(
@@ -212,7 +219,7 @@ for (const mode of ["keyword", "description"] as const) {
       });
       expect(page.url()).not.toContain("Electricity");
     } else {
-      await page.getByRole("checkbox", { name: en.Search.smartMatch }).uncheck();
+      await setSmartMatching(page, false);
       await page.getByRole("searchbox", { name: en.Search.label }).fill("steel");
       await page.getByRole("searchbox", { name: en.Search.label }).press("Enter");
       await expect(page).toHaveURL(/q=steel/);
@@ -255,8 +262,11 @@ for (const width of [1440, 390]) {
           buttonHeight: button.getBoundingClientRect().height,
         };
       });
-    await expect(page.getByRole("checkbox", { name: en.Search.smartMatch })).toBeChecked();
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).uncheck();
+    await expect(page.getByRole("button", { name: en.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await setSmartMatching(page, false);
     await expect(keyword).toBeVisible();
     const workspaceLayout = () =>
       page.locator(".catalog-search-modes").evaluate((element) =>
@@ -269,21 +279,22 @@ for (const width of [1440, 390]) {
         }),
       );
     const original = await metrics();
-    const checkboxBox = await page
-      .getByRole("checkbox", { name: en.Search.smartMatch })
-      .boundingBox();
-    expect(checkboxBox).not.toBeNull();
-    expect(checkboxBox!.y).toBeGreaterThanOrEqual(original.y);
-    expect(checkboxBox!.y + checkboxBox!.height).toBeLessThanOrEqual(original.y + original.height);
+    const toggleBox = await page.getByRole("button", { name: en.Search.smartMatch }).boundingBox();
+    expect(toggleBox).not.toBeNull();
+    expect(toggleBox!.y).toBeGreaterThanOrEqual(original.y);
+    expect(toggleBox!.y + toggleBox!.height).toBeLessThanOrEqual(original.y + original.height);
     const originalLayout = await workspaceLayout();
     await expect(page.getByRole("button", { name: en.Hybrid.process, exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: en.Search.facets })).toBeVisible();
     await expect(page.getByRole("button", { name: en.Hybrid.shareQuery })).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath(`keyword-${width}.png`), fullPage: true });
     await keyword.fill("steel");
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).check();
+    await setSmartMatching(page, true);
     await expect(description).toBeVisible();
-    await expect(page.getByRole("checkbox", { name: en.Search.smartMatch })).toBeChecked();
+    await expect(page.getByRole("button", { name: en.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     await expect(description).toHaveValue("steel");
     await page.locator("body").evaluate(async (element) => {
       await Promise.all(
@@ -300,9 +311,9 @@ for (const width of [1440, 390]) {
       fullPage: true,
     });
     await description.fill("electricity in China");
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).uncheck();
+    await setSmartMatching(page, false);
     await expect(keyword).toHaveValue("electricity in China");
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).check();
+    await setSmartMatching(page, true);
     await expect(description).toHaveValue("electricity in China");
     await description.press("Enter");
     await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
@@ -310,10 +321,10 @@ for (const width of [1440, 390]) {
     await expect(page.getByText(en.Search.pendingTitle, { exact: true })).toBeVisible();
     await expect(page.getByText("Showing results for: electricity in China")).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath(`pending-${width}.png`), fullPage: true });
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).uncheck();
+    await setSmartMatching(page, false);
     await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
     await expect(keyword).toHaveValue("industrial electricity in China, 2022");
-    await page.getByRole("checkbox", { name: en.Search.smartMatch }).check();
+    await setSmartMatching(page, true);
     await page.getByRole("button", { name: en.Search.discardChanges }).click();
     await expect(description).toHaveValue("electricity in China");
     expect(page.url()).not.toContain("electricity");

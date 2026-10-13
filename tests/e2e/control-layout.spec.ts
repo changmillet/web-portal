@@ -130,7 +130,7 @@ test("search remains live while pending and filter feedback survives closing its
     if (route.request().headers().rsc === "1") await gate;
     await route.continue();
   });
-  await page.getByRole("checkbox", { name: "Smart matching" }).uncheck();
+  await page.getByRole("button", { name: "Smart matching" }).click();
   await page.getByRole("searchbox").fill("electricity");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.locator(".portal-keyword-form")).toHaveAttribute("aria-busy", "true");

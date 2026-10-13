@@ -12,6 +12,7 @@ import {
   type SetStateAction,
 } from "react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
+import { SparklesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -47,26 +48,33 @@ export function SearchModeControl() {
   const context = useSearchWorkspace();
   if (!context) return null;
   return (
-    <label className="catalog-smart-match">
-      <input
-        type="checkbox"
-        checked={context.mode === "description"}
-        disabled={context.smartMatchDisabled}
-        onChange={(event) => {
-          const workspace = event.currentTarget.closest(".catalog-search-modes");
-          context.change(event.target.checked ? "description" : "keyword");
-          // Both forms stay mounted; move keyboard focus to the now-visible checkbox.
-          requestAnimationFrame(() => {
-            const checkbox = [
-              ...(workspace?.querySelectorAll<HTMLInputElement>(".catalog-smart-match input") ??
-                []),
-            ].find((node) => node.getClientRects().length > 0);
-            checkbox?.focus();
-          });
-        }}
-      />
-      <span>{context.labels.smartMatch}</span>
-    </label>
+    <Button
+      className="catalog-smart-match"
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={context.labels.smartMatch}
+      title={context.labels.smartMatch}
+      aria-pressed={context.mode === "description"}
+      disabled={context.smartMatchDisabled}
+      onClick={(event) => {
+        const previousToggle = event.currentTarget;
+        const workspace = previousToggle.closest(".catalog-search-modes");
+        context.change(context.mode === "description" ? "keyword" : "description");
+        // Both forms stay mounted; keep focus on the now-visible toggle.
+        requestAnimationFrame(() => {
+          // Do not steal focus if the user has already moved to another control.
+          const active = previousToggle.ownerDocument.activeElement;
+          if (active !== previousToggle && active !== previousToggle.ownerDocument.body) return;
+          const toggle = [
+            ...(workspace?.querySelectorAll<HTMLButtonElement>(".catalog-smart-match") ?? []),
+          ].find((node) => node.getClientRects().length > 0);
+          toggle?.focus();
+        });
+      }}
+    >
+      <SparklesIcon aria-hidden="true" />
+    </Button>
   );
 }
 

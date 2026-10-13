@@ -109,9 +109,15 @@ type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Keyword: Story = {
   play: async ({ canvas, globals, userEvent }) => {
     const m = dictionaries[storyLocale(globals)];
-    await expect(canvas.getByRole("checkbox", { name: m.Search.smartMatch })).toBeChecked();
-    await userEvent.click(canvas.getByRole("checkbox", { name: m.Search.smartMatch }));
-    await expect(canvas.getByRole("checkbox", { name: m.Search.smartMatch })).not.toBeChecked();
+    await expect(canvas.getByRole("button", { name: m.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
+    await expect(canvas.getByRole("button", { name: m.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
     await expect(canvas.getByRole("button", { name: m.Hybrid.process })).toBeVisible();
     await expect(canvas.getByRole("button", { name: m.Search.facets })).toBeVisible();
     await expect(
@@ -136,10 +142,13 @@ export const Description: Story = {
         },
       );
     const before = metric();
-    await userEvent.click(canvas.getByRole("checkbox", { name: m.Search.smartMatch }));
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
     await expect(canvas.getByRole("searchbox", { name: m.Hybrid.queryLabel })).toBeVisible();
     await expect(metric()).toEqual(before);
-    await expect(canvas.getByRole("checkbox", { name: m.Search.smartMatch })).toBeChecked();
+    await expect(canvas.getByRole("button", { name: m.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   },
 };
 export const DraftsAndFilters: Story = {
@@ -149,7 +158,7 @@ export const DraftsAndFilters: Story = {
     const m = dictionaries[storyLocale(globals)];
     await userEvent.type(canvas.getByRole("searchbox", { name: m.Search.label }), "steel");
     await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.flow }));
-    await userEvent.click(canvas.getByRole("checkbox", { name: m.Search.smartMatch }));
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
     await expect(canvas.getByRole("button", { name: m.Hybrid.flow })).toHaveAttribute(
       "aria-pressed",
       "true",
@@ -160,7 +169,7 @@ export const DraftsAndFilters: Story = {
       canvas.getByRole("searchbox", { name: m.Hybrid.queryLabel }),
       "Electricity in China",
     );
-    await userEvent.click(canvas.getByRole("checkbox", { name: m.Search.smartMatch }));
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
     await expect(canvas.getByRole("searchbox", { name: m.Search.label })).toHaveValue(
       "Electricity in China",
     );
@@ -183,9 +192,9 @@ export const Results: Story = {
     await userEvent.click(canvas.getByRole("button", { name: m.Search.submit }));
     await expect(await canvas.findByRole("heading", { name: m.Hybrid.resultsTitle })).toBeVisible();
     await expect(canvas.getByRole("button", { name: m.Hybrid.shareQuery })).toBeVisible();
-    await userEvent.click(canvas.getByRole("checkbox", { name: m.Search.smartMatch }));
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
     await expect(canvas.getByRole("heading", { name: m.Hybrid.resultsTitle })).toBeVisible();
-    await userEvent.click(canvas.getByRole("checkbox", { name: m.Search.smartMatch }));
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
   },
 };
 export const PendingChanges: Story = {

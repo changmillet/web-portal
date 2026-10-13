@@ -186,6 +186,10 @@ test.describe("site presentation", () => {
 
   test(`${site} preserves public exact-version detail and catalog actions`, async ({ page }) => {
     await page.goto("/en/search?v=1&kind=process&q=electricity");
+    await expect(page.getByRole("button", { name: "Smart matching" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
     if (site === "atlas") await expect(page.locator(".atlas-record").first()).toBeVisible();
     await page

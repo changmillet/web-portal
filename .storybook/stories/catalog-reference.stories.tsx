@@ -95,14 +95,22 @@ export const FiltersAndEmptyRecovery: Story = {
       body.getByRole("radio", { name: new RegExp(m.CatalogReference.availabilityMetadata) }),
     );
     await userEvent.keyboard("{Escape}");
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(2);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(2);
     const input = await canvas.findByRole("searchbox", { name: m.Search.label });
     await userEvent.clear(input);
     await userEvent.type(input, "no-such-synthetic-dataset");
     await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));
     await expect(canvas.getByText(m.Search.emptyTitle)).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.resetSearch }));
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(6);
   },
 };
 export const MobileFilterKeyboard: Story = {
@@ -119,7 +127,11 @@ export const MobileFilterKeyboard: Story = {
     );
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(trigger).toHaveFocus());
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(3);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(3);
     const menu = canvas.getByRole("button", { name: m.CatalogReference.menu });
     await userEvent.click(menu);
     await waitFor(() =>
@@ -201,7 +213,9 @@ export const ShortlistAndSelectionLimit: Story = {
     );
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
-    const boxes = canvas.getAllByRole("checkbox");
+    const boxes = canvas.getAllByRole("checkbox", {
+      name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+    });
     for (const box of boxes.slice(0, 4)) await userEvent.click(box);
     await expect(boxes[4]).toBeDisabled();
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.compare }));
@@ -274,21 +288,47 @@ export const LoadMoreAndReturn: Story = {
     const records = referenceDatasets(locale);
     const page = Promise.withResolvers<void>();
     args.requestPage!.mockImplementationOnce(() => page.promise);
-    await userEvent.click(canvas.getAllByRole("checkbox")[0]!);
+    await userEvent.click(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      })[0]!,
+    );
     await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.loadMore }));
     await expect(canvas.getByRole("button", { name: m.Hybrid.loadingMore })).toBeDisabled();
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(6);
     page.resolve();
-    await waitFor(() => expect(canvas.getAllByRole("checkbox")).toHaveLength(8));
-    await expect(canvas.getAllByRole("checkbox")[0]).toBeChecked();
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole("checkbox", {
+          name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+        }),
+      ).toHaveLength(8),
+    );
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      })[0],
+    ).toBeChecked();
     const next = canvas.getByRole("link", { name: records[6]!.name });
     await expect(next).toHaveFocus();
     await userEvent.click(next);
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.back }));
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(8);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(8);
     await expect(canvas.getByRole("link", { name: records[6]!.name })).toHaveFocus();
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.sort }));
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(6);
     await expect(
       canvas.getByRole("checkbox", { name: `${m.CatalogReference.select}: ${records[0]!.name}` }),
     ).toBeChecked();
@@ -300,9 +340,19 @@ export const PaginationRetry: Story = {
     args.requestPage!.mockRejectedValueOnce(new Error("Fixture page unavailable"));
     await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.loadMore }));
     await expect(canvas.findByRole("alert")).resolves.toHaveTextContent(m.Hybrid.pageError);
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(6);
     await userEvent.click(canvas.getByRole("button", { name: m.Common.retry }));
-    await waitFor(() => expect(canvas.getAllByRole("checkbox")).toHaveLength(8));
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole("checkbox", {
+          name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+        }),
+      ).toHaveLength(8),
+    );
     await expect(canvas.queryByRole("alert")).not.toBeInTheDocument();
   },
 };
@@ -317,9 +367,17 @@ export const NewQueryCancelsPage: Story = {
     await userEvent.type(input, "no-such-synthetic-dataset");
     await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));
     page.resolve();
-    await expect(canvas.queryAllByRole("checkbox")).toHaveLength(0);
+    await expect(
+      canvas.queryAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(0);
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.resetSearch }));
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(
+      canvas.getAllByRole("checkbox", {
+        name: (name) => name.startsWith(`${m.CatalogReference.select}:`),
+      }),
+    ).toHaveLength(6);
     await expect(canvas.getByRole("button", { name: m.Hybrid.loadMore })).toBeEnabled();
   },
 };

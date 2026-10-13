@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-12
-lastReviewedCommit: e9bb2450eafbdbec6ac548447f69fe40e671880a
+lastReviewedAt: 2026-10-13
+lastReviewedCommit: ad37b36f7975973aa623750d51c17c0a416a63ea
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #155: reviewed Atlas desktop navigation horizontal inset and inter-link spacing; active underline, native navigation, keyboard focus and mobile scrolling remain unchanged."
+lastReviewedNote: "Portal #157: reviewed the compact search toggle, 44px target, semantic colors, keyboard focus, localized tooltips and responsive shared input."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:

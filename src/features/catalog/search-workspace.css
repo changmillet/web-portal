@@ -3,45 +3,10 @@
 .catalog-search-modes {
   font-family: "Source Sans 3 Variable", "Noto Sans SC Variable", sans-serif;
 }
-.catalog-search-mode-switch {
-  width: fit-content;
-  max-width: 100%;
-  border-bottom: 1px solid var(--border);
-  border-radius: 0;
-  gap: 20px;
-}
-.catalog-search-mode-switch > button {
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-  padding-inline: 0;
-  border-bottom: 2px solid transparent;
-  color: var(--muted-foreground);
-  font-weight: 500;
-}
-.catalog-search-mode-switch > button[data-state="on"] {
-  background: transparent;
-  border-bottom-color: var(--primary);
-  color: var(--link);
-}
 .catalog-description-workspace {
   border-radius: 0;
   box-shadow: none;
   background: transparent;
-}
-.catalog-description-workspace > [data-slot="card-header"],
-.catalog-description-workspace > [data-slot="card-content"] {
-  padding-inline: 0;
-}
-.catalog-description-workspace > [data-slot="card-header"] [data-slot="card-title"] {
-  font-family: inherit;
-  font-size: 24px;
-  line-height: 1.4;
-}
-.catalog-description-workspace textarea {
-  min-height: 128px;
-  border-radius: 6px;
 }
 .catalog-results-heading {
   margin-bottom: 20px;
@@ -65,9 +30,6 @@
   .catalog-result-record {
     padding-block: 20px;
   }
-  .catalog-search-mode-switch {
-    gap: 16px;
-  }
 }
 
 .catalog-results-layout .portal-facets-content > [data-slot="card"] {
@@ -84,7 +46,7 @@
   background: var(--background);
   width: 100%;
 }
-.catalog-query-control input {
+.catalog-query-control input[type="search"] {
   font-size: 17px;
   font-family: inherit;
 }
@@ -95,21 +57,6 @@
   border-radius: 4px;
   min-width: 96px;
   min-height: 44px;
-}
-.catalog-mode-trigger[data-slot="select-trigger"] {
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  padding: 10px;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.catalog-mode-trigger > svg:last-child {
-  display: none;
-}
-.catalog-mode-trigger:hover {
-  background: var(--muted);
 }
 .catalog-kind-switch {
   gap: 20px;
@@ -147,7 +94,7 @@
     gap: 24px;
     padding-top: 16px;
   }
-  .catalog-query-control input {
+  .catalog-query-control input[type="search"] {
     font-size: 16px;
   }
   .catalog-query-control [data-slot="button"][type="submit"] {
@@ -249,58 +196,11 @@
   font-size: 14px;
   border-radius: 6px;
 }
-.catalog-description-workspace > [data-slot="card-header"] {
-  display: none;
-}
-.catalog-description-workspace > [data-slot="card-content"] {
-  padding-top: 0;
-}
-.catalog-description-workspace form {
-  position: relative;
-}
-.catalog-description-workspace textarea {
-  font-family: inherit;
-  font-size: 17px;
-  line-height: 1.6;
-  border-radius: 6px;
-  padding: 16px;
-}
-
 .catalog-kind-switch [aria-pressed="true"] {
   color: var(--link);
   border-bottom: 2px solid var(--primary);
   background: transparent;
 }
-.catalog-description-workspace .catalog-description-input {
-  margin-bottom: 0;
-}
-.catalog-description-workspace .catalog-description-submit {
-  justify-content: flex-end;
-  margin-top: -6px;
-}
-.catalog-description-workspace .catalog-description-submit > button[type="submit"] {
-  min-width: 96px;
-}
-.catalog-description-query {
-  border: 1px solid var(--input);
-  border-radius: 6px;
-  padding: 7px;
-  background: var(--background);
-}
-.catalog-description-query textarea {
-  border: 0;
-  box-shadow: none;
-  min-height: 88px;
-  padding: 9px;
-}
-.catalog-description-query .catalog-description-submit {
-  margin-top: 4px;
-}
-.catalog-description-query:focus-within {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
 .catalog-results-layout-full {
   padding-top: 0;
   gap: 1.25rem;
@@ -340,4 +240,117 @@
     width: 100%;
     justify-content: flex-end;
   }
+}
+
+/* Keep both inputs mounted while results remain attached to the submitted search. */
+.catalog-description-workspace {
+  display: contents;
+}
+.catalog-workspace-input {
+  order: 1;
+  min-width: 0;
+}
+.catalog-workspace-results {
+  order: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+.catalog-workspace-browse {
+  order: 6;
+}
+.catalog-workspace-feedback[hidden],
+.catalog-workspace-controls[hidden],
+.catalog-workspace-input[hidden],
+.catalog-workspace-results[hidden] {
+  display: none;
+}
+.catalog-input-help {
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+.catalog-pending-changes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--muted);
+}
+.catalog-pending-changes p {
+  color: var(--muted-foreground);
+}
+.catalog-pending-changes button {
+  white-space: normal;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+.catalog-applied-query {
+  overflow-wrap: anywhere;
+  color: var(--muted-foreground);
+}
+@media (max-width: 760px) {
+  .catalog-pending-changes {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+
+/* The shared clear action owns its accessible label and 44px target. */
+.catalog-query-control input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.catalog-workspace-help {
+  order: 2;
+  display: grid;
+  margin-top: -14px;
+}
+.catalog-workspace-controls {
+  order: 4;
+  min-width: 0;
+}
+
+.catalog-workspace-feedback {
+  order: 3;
+  min-width: 0;
+}
+.catalog-workspace-feedback .catalog-pending-changes {
+  margin-top: 0;
+}
+
+.catalog-smart-match[data-slot="button"] {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+.catalog-smart-match[data-slot="button"][aria-pressed="true"] {
+  color: var(--primary);
+}
+.catalog-smart-match[data-slot="button"] > svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+
+.catalog-mode-tooltip {
+  z-index: 60;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+  font-size: 13px;
+  line-height: 1.5;
 }

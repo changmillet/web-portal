@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-10-12
-lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
-lastReviewedNote: "Portal #151/#152: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, Atlas navigation progress contrast, and same-origin map geometry credentials for infrastructure-protected previews; Portal remains anonymous with unchanged CSP and map fallback behavior."
+lastReviewedAt: 2026-10-13
+lastReviewedCommit: ad37b36f7975973aa623750d51c17c0a416a63ea
+lastReviewedNote: "Portal #157: reviewed the shared search workspace, default icon toggle, current-state/action tooltip, applied-result separation, sharing privacy and native keyword fallback."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -377,7 +377,7 @@ Sources 目录、首页/搜索/数据库指南入口及新来源筛选不再展�
 
 结果采用共享单列记录行，筛选统一放入 Sheet，工具栏集中种类、筛选和排序。地区展示聚合入口，点击后进入过滤后的记录列表；旧浏览路由保留兼容。精确版本选择托盘固定在下方，说明已选数量并可展开名称和版本；所有尺寸上限均为 4 个。导航使用不透明层，Sheet 位于导航之上，锚点滚动按实际导航高度留出空间。
 
-搜索按钮旁的图标菜单提供“关键词或编号”与“描述需求”两个模式，共用输入框和结果行。显式探索目录允许无关键词浏览；未选择探索、关键词为空且没有筛选时展示初始入口。关键词为空且没有任何显式筛选条件时才是未提交状态，不发起空查询 RPC，也不显示后端不可用；由地区目录或旧来源分享链接进入的 filter-only URL 是有效查询，必须展示命中结果。切换类型、筛选、普通查询和续页保留仍适用的条件；Flow 去掉 Process subtype。只有实际读取失败才显示不可用提示。
+搜索框内以星光图标按钮切换检索方式，默认点亮后按描述匹配，点击熄灭后按关键词搜索。不常驻显示功能文字，以悬停提示和可访问名称说明“智能匹配”，通过 aria-pressed 表达开关状态。无 JavaScript 时保留原生关键词提交；层级条件不支持智能匹配时禁用按钮并提供清除条件入口。桌面和手机均保留单行搜索框。两种模式复用原有关键词单行搜索框及框内搜索按钮，首次进入共享同一个类型/筛选栏和浏览区，提示区域按两种文案共同占位。类型及筛选条件跨输入方式保留，分享入口仅在有结果时出现。Storybook 使用同一页面标题、真实浏览入口及完整工作区。两种模式共用同一份输入草稿；切换模式不自动提交，也不清空已提交的结果。描述修改后提示待应用，结果注明上次提交的描述，并允许放弃修改。已有描述结果时切换 Process/Flow 会使用已提交条件重新查询。显式探索目录允许无关键词浏览；未选择探索、关键词为空且没有筛选时展示初始入口。关键词为空且没有任何显式筛选条件时才是未提交状态，不发起空查询 RPC，也不显示后端不可用；由地区目录或旧来源分享链接进入的 filter-only URL 是有效查询，必须展示命中结果。切换类型、筛选、普通查询和续页保留仍适用的条件；Flow 去掉 Process subtype。只有实际读取失败才显示不可用提示。
 
 搜索流程：
 

@@ -33,6 +33,9 @@ const meta = {
       const entry = canvasElement.querySelector(".catalog-search-teaser");
       await expect(entry).toHaveAttribute("href", expect.stringContaining("/search?v=1"));
       await expect(canvasElement.querySelector("input[type=search]")).toBeNull();
+    } else if (args.browseOnly) {
+      await expect(canvasElement.querySelector("input[type=search]")).toBeNull();
+      await expect(canvasElement.querySelector("h1")).toBeNull();
     } else {
       await expect(canvasElement.querySelector("input[type=search]")).toBeVisible();
     }
@@ -165,3 +168,5 @@ export const MatchingRegions: Story = {
     />
   ),
 };
+
+export const BrowseOnly: Story = { args: { browseOnly: true } };

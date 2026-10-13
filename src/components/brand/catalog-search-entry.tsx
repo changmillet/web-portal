@@ -19,8 +19,10 @@ export async function CatalogSearchEntry({
   kind = "process",
   counts,
   coverage,
+  browseOnly = false,
 }: {
   locale: PortalLocale;
+  browseOnly?: boolean;
   number?: string;
   kind?: "process" | "flow";
   coverage?: CatalogCoverage | null;
@@ -38,39 +40,42 @@ export async function CatalogSearchEntry({
   ] as const;
   return (
     <div className="catalog-search-entry">
-      <div className="brand-section-heading">
-        <div>
-          {number && <SectionEyebrow number={number}>{t("catalogKicker")}</SectionEyebrow>}
-          <Heading id="explore-title">{t("catalogTitle")}</Heading>
+      {!browseOnly && (
+        <div className="brand-section-heading">
+          <div>
+            {number && <SectionEyebrow number={number}>{t("catalogKicker")}</SectionEyebrow>}
+            <Heading id="explore-title">{t("catalogTitle")}</Heading>
+          </div>
+          <p>{t("catalogDescription")}</p>
         </div>
-        <p>{t("catalogDescription")}</p>
-      </div>
-      {number ? (
-        <CatalogSearchTeaser
-          href={`${localePath(locale, "search")}?v=1`}
-          label={t("searchEntryAction")}
-          examples={[t("searchExample1"), t("searchExample2"), t("searchExample3")]}
-        />
-      ) : (
-        <search className="brand-search" aria-label={catalog("searchLabel")}>
-          <KeywordSearchForm action={localePath(locale, "search")}>
-            <input name="v" type="hidden" value="1" />
-            <input name="kind" type="hidden" value={kind} />
-            <label className="sr-only" htmlFor="catalog-entry-query">
-              {catalog("searchLabel")}
-            </label>
-            <CatalogSearchInput
-              submitLabel={catalog("searchButton")}
-              clearLabel={common("clear")}
-              autoComplete="off"
-              id="catalog-entry-query"
-              name="q"
-              maxLength={512}
-              placeholder={catalog("searchPlaceholder")}
-            />
-          </KeywordSearchForm>
-        </search>
       )}
+      {!browseOnly &&
+        (number ? (
+          <CatalogSearchTeaser
+            href={`${localePath(locale, "search")}?v=1`}
+            label={t("searchEntryAction")}
+            examples={[t("searchExample1"), t("searchExample2"), t("searchExample3")]}
+          />
+        ) : (
+          <search className="brand-search" aria-label={catalog("searchLabel")}>
+            <KeywordSearchForm action={localePath(locale, "search")}>
+              <input name="v" type="hidden" value="1" />
+              <input name="kind" type="hidden" value={kind} />
+              <label className="sr-only" htmlFor="catalog-entry-query">
+                {catalog("searchLabel")}
+              </label>
+              <CatalogSearchInput
+                submitLabel={catalog("searchButton")}
+                clearLabel={common("clear")}
+                autoComplete="off"
+                id="catalog-entry-query"
+                name="q"
+                maxLength={512}
+                placeholder={catalog("searchPlaceholder")}
+              />
+            </KeywordSearchForm>
+          </search>
+        ))}
       <nav className="brand-catalog-index" aria-label={catalog("browseTitle")}>
         {dimensions.map(([dimension, label, description, Icon]) => (
           <Link

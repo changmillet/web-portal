@@ -5,8 +5,8 @@ import type { ComponentProps } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
-import { SearchModeControl } from "./search-modes";
 import "./search-workspace.css";
+import { SearchModeControl, useSearchWorkspace } from "./search-modes";
 
 /** Shared real search input for the public route and interactive design reference.
  * @import import { CatalogSearchInput } from "@/features/catalog/catalog-search-input";
@@ -15,14 +15,23 @@ export function CatalogSearchInput({
   submitLabel,
   onClear,
   clearLabel,
+  submitDisabled,
+  busy,
   ...input
 }: ComponentProps<typeof InputGroupInput> & {
   submitLabel: string;
+  submitDisabled?: boolean;
+  busy?: boolean;
   onClear?: () => void;
   clearLabel?: string;
 }) {
   const [draft, setDraft] = useState(input.defaultValue ?? "");
-  const value = input.value ?? draft;
+  const workspace = useSearchWorkspace();
+  const value = input.value ?? workspace?.descriptionDraft.query ?? draft;
+  const updateQuery = (query: string) => {
+    setDraft(query);
+    workspace?.setDescriptionDraft((current) => ({ ...current, query }));
+  };
   const field = useRef<HTMLInputElement>(null);
   return (
     <InputGroup className="catalog-query-control">
@@ -36,10 +45,11 @@ export function CatalogSearchInput({
         defaultValue={undefined}
         value={value}
         onChange={(event) => {
-          setDraft(event.target.value);
+          updateQuery(event.target.value);
           input.onChange?.(event);
         }}
       />
+      <SearchModeControl />
       <InputGroupAddon align="inline-end">
         {clearLabel && value && (
           <Button
@@ -49,7 +59,7 @@ export function CatalogSearchInput({
             size="icon-sm"
             aria-label={clearLabel}
             onClick={() => {
-              setDraft("");
+              updateQuery("");
               onClear?.();
               field.current?.focus();
             }}
@@ -57,8 +67,9 @@ export function CatalogSearchInput({
             <XIcon aria-hidden="true" />
           </Button>
         )}
-        <SearchModeControl />
-        <Button type="submit">{submitLabel}</Button>
+        <Button type="submit" disabled={submitDisabled} aria-busy={busy}>
+          {submitLabel}
+        </Button>
       </InputGroupAddon>
     </InputGroup>
   );

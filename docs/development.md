@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-12
-lastReviewedCommit: e9bb2450eafbdbec6ac548447f69fe40e671880a
+lastReviewedAt: 2026-10-13
+lastReviewedCommit: ad37b36f7975973aa623750d51c17c0a416a63ea
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #155: reviewed focused Atlas navigation hover/focus stories in light, dark and mobile German; existing Storybook workflow and toolchain remain unchanged."
+lastReviewedNote: "Portal #157: reviewed production search and Storybook validation, four-locale interaction coverage and unchanged main-to-EdgeOne release workflow."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

@@ -128,7 +128,7 @@ export const EarlyResults: Story = {
   play: async ({ canvas, userEvent, globals }) => {
     const locale = storyLocale(globals);
     const m = dictionaries[locale].Hybrid;
-    await userEvent.type(canvas.getByRole("textbox", { name: m.queryLabel }), query);
+    await userEvent.type(canvas.getByRole("searchbox", { name: m.queryLabel }), query);
     await userEvent.click(canvas.getByRole("button", { name: m.submit }));
     await respond("lexical", query, lexicalPage(locale));
     await expect(await canvas.findByRole("link", { name: sampleNames[locale][0] })).toBeVisible();
@@ -191,7 +191,7 @@ export const NewQueryCancelsPrevious: Story = {
       const locale = storyLocale(globals);
       const m = dictionaries[locale].Hybrid;
       const oldSignals = transport.mock.calls.map(([, init]) => init?.signal);
-      const input = canvas.getByRole("textbox", { name: m.queryLabel });
+      const input = canvas.getByRole("searchbox", { name: m.queryLabel });
       await userEvent.clear(input);
       await userEvent.type(input, `${query} B`);
       await userEvent.click(canvas.getByRole("button", { name: m.submit }));
@@ -226,7 +226,7 @@ export const PaginationFailure: Story = {
   play: async ({ canvas, userEvent, globals, parameters }) => {
     const locale = storyLocale(globals);
     const m = dictionaries[locale].Hybrid;
-    await userEvent.type(canvas.getByRole("textbox", { name: m.queryLabel }), query);
+    await userEvent.type(canvas.getByRole("searchbox", { name: m.queryLabel }), query);
     await userEvent.click(canvas.getByRole("button", { name: m.submit }));
     await respond("hybrid", query, refinedPage(locale, "fixture_page_2"));
     await respond("lexical", query, lexicalPage(locale));
@@ -252,19 +252,26 @@ export const PaginationFailure: Story = {
 export const ExpiredCursor: Story = { ...PaginationFailure, parameters: { expired: true } };
 export const CancelQuerySharing: Story = {
   play: async ({ canvas, userEvent, globals }) => {
-    const m = dictionaries[storyLocale(globals)].Hybrid;
+    const locale = storyLocale(globals);
+    const m = dictionaries[locale].Hybrid;
     const clipboard = spyOn(navigator.clipboard, "writeText").mockResolvedValue();
     const before = window.location.href;
     try {
-      await userEvent.type(canvas.getByRole("textbox", { name: m.queryLabel }), query);
+      await userEvent.type(canvas.getByRole("searchbox", { name: m.queryLabel }), query);
+      await expect(canvas.queryByRole("button", { name: m.shareQuery })).not.toBeInTheDocument();
+      await userEvent.click(canvas.getByRole("button", { name: m.submit }));
+      await respond("hybrid", query, refinedPage(locale));
+      await respond("lexical", query, lexicalPage(locale));
+      await expect(await canvas.findByRole("heading", { name: m.resultsTitle })).toBeVisible();
+      const requestCount = pending.length;
       await userEvent.click(canvas.getByRole("button", { name: m.shareQuery }));
       await expect(canvas.getByRole("heading", { name: m.sharePreview })).toBeVisible();
       await userEvent.click(canvas.getByRole("button", { name: m.shareCancel }));
       await expect(canvas.queryByRole("heading", { name: m.sharePreview })).not.toBeInTheDocument();
       await expect(clipboard).not.toHaveBeenCalled();
-      await expect(pending).toHaveLength(0);
+      await expect(pending).toHaveLength(requestCount);
       await expect(window.location.href).toBe(before);
-      await expect(canvas.getByRole("textbox", { name: m.queryLabel })).toHaveValue(query);
+      await expect(canvas.getByRole("searchbox", { name: m.queryLabel })).toHaveValue(query);
     } finally {
       clipboard.mockRestore();
     }
@@ -277,4 +284,21 @@ export const MobileGermanUpdate: Story = {
 export const DarkFrenchFailure: Story = {
   ...PaginationFailure,
   globals: { ...mobileGlobals, locale: "fr", theme: "dark" },
+};
+
+export const PendingChanges: Story = {
+  play: async (context) => {
+    await ApplyUpdate.play?.(context);
+    const { canvas, userEvent, globals } = context;
+    const m = dictionaries[storyLocale(globals)];
+    await userEvent.type(canvas.getByRole("searchbox", { name: m.Hybrid.queryLabel }), " in 2022");
+    await expect(canvas.getByText(m.Search.pendingTitle)).toBeVisible();
+    await expect(
+      canvas.getByRole("link", { name: sampleNames[storyLocale(globals)][1] }),
+    ).toBeVisible();
+  },
+};
+export const PendingChangesFrench: Story = {
+  ...PendingChanges,
+  globals: { ...mobileGlobals, locale: "fr" },
 };

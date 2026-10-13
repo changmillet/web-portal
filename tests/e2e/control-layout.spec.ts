@@ -130,6 +130,11 @@ test("search remains live while pending and filter feedback survives closing its
     if (route.request().headers().rsc === "1") await gate;
     await route.continue();
   });
+  const smartMatch = page.getByRole("button", { name: "Smart matching" });
+  // Wait for hydration to replace the native keyword fallback with the default mode.
+  await expect(smartMatch).toHaveAttribute("aria-pressed", "true");
+  await smartMatch.click();
+  await expect(smartMatch).toHaveAttribute("aria-pressed", "false");
   await page.getByRole("searchbox").fill("electricity");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.locator(".portal-keyword-form")).toHaveAttribute("aria-busy", "true");

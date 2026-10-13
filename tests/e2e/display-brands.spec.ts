@@ -13,8 +13,10 @@ test("limits the brand selector to this deployment and hides it for a single bra
   page,
 }) => {
   await page.goto("/en/search?v=1");
-  await page.getByRole("combobox", { name: /Search mode/ }).click();
-  await page.getByRole("option", { name: "Describe your need" }).click();
+  await expect(page.getByRole("button", { name: "Smart matching" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   await page.getByRole("button", { name: en.Search.facets, exact: true }).click();
   const selector = page.getByRole("combobox", { name: en.Common.dataBrand });
   if (scope.allowedBrandCodes.length === 1) {

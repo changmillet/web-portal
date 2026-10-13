@@ -1,6 +1,13 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import en from "../../src/i18n/messages/en.json" with { type: "json" };
+
+async function setSmartMatching(page: Page, enabled: boolean) {
+  const toggle = page.getByRole("button", { name: en.Search.smartMatch });
+  await expect(toggle).toBeEnabled();
+  if ((await toggle.getAttribute("aria-pressed")) !== String(enabled)) await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", String(enabled));
+}
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 const fixtureOrigin = `http://127.0.0.1:${process.env.PORTAL_FIXTURE_PORT ?? "4328"}`;
@@ -12,15 +19,14 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/search?v=1");
-  await page.getByRole("combobox", { name: /Search mode/ }).click();
-  await page.getByRole("option", { name: "Describe your need" }).click();
+  await setSmartMatching(page, true);
   const bffResponsePromise = page.waitForResponse(
     (response) =>
       response.url().endsWith("/internal/hybrid") && response.request().method() === "POST",
   );
   const query = "low-carbon electricity for an industrial site in China";
   await page.getByLabel("Data need").fill(query);
-  await page.getByRole("button", { name: "Find matching datasets" }).click();
+  await page.getByRole("button", { name: "Search", exact: true }).click();
   const bffResponse = await bffResponsePromise;
 
   expect(bffResponse.ok()).toBe(true);
@@ -77,11 +83,10 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 
 test("automatically returns lexical cards for a fixed Hybrid guard rejection", async ({ page }) => {
   await page.goto("/en/search?v=1");
-  await page.getByRole("combobox", { name: /Search mode/ }).click();
-  await page.getByRole("option", { name: "Describe your need" }).click();
+  await setSmartMatching(page, true);
   const query = "fixture:guard_unavailable";
   await page.getByLabel("Data need").fill(query);
-  await page.getByRole("button", { name: "Find matching datasets" }).click();
+  await page.getByRole("button", { name: "Search", exact: true }).click();
 
   await expect(page.getByText("Keyword results shown", { exact: true })).toBeVisible();
   await expect(
@@ -106,10 +111,9 @@ test("keeps early selections stable until a late update is accepted and exposes 
     await route.fulfill({ response });
   });
   await page.goto("/en/search?v=1");
-  await page.getByRole("combobox", { name: /Search mode/ }).click();
-  await page.getByRole("option", { name: "Describe your need" }).click();
+  await setSmartMatching(page, true);
   await page.getByLabel("Data need").fill("electricity for an industrial site");
-  await page.getByRole("button", { name: "Find matching datasets" }).click();
+  await page.getByRole("button", { name: "Search", exact: true }).click();
   const firstSelection = page.getByRole("checkbox", { name: /^Select for comparison /u }).first();
   await firstSelection.check();
   const selectedRef = await firstSelection.inputValue();
@@ -189,3 +193,140 @@ test("shares collection notes only after preview and second confirmation", async
     await receiverContext.close();
   }
 });
+
+for (const mode of ["keyword", "description"] as const) {
+  test(`submits shared type and filters through ${mode} search`, async ({ page }) => {
+    await page.goto("/en/search?v=1");
+    await page.getByRole("button", { name: en.Hybrid.flow, exact: true }).click();
+    await page.getByRole("button", { name: en.Search.facets }).click();
+    const drawer = page.getByRole("dialog");
+    await drawer.getByLabel(en.Hybrid.filterGeography, { exact: true }).fill("CN");
+    await drawer.getByLabel(en.Hybrid.filterYearFrom).fill("2020");
+    await drawer.getByLabel(en.Hybrid.filterYearTo).fill("2022");
+    await drawer.getByRole("button", { name: en.Search.applyFilters }).click();
+    await expect(drawer).toBeHidden();
+    await setSmartMatching(page, true);
+    await page.getByRole("searchbox", { name: en.Hybrid.queryLabel }).fill("Electricity in China");
+    if (mode === "description") {
+      const submitted = page.waitForRequest(
+        (request) => request.url().endsWith("/internal/hybrid") && request.method() === "POST",
+      );
+      await page.getByRole("searchbox", { name: en.Hybrid.queryLabel }).press("Enter");
+      expect((await submitted).postDataJSON()).toMatchObject({
+        kind: "flow",
+        query: "Electricity in China",
+        filters: { geography: "cn", referenceYearFrom: 2020, referenceYearTo: 2022 },
+      });
+      expect(page.url()).not.toContain("Electricity");
+    } else {
+      await setSmartMatching(page, false);
+      await page.getByRole("searchbox", { name: en.Search.label }).fill("steel");
+      await page.getByRole("searchbox", { name: en.Search.label }).press("Enter");
+      await expect(page).toHaveURL(/q=steel/);
+      const parameters = new URL(page.url()).searchParams;
+      expect(Object.fromEntries(parameters)).toMatchObject({
+        kind: "flow",
+        q: "steel",
+        geo: "CN",
+        yearFrom: "2020",
+        yearTo: "2022",
+      });
+      expect(page.url()).not.toContain("Electricity");
+    }
+  });
+}
+
+for (const width of [1440, 390]) {
+  test(`keeps one search workspace and identical input geometry at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/en/search?v=1");
+    const keyword = page.getByRole("searchbox", { name: en.Search.label });
+    const description = page.getByRole("searchbox", { name: en.Hybrid.queryLabel });
+    const metrics = () =>
+      page.locator(".catalog-query-control:visible").evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const input = element.querySelector("input")!;
+        const button = element.querySelector('button[type="submit"]')!;
+        return {
+          x: box.x,
+          y: box.y,
+          width: box.width,
+          height: box.height,
+          padding: style.padding,
+          radius: style.borderRadius,
+          background: style.backgroundColor,
+          fontSize: getComputedStyle(input).fontSize,
+          buttonHeight: button.getBoundingClientRect().height,
+        };
+      });
+    await expect(page.getByRole("button", { name: en.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await setSmartMatching(page, false);
+    await expect(keyword).toBeVisible();
+    const workspaceLayout = () =>
+      page.locator(".catalog-search-modes").evaluate((element) =>
+        [".catalog-workspace-controls", ".catalog-workspace-browse"].map((selector) => {
+          const node = [...element.querySelectorAll(selector)].find(
+            (node) => node.getBoundingClientRect().height > 0,
+          )!;
+          const { x, y, width, height } = node.getBoundingClientRect();
+          return { x, y, width, height };
+        }),
+      );
+    const original = await metrics();
+    const toggleBox = await page.getByRole("button", { name: en.Search.smartMatch }).boundingBox();
+    expect(toggleBox).not.toBeNull();
+    expect(toggleBox!.y).toBeGreaterThanOrEqual(original.y);
+    expect(toggleBox!.y + toggleBox!.height).toBeLessThanOrEqual(original.y + original.height);
+    const originalLayout = await workspaceLayout();
+    await expect(page.getByRole("button", { name: en.Hybrid.process, exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: en.Search.facets })).toBeVisible();
+    await expect(page.getByRole("button", { name: en.Hybrid.shareQuery })).toHaveCount(0);
+    await page.screenshot({ path: testInfo.outputPath(`keyword-${width}.png`), fullPage: true });
+    await keyword.fill("steel");
+    await setSmartMatching(page, true);
+    await expect(description).toBeVisible();
+    await expect(page.getByRole("button", { name: en.Search.smartMatch })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect(description).toHaveValue("steel");
+    await page.locator("body").evaluate(async (element) => {
+      await Promise.all(
+        element
+          .getAnimations({ subtree: true })
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+    });
+    expect(await metrics()).toEqual(original);
+    expect(await workspaceLayout()).toEqual(originalLayout);
+    await expect(page.getByRole("navigation", { name: en.Home.browseTitle })).toBeVisible();
+    await page.screenshot({
+      path: testInfo.outputPath(`description-${width}.png`),
+      fullPage: true,
+    });
+    await description.fill("electricity in China");
+    await setSmartMatching(page, false);
+    await expect(keyword).toHaveValue("electricity in China");
+    await setSmartMatching(page, true);
+    await expect(description).toHaveValue("electricity in China");
+    await description.press("Enter");
+    await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
+    await description.fill("industrial electricity in China, 2022");
+    await expect(page.getByText(en.Search.pendingTitle, { exact: true })).toBeVisible();
+    await expect(page.getByText("Showing results for: electricity in China")).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath(`pending-${width}.png`), fullPage: true });
+    await setSmartMatching(page, false);
+    await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
+    await expect(keyword).toHaveValue("industrial electricity in China, 2022");
+    await setSmartMatching(page, true);
+    await page.getByRole("button", { name: en.Search.discardChanges }).click();
+    await expect(description).toHaveValue("electricity in China");
+    expect(page.url()).not.toContain("electricity");
+  });
+}

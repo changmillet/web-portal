@@ -3,6 +3,7 @@
 import { DataBrandFilter } from "./data-brand-filter";
 import { dataBrandNames, type PortalDataBrandScope } from "@/config/data-brands";
 import { ResponsiveFacets } from "./responsive-facets";
+import { SheetClose } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { CatalogPagination } from "@/features/catalog/catalog-pagination";
@@ -15,7 +16,8 @@ import {
   SparklesIcon,
   XIcon,
 } from "lucide-react";
-import { SearchModeControl } from "./search-modes";
+import { SearchModeSection, useSearchWorkspace } from "./search-modes";
+import { CatalogSearchInput } from "./catalog-search-input";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -30,7 +32,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { Textarea } from "@/components/ui/textarea";
 import { CatalogKindSwitch } from "./catalog-kind-switch";
 import { CatalogResultsToolbar } from "./catalog-results-toolbar";
 import { mapProgressiveSearchPage } from "@/features/catalog/map-public-data";
@@ -43,7 +44,7 @@ import {
 import {
   portalHybridSearchRequestSchema,
   type PortalHybridFilters,
-  type PortalHybridSearchRequest,
+  type PortalHybridVersionSearchRequest,
 } from "@/lib/hybrid-request";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import { CompareSelectionForm } from "@/features/compare/selection";
@@ -112,8 +113,8 @@ type RequestState = {
   limit: number;
 };
 
-function shareRequest(state: RequestState): PortalHybridSearchRequest {
-  return portalHybridSearchRequestSchema.parse({
+function shareRequest(state: RequestState): PortalHybridVersionSearchRequest {
+  const request = portalHybridSearchRequestSchema.parse({
     schemaVersion: "portal.hybrid-search-request.v2",
     kind: state.kind,
     query: state.query,
@@ -122,6 +123,9 @@ function shareRequest(state: RequestState): PortalHybridSearchRequest {
     limit: state.limit,
     cursor: null,
   });
+  if (request.schemaVersion !== "portal.hybrid-search-request.v2")
+    throw new Error("Expected versioned request");
+  return request;
 }
 
 /** @import import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel"; */
@@ -142,24 +146,44 @@ export function HybridSearchPanel({
   resultLabels: SearchResultLabels;
   siteOrigin: string;
 }) {
+  const workspace = useSearchWorkspace();
   const catalog = useTranslations("Search");
   const common = useTranslations("Common");
-  const [requestState, setRequestState] = useState<RequestState>({
+  const [localDraft, setLocalDraft] = useState<RequestState>({
     filters: initialFilters,
     kind: initialKind,
     query: "",
     limit: 20,
   });
+  const requestState = workspace?.descriptionDraft ?? localDraft;
+  const setRequestState = workspace?.setDescriptionDraft ?? setLocalDraft;
   const [message, setMessage] = useState("");
-  const [sharePreview, setSharePreview] = useState(false);
+  const [sharePreview, setSharePreview] = useState<PortalHybridVersionSearchRequest | null>(null);
   const {
     state: search,
-    start,
+    start: startSearch,
     applyUpdate,
     loadMore,
     running,
     unavailable,
   } = useProgressiveSearch(locale);
+  const start = (request: PortalHybridVersionSearchRequest) => {
+    workspace?.showDescriptionResults();
+    startSearch(request);
+  };
+  const pendingChanges =
+    !!search.request &&
+    (requestState.query.trim() !== search.request.query ||
+      JSON.stringify(
+        Object.entries(requestState.filters)
+          .filter(([, value]) => value !== undefined)
+          .sort(([left], [right]) => left.localeCompare(right)),
+      ) !==
+        JSON.stringify(
+          Object.entries(search.request.filters)
+            .filter(([, value]) => value !== undefined)
+            .sort(([left], [right]) => left.localeCompare(right)),
+        ));
   const response = search.response;
   const resultHeading = useRef<HTMLHeadingElement>(null);
 
@@ -178,7 +202,7 @@ export function HybridSearchPanel({
       // oxlint-disable-next-line react-hooks/set-state-in-effect -- Invalid shared input is reported locally.
       setMessage(labels.error);
     }
-  }, [labels.error]);
+  }, [labels.error, setRequestState]);
 
   const parsedRequest = useMemo(() => {
     const parsed = portalHybridSearchRequestSchema.safeParse({
@@ -212,208 +236,248 @@ export function HybridSearchPanel({
     referenceYearTo: labels.filterYearTo,
     source: labels.filterSource,
   };
-  const filterEntries = Object.entries(requestState.filters)
-    .filter(
-      ([key, value]) =>
-        value !== undefined && !(key === "processSubtype" && requestState.kind === "flow"),
-    )
-    .map(([key, value]) => ({
-      label: filterLabels[key as keyof PortalHybridFilters],
-      value:
-        key === "brand"
-          ? dataBrandNames[value as keyof typeof dataBrandNames]
-          : key === "geography"
-            ? formatGeographyCode(String(value), locale)
-            : key === "accessLevel"
-              ? value === "open"
-                ? resultLabels.public
-                : resultLabels.metadataOnly
-              : key === "processSubtype"
-                ? localizeProcessSubtype(String(value), locale)
-                : String(value),
-    }));
+  const describeFilters = (filters: PortalHybridFilters, kind: "process" | "flow") =>
+    Object.entries(filters)
+      .filter(
+        ([key, value]) => value !== undefined && !(key === "processSubtype" && kind === "flow"),
+      )
+      .map(([key, value]) => ({
+        label: filterLabels[key as keyof PortalHybridFilters],
+        value:
+          key === "brand"
+            ? dataBrandNames[value as keyof typeof dataBrandNames]
+            : key === "geography"
+              ? formatGeographyCode(String(value), locale)
+              : key === "accessLevel"
+                ? value === "open"
+                  ? resultLabels.public
+                  : resultLabels.metadataOnly
+                : key === "processSubtype"
+                  ? localizeProcessSubtype(String(value), locale)
+                  : String(value),
+      }));
+  const filterEntries = describeFilters(
+    search.request?.filters ?? requestState.filters,
+    search.request?.kind ?? requestState.kind,
+  );
 
   return (
-    <Card className="catalog-description-workspace">
-      <CardHeader>
-        <CardTitle>
-          <h2>{labels.title}</h2>
-        </CardTitle>
-        <CardDescription>{labels.description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!parsedRequest) {
-              setMessage(labels.error);
-              return;
-            }
-            setMessage("");
-            setSharePreview(false);
-            start(parsedRequest);
-          }}
-        >
-          {filterEntries.length > 0 ? (
-            <section aria-label={labels.activeFilters} className="rounded-lg border p-3">
-              <p className="text-sm font-medium">{labels.activeFilters}</p>
-              <dl className="mt-2 grid gap-2 sm:grid-cols-2">
-                {filterEntries.map((entry) => (
-                  <div className="min-w-0 text-sm" key={entry.label}>
-                    <dt className="text-muted-foreground">{entry.label}</dt>
-                    <dd className="break-words">{entry.value}</dd>
-                  </div>
-                ))}
-              </dl>
-              <Button
-                className="mt-2 h-auto min-h-11 whitespace-normal"
-                onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
-                type="button"
-                variant="ghost"
-              >
-                {labels.clearFilters}
-              </Button>
-            </section>
-          ) : null}
-          <div className="catalog-description-query">
-            <Field className="catalog-description-input">
-              <FieldLabel className="sr-only" htmlFor="hybrid-query">
-                {labels.queryLabel}
-              </FieldLabel>
-              <Textarea
-                id="hybrid-query"
-                maxLength={512}
-                onChange={(event) =>
-                  setRequestState((current) => ({ ...current, query: event.target.value }))
-                }
-                placeholder={
-                  requestState.kind === "flow" ? labels.flowPlaceholder : labels.queryPlaceholder
-                }
-                rows={3}
-                value={requestState.query}
-              />
-            </Field>
-            <div className="catalog-description-submit flex flex-wrap gap-2">
-              <SearchModeControl />
-              <Button
-                aria-busy={running}
-                className="h-auto min-h-11 whitespace-normal"
-                disabled={!parsedRequest}
-                type="submit"
-              >
-                {running ? (
-                  <LoaderCircleIcon className="motion-safe:animate-spin" data-icon="inline-start" />
-                ) : (
-                  <ScanSearchIcon data-icon="inline-start" />
-                )}
-                {labels.submit}
-              </Button>
-              <Button
-                disabled={!parsedRequest}
-                onClick={() => setSharePreview(true)}
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={labels.shareQuery}
-                title={labels.shareQuery}
-              >
-                <LinkIcon data-icon="inline-start" />
-              </Button>
-            </div>
-          </div>
-        </form>
-        <CatalogResultsToolbar
-          headingRef={resultHeading}
-          titleId="description-results-heading"
-          title={response ? labels.resultsTitle : ""}
-          scope={
-            <CatalogKindSwitch
-              value={requestState.kind}
-              label={labels.kind}
-              labels={{ process: labels.process, flow: labels.flow }}
-              onChange={(kind) =>
-                setRequestState((current) => ({
-                  ...current,
-                  kind,
-                  filters:
-                    kind === "flow"
-                      ? Object.fromEntries(
-                          Object.entries(current.filters).filter(
-                            ([key]) => key !== "processSubtype",
-                          ),
-                        )
-                      : current.filters,
-                }))
+    <div className="catalog-description-workspace">
+      <SearchModeSection mode="description" area="input">
+        <search className="brand-search catalog-results-query">
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!parsedRequest) {
+                setMessage(labels.error);
+                return;
               }
+              setMessage("");
+              setSharePreview(null);
+              start(parsedRequest);
+            }}
+          >
+            <label className="sr-only" htmlFor="hybrid-query">
+              {labels.queryLabel}
+            </label>
+            <CatalogSearchInput
+              id="hybrid-query"
+              maxLength={512}
+              autoComplete="off"
+              onChange={(event) =>
+                setRequestState((current) => ({ ...current, query: event.target.value }))
+              }
+              onClear={() => setRequestState((current) => ({ ...current, query: "" }))}
+              clearLabel={common("clear")}
+              placeholder={
+                requestState.kind === "flow" ? labels.flowPlaceholder : labels.queryPlaceholder
+              }
+              value={requestState.query}
+              submitLabel={catalog("submit")}
+              submitDisabled={!parsedRequest}
+              busy={running}
             />
-          }
-          actions={
-            <ResponsiveFacets
-              drawer
-              labels={{
-                title: catalog("facets"),
-                description: catalog("filtersDescription"),
-                close: common("close"),
+          </form>
+        </search>
+        {!workspace?.hasSharedHelp && <p className="catalog-input-help">{labels.privacy}</p>}
+      </SearchModeSection>
+      <SearchModeSection mode="description" area="feedback" when={pendingChanges}>
+        {pendingChanges ? (
+          <output className="catalog-pending-changes" aria-live="polite">
+            <div>
+              <strong>{catalog("pendingTitle")}</strong>
+              <p>{catalog("pendingDescription")}</p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                if (search.request) setRequestState({ ...search.request });
               }}
             >
-              <div className="flex flex-col gap-4">
-                <DataBrandFilter
-                  allowedBrandCodes={allowedBrandCodes}
-                  value={requestState.filters.brand}
-                  label={common("dataBrand")}
-                  allLabel={common("allDataBrands")}
-                  onChange={(brand) =>
-                    setRequestState((current) => {
-                      const filters = { ...current.filters };
-                      if (brand) filters.brand = brand;
-                      else delete filters.brand;
-                      return { ...current, filters };
-                    })
+              {catalog("discardChanges")}
+            </Button>
+          </output>
+        ) : null}
+      </SearchModeSection>
+      <SearchModeSection mode="description" area="controls">
+        <div className="catalog-control-bar">
+          <CatalogResultsToolbar
+            showSaved={!workspace}
+            headingRef={resultHeading}
+            titleId="description-results-heading"
+            title={response ? labels.resultsTitle : ""}
+            scope={
+              <CatalogKindSwitch
+                value={requestState.kind}
+                label={labels.kind}
+                labels={{ process: labels.process, flow: labels.flow }}
+                onChange={(kind) => {
+                  setRequestState((current) => ({
+                    ...current,
+                    kind,
+                    filters:
+                      kind === "flow"
+                        ? Object.fromEntries(
+                            Object.entries(current.filters).filter(
+                              ([key]) => key !== "processSubtype",
+                            ),
+                          )
+                        : current.filters,
+                  }));
+                  if (search.request && kind !== search.request.kind) {
+                    start(shareRequest({ ...search.request, kind }));
                   }
-                />
-                {(
-                  [
-                    ["geography", labels.filterGeography],
-                    ["classification", labels.filterClassification],
-                  ] as const
-                ).map(([key, label]) => (
-                  <Field key={key}>
-                    <FieldLabel htmlFor={`description-filter-${key}`}>{label}</FieldLabel>
-                    <Input
-                      id={`description-filter-${key}`}
-                      value={String(requestState.filters[key] ?? "")}
-                      onChange={(event) =>
+                }}
+              />
+            }
+            actions={
+              <>
+                {response && (
+                  <Button
+                    disabled={!search.request}
+                    onClick={() => setSharePreview(search.request ?? parsedRequest)}
+                    type="button"
+                    variant="ghost"
+                    aria-label={labels.shareQuery}
+                    title={labels.shareQuery}
+                  >
+                    <LinkIcon aria-hidden="true" />
+                    {labels.shareQuery}
+                  </Button>
+                )}
+                <ResponsiveFacets
+                  drawer
+                  labels={{
+                    title: catalog("facets"),
+                    description: catalog("filtersDescription"),
+                    close: common("close"),
+                  }}
+                >
+                  <div className="flex flex-col gap-4">
+                    <DataBrandFilter
+                      allowedBrandCodes={allowedBrandCodes}
+                      value={requestState.filters.brand}
+                      label={common("dataBrand")}
+                      allLabel={common("allDataBrands")}
+                      onChange={(brand) =>
                         setRequestState((current) => {
                           const filters = { ...current.filters };
-                          if (event.target.value.trim()) filters[key] = event.target.value.trim();
-                          else delete filters[key];
+                          if (brand) filters.brand = brand;
+                          else delete filters.brand;
                           return { ...current, filters };
                         })
                       }
                     />
-                  </Field>
-                ))}
-                <Button
-                  disabled={!parsedRequest}
-                  onClick={() => {
-                    if (parsedRequest) start(parsedRequest);
-                  }}
-                >
-                  {labels.submit}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
-                >
-                  {labels.clearFilters}
-                </Button>
-              </div>
-            </ResponsiveFacets>
-          }
-        />
+                    {(
+                      [
+                        ["geography", labels.filterGeography],
+                        ["classification", labels.filterClassification],
+                      ] as const
+                    ).map(([key, label]) => (
+                      <Field key={key}>
+                        <FieldLabel htmlFor={`description-filter-${key}`}>{label}</FieldLabel>
+                        <Input
+                          id={`description-filter-${key}`}
+                          value={String(requestState.filters[key] ?? "")}
+                          onChange={(event) =>
+                            setRequestState((current) => {
+                              const filters = { ...current.filters };
+                              if (event.target.value.trim())
+                                filters[key] = event.target.value.trim();
+                              else delete filters[key];
+                              return { ...current, filters };
+                            })
+                          }
+                        />
+                      </Field>
+                    ))}
+                    {(["referenceYearFrom", "referenceYearTo"] as const).map((key) => (
+                      <Field key={key}>
+                        <FieldLabel htmlFor={`description-filter-${key}`}>
+                          {key === "referenceYearFrom"
+                            ? labels.filterYearFrom
+                            : labels.filterYearTo}
+                        </FieldLabel>
+                        <Input
+                          id={`description-filter-${key}`}
+                          type="number"
+                          min={0}
+                          max={9999}
+                          step={1}
+                          value={requestState.filters[key] ?? ""}
+                          onChange={(event) =>
+                            setRequestState((current) => {
+                              const filters = { ...current.filters };
+                              if (event.target.value === "") delete filters[key];
+                              else filters[key] = event.target.valueAsNumber;
+                              return { ...current, filters };
+                            })
+                          }
+                        />
+                      </Field>
+                    ))}
+                    <SheetClose asChild>
+                      <Button
+                        disabled={!!search.request && !parsedRequest}
+                        onClick={() => {
+                          if (search.request && parsedRequest) start(parsedRequest);
+                        }}
+                      >
+                        {catalog("applyFilters")}
+                      </Button>
+                    </SheetClose>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
+                    >
+                      {labels.clearFilters}
+                    </Button>
+                  </div>
+                </ResponsiveFacets>
+              </>
+            }
+          />
 
-        {sharePreview && parsedRequest ? (
+          {filterEntries.length ? (
+            <section className="catalog-applied-filters" aria-label={labels.activeFilters}>
+              {filterEntries.map((entry) => (
+                <Badge variant="secondary" key={entry.label}>
+                  {entry.label}: {entry.value}
+                </Badge>
+              ))}
+            </section>
+          ) : null}
+        </div>
+      </SearchModeSection>
+      <SearchModeSection mode="description" area="results" when={!!search.request || !!message}>
+        {search.request ? (
+          <p className="catalog-applied-query">
+            {catalog("showingResultsFor", { query: search.request.query })}
+          </p>
+        ) : null}
+        {sharePreview ? (
           <Card size="sm">
             <CardHeader>
               <CardTitle>
@@ -425,13 +489,13 @@ export function HybridSearchPanel({
               <dl className="flex flex-col gap-3">
                 <div>
                   <dt className="text-muted-foreground text-sm">{labels.kind}</dt>
-                  <dd>{parsedRequest.kind === "process" ? labels.process : labels.flow}</dd>
+                  <dd>{sharePreview.kind === "process" ? labels.process : labels.flow}</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground text-sm">{labels.queryLabel}</dt>
-                  <dd className="break-words whitespace-pre-wrap">{parsedRequest.query}</dd>
+                  <dd className="break-words whitespace-pre-wrap">{sharePreview.query}</dd>
                 </div>
-                {filterEntries.map((entry) => (
+                {describeFilters(sharePreview.filters, sharePreview.kind).map((entry) => (
                   <div key={entry.label}>
                     <dt className="text-muted-foreground text-sm">{entry.label}</dt>
                     <dd className="break-words">{entry.value}</dd>
@@ -443,18 +507,18 @@ export function HybridSearchPanel({
                   {labels.technicalPreview}
                 </summary>
                 <pre className="bg-muted max-h-64 overflow-auto rounded-lg p-3 text-xs break-words whitespace-pre-wrap">
-                  {JSON.stringify(parsedRequest, null, 2)}
+                  {JSON.stringify(sharePreview, null, 2)}
                 </pre>
               </details>
               <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={async () => {
                     try {
-                      const fragment = encodeHybridQueryFragment(shareRequest(requestState));
+                      const fragment = encodeHybridQueryFragment(sharePreview);
                       const url = `${window.location.origin}${window.location.pathname}${fragment}`;
                       await navigator.clipboard.writeText(url);
                       setMessage(labels.shared);
-                      setSharePreview(false);
+                      setSharePreview(null);
                     } catch {
                       setMessage(labels.error);
                     }
@@ -464,7 +528,7 @@ export function HybridSearchPanel({
                   <LinkIcon data-icon="inline-start" />
                   {labels.shareConfirm}
                 </Button>
-                <Button onClick={() => setSharePreview(false)} type="button" variant="ghost">
+                <Button onClick={() => setSharePreview(null)} type="button" variant="ghost">
                   <XIcon data-icon="inline-start" />
                   {labels.shareCancel}
                 </Button>
@@ -658,7 +722,7 @@ export function HybridSearchPanel({
         <p aria-live="polite" className="text-muted-foreground min-h-5 text-sm">
           {message}
         </p>
-      </CardContent>
-    </Card>
+      </SearchModeSection>
+    </div>
   );
 }

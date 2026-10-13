@@ -4,7 +4,7 @@ import { CitationCopy } from "../../src/features/catalog/citation-copy";
 import { CatalogResultsToolbar } from "../../src/features/catalog/catalog-results-toolbar";
 import { CatalogSearchInput } from "../../src/features/catalog/catalog-search-input";
 import { CatalogSearchLayout } from "../../src/features/catalog/catalog-search-layout";
-import { SearchModes } from "../../src/features/catalog/search-modes";
+import { SearchModes, SearchModeSection } from "../../src/features/catalog/search-modes";
 import { HybridSearchPanel } from "../../src/features/catalog/hybrid-search-panel";
 import { resultLabels } from "../fixtures";
 import type { PortalLocale } from "../../src/i18n/routing";
@@ -174,10 +174,13 @@ export function SearchReference(props: SearchReferenceProps) {
   const activeFilters = Object.entries(filters).filter(([, value]) => value);
   return (
     <SearchModes
+      initialResultsMode="keyword"
+      initialInputMode="keyword"
+      initialDraft={{ kind: "process", filters: {}, query: draft }}
       labels={{
-        mode: m.Search.searchMode,
-        keyword: m.Search.keywordMode,
-        description: m.Search.descriptionMode,
+        smartMatch: m.Search.smartMatch,
+        smartMatchOnHint: m.Search.smartMatchOnHint,
+        smartMatchOffHint: m.Search.smartMatchOffHint,
       }}
       description={
         <HybridSearchPanel
@@ -191,216 +194,220 @@ export function SearchReference(props: SearchReferenceProps) {
       }
       keyword={
         <>
-          <section className="cr-search-heading" aria-labelledby="cr-search-title">
-            <div className="cr-title-line">
-              <div>
-                <h1 id="cr-search-title">{m.CatalogReference.catalog}</h1>
-              </div>
-            </div>
-            <search aria-label={m.Search.title}>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  props.onSearch();
-                }}
-                className="cr-search-form"
-              >
-                <CatalogSearchInput
-                  submitLabel={m.Common.search}
-                  clearLabel={m.Common.clear}
-                  onClear={() => props.onDraft("")}
-                  aria-label={m.Search.label}
-                  value={draft}
-                  placeholder={m.Search.placeholder}
-                  onChange={(event) => props.onDraft(event.target.value)}
-                />
-              </form>
-            </search>
-          </section>
-          <CatalogSearchLayout>
-            <section className="cr-results" aria-labelledby="cr-results-heading">
-              <CatalogResultsToolbar
-                titleId="cr-results-heading"
-                title={
-                  <>
-                    {query ? `“${query}”` : m.CatalogReference.catalog}
-                    <span>
-                      {m.CatalogReference.resultCount.replace("{count}", String(matches.length))}
-                    </span>
-                  </>
-                }
-                actions={
-                  <>
-                    <div className="catalog-filter-trigger">
-                      <Sheet>
-                        <SheetTrigger asChild>
-                          <Button variant="outline" size="sm" aria-label={m.Search.facets}>
-                            <SlidersHorizontalIcon aria-hidden="true" />
-                            {m.CatalogReference.filter}
-                            {activeFilters.length > 0 && (
-                              <span className="cr-count">{activeFilters.length}</span>
-                            )}
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent
-                          side="left"
-                          className="cr-surface"
-                          closeLabel={m.Common.close}
-                        >
-                          <SheetHeader>
-                            <SheetTitle>{m.Search.facets}</SheetTitle>
-                            <SheetDescription>{m.Search.description}</SheetDescription>
-                          </SheetHeader>
-                          <div className="cr-filter-sheet">
-                            <FilterControls {...props} />
-                            <SheetClose asChild>
-                              <Button>{m.CatalogReference.applyFilters}</Button>
-                            </SheetClose>
-                          </div>
-                        </SheetContent>
-                      </Sheet>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      aria-label={m.CatalogReference.sort}
-                      aria-pressed={props.newest}
-                      onClick={props.onSort}
-                    >
-                      {props.newest
-                        ? m.CatalogReference.yearDescending
-                        : m.CatalogReference.relevance}
-                      <ChevronDownIcon aria-hidden="true" />
-                    </Button>
-                  </>
-                }
-              />
-              {activeFilters.length > 0 && (
-                <div className="cr-active-filters">
-                  {activeFilters.map(([key, value]) => {
-                    const label =
-                      key === "region"
-                        ? (props.records.find((r) => r.region === value)?.geography ?? value)
-                        : key === "access"
-                          ? value === "open"
-                            ? m.CatalogReference.availabilityExchanges
-                            : m.CatalogReference.availabilityMetadata
-                          : value;
-                    return (
-                      <Button
-                        key={key}
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => props.onFilter(key as keyof ReferenceFilters, "")}
-                      >
-                        {label}
-                        <XIcon aria-hidden="true" />
-                      </Button>
-                    );
-                  })}
+          <SearchModeSection mode="keyword" area="input">
+            <section className="cr-search-heading" aria-labelledby="cr-search-title">
+              <div className="cr-title-line">
+                <div>
+                  <h1 id="cr-search-title">{m.CatalogReference.catalog}</h1>
                 </div>
-              )}
-              {matches.length ? (
-                <CatalogResultList>
-                  {matches.slice(0, props.visibleCount).map((record) => (
-                    <CatalogResultRow
-                      key={record.ref}
-                      selected={selected.includes(record.ref)}
-                      selection={
-                        <>
-                          {" "}
-                          <label className="cr-record-select">
-                            <input
-                              type="checkbox"
-                              checked={selected.includes(record.ref)}
-                              disabled={selected.length >= 4 && !selected.includes(record.ref)}
-                              aria-label={`${m.CatalogReference.select}: ${record.name}`}
-                              onChange={() => props.onSelect(record.ref)}
-                            />
-                            <span className="sr-only">{m.CatalogReference.select}</span>
-                          </label>
-                        </>
-                      }
-                      title={
-                        <>
-                          {" "}
-                          <a
-                            href={`#catalog-record-${record.ref}`}
-                            data-record-ref={record.ref}
-                            onClick={(event) => {
-                              event.preventDefault();
-                              props.onOpen(record.ref);
-                            }}
-                          >
-                            {record.name}
-                          </a>
-                        </>
-                      }
-                      tags={
-                        <>
-                          {" "}
-                          <DatasetVersionTag
-                            version={record.ref.split("@")[1]!}
-                            label={m.Search.version}
-                          />
-                          <PublicContentTag
-                            content={record.open ? "exchanges" : "metadata"}
-                            labels={m.CatalogReference}
-                            compact
-                          />
-                        </>
-                      }
-                      action={
-                        <div className="catalog-result-actions">
-                          <CatalogCopyIdentity reference={record.ref} />
-                          <CitationCopy
-                            iconOnly
-                            showText={false}
-                            citation={referenceCitation(record, props.locale)}
-                            copyLabel={m.Detail.copyCitation}
-                            copiedLabel={m.Detail.citationCopied}
-                            failureLabel={m.Detail.copyFailed}
-                          />{" "}
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label={`${saved.includes(record.ref) ? m.CatalogReference.unsave : m.Detail.collect}: ${record.name}`}
-                            aria-pressed={saved.includes(record.ref)}
-                            onClick={() => props.onSave(record.ref)}
-                          >
-                            {saved.includes(record.ref) ? (
-                              <CheckIcon aria-hidden="true" />
-                            ) : (
-                              <BookmarkIcon aria-hidden="true" />
-                            )}
-                          </Button>
-                        </div>
-                      }
-                    >
-                      <Metadata record={record} labels={m} />
-                      <CatalogResultSummary text={record.description} query={query} />
-                    </CatalogResultRow>
-                  ))}
-                </CatalogResultList>
-              ) : (
-                <NoResults labels={m} onReset={props.onReset} />
-              )}
-              {matches.length > 0 && (
-                <ResultsContinuation
-                  state={props.visibleCount >= matches.length ? "complete" : props.pageState}
-                  summary={
-                    props.visibleCount >= matches.length
-                      ? m.CatalogReference.recordsShown.replace("{count}", String(matches.length))
-                      : m.CatalogReference.recordsProgress
-                          .replace("{shown}", String(props.visibleCount))
-                          .replace("{total}", String(matches.length))
-                  }
-                  labels={{ ...m.Hybrid, retry: m.Common.retry }}
-                  onLoadMore={props.onLoadMore}
-                />
-              )}
+              </div>
+              <search aria-label={m.Search.title}>
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    props.onSearch();
+                  }}
+                  className="cr-search-form"
+                >
+                  <CatalogSearchInput
+                    submitLabel={m.Common.search}
+                    clearLabel={m.Common.clear}
+                    onClear={() => props.onDraft("")}
+                    aria-label={m.Search.label}
+                    value={draft}
+                    placeholder={m.Search.placeholder}
+                    onChange={(event) => props.onDraft(event.target.value)}
+                  />
+                </form>
+              </search>
             </section>
-          </CatalogSearchLayout>
+          </SearchModeSection>
+          <SearchModeSection mode="keyword" area="results">
+            <CatalogSearchLayout>
+              <section className="cr-results" aria-labelledby="cr-results-heading">
+                <CatalogResultsToolbar
+                  titleId="cr-results-heading"
+                  title={
+                    <>
+                      {query ? `“${query}”` : m.CatalogReference.catalog}
+                      <span>
+                        {m.CatalogReference.resultCount.replace("{count}", String(matches.length))}
+                      </span>
+                    </>
+                  }
+                  actions={
+                    <>
+                      <div className="catalog-filter-trigger">
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button variant="outline" size="sm" aria-label={m.Search.facets}>
+                              <SlidersHorizontalIcon aria-hidden="true" />
+                              {m.CatalogReference.filter}
+                              {activeFilters.length > 0 && (
+                                <span className="cr-count">{activeFilters.length}</span>
+                              )}
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent
+                            side="left"
+                            className="cr-surface"
+                            closeLabel={m.Common.close}
+                          >
+                            <SheetHeader>
+                              <SheetTitle>{m.Search.facets}</SheetTitle>
+                              <SheetDescription>{m.Search.description}</SheetDescription>
+                            </SheetHeader>
+                            <div className="cr-filter-sheet">
+                              <FilterControls {...props} />
+                              <SheetClose asChild>
+                                <Button>{m.CatalogReference.applyFilters}</Button>
+                              </SheetClose>
+                            </div>
+                          </SheetContent>
+                        </Sheet>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label={m.CatalogReference.sort}
+                        aria-pressed={props.newest}
+                        onClick={props.onSort}
+                      >
+                        {props.newest
+                          ? m.CatalogReference.yearDescending
+                          : m.CatalogReference.relevance}
+                        <ChevronDownIcon aria-hidden="true" />
+                      </Button>
+                    </>
+                  }
+                />
+                {activeFilters.length > 0 && (
+                  <div className="cr-active-filters">
+                    {activeFilters.map(([key, value]) => {
+                      const label =
+                        key === "region"
+                          ? (props.records.find((r) => r.region === value)?.geography ?? value)
+                          : key === "access"
+                            ? value === "open"
+                              ? m.CatalogReference.availabilityExchanges
+                              : m.CatalogReference.availabilityMetadata
+                            : value;
+                      return (
+                        <Button
+                          key={key}
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => props.onFilter(key as keyof ReferenceFilters, "")}
+                        >
+                          {label}
+                          <XIcon aria-hidden="true" />
+                        </Button>
+                      );
+                    })}
+                  </div>
+                )}
+                {matches.length ? (
+                  <CatalogResultList>
+                    {matches.slice(0, props.visibleCount).map((record) => (
+                      <CatalogResultRow
+                        key={record.ref}
+                        selected={selected.includes(record.ref)}
+                        selection={
+                          <>
+                            {" "}
+                            <label className="cr-record-select">
+                              <input
+                                type="checkbox"
+                                checked={selected.includes(record.ref)}
+                                disabled={selected.length >= 4 && !selected.includes(record.ref)}
+                                aria-label={`${m.CatalogReference.select}: ${record.name}`}
+                                onChange={() => props.onSelect(record.ref)}
+                              />
+                              <span className="sr-only">{m.CatalogReference.select}</span>
+                            </label>
+                          </>
+                        }
+                        title={
+                          <>
+                            {" "}
+                            <a
+                              href={`#catalog-record-${record.ref}`}
+                              data-record-ref={record.ref}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                props.onOpen(record.ref);
+                              }}
+                            >
+                              {record.name}
+                            </a>
+                          </>
+                        }
+                        tags={
+                          <>
+                            {" "}
+                            <DatasetVersionTag
+                              version={record.ref.split("@")[1]!}
+                              label={m.Search.version}
+                            />
+                            <PublicContentTag
+                              content={record.open ? "exchanges" : "metadata"}
+                              labels={m.CatalogReference}
+                              compact
+                            />
+                          </>
+                        }
+                        action={
+                          <div className="catalog-result-actions">
+                            <CatalogCopyIdentity reference={record.ref} />
+                            <CitationCopy
+                              iconOnly
+                              showText={false}
+                              citation={referenceCitation(record, props.locale)}
+                              copyLabel={m.Detail.copyCitation}
+                              copiedLabel={m.Detail.citationCopied}
+                              failureLabel={m.Detail.copyFailed}
+                            />{" "}
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              aria-label={`${saved.includes(record.ref) ? m.CatalogReference.unsave : m.Detail.collect}: ${record.name}`}
+                              aria-pressed={saved.includes(record.ref)}
+                              onClick={() => props.onSave(record.ref)}
+                            >
+                              {saved.includes(record.ref) ? (
+                                <CheckIcon aria-hidden="true" />
+                              ) : (
+                                <BookmarkIcon aria-hidden="true" />
+                              )}
+                            </Button>
+                          </div>
+                        }
+                      >
+                        <Metadata record={record} labels={m} />
+                        <CatalogResultSummary text={record.description} query={query} />
+                      </CatalogResultRow>
+                    ))}
+                  </CatalogResultList>
+                ) : (
+                  <NoResults labels={m} onReset={props.onReset} />
+                )}
+                {matches.length > 0 && (
+                  <ResultsContinuation
+                    state={props.visibleCount >= matches.length ? "complete" : props.pageState}
+                    summary={
+                      props.visibleCount >= matches.length
+                        ? m.CatalogReference.recordsShown.replace("{count}", String(matches.length))
+                        : m.CatalogReference.recordsProgress
+                            .replace("{shown}", String(props.visibleCount))
+                            .replace("{total}", String(matches.length))
+                    }
+                    labels={{ ...m.Hybrid, retry: m.Common.retry }}
+                    onLoadMore={props.onLoadMore}
+                  />
+                )}
+              </section>
+            </CatalogSearchLayout>
+          </SearchModeSection>
         </>
       }
     />

@@ -450,8 +450,7 @@ test("ordinary catalog does not fetch maps and hierarchy constraints are explici
   await expect(page.locator("main")).toBeVisible();
   await page.goto("/en/search?kind=process&classNode=class:isic:0&classScope=subtree");
   await expect(page.getByRole("heading", { name: "Browse categories" })).toBeVisible();
-  await page.getByRole("combobox", { name: /Keyword search/ }).click();
-  await page.getByRole("option", { name: "Describe your need" }).click();
+  await expect(page.getByRole("button", { name: "Smart matching" })).toBeDisabled();
   await expect(
     page.getByText("To describe your needs, first clear category and region hierarchy selections."),
   ).toBeVisible();

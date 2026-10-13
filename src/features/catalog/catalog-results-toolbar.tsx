@@ -10,6 +10,7 @@ export function CatalogResultsToolbar({
   actions,
   headingRef,
   hideTitle = false,
+  showSaved = true,
 }: {
   title: ReactNode;
   titleId: string;
@@ -17,6 +18,7 @@ export function CatalogResultsToolbar({
   actions: ReactNode;
   headingRef?: Ref<HTMLHeadingElement>;
   hideTitle?: boolean;
+  showSaved?: boolean;
 }) {
   return (
     <div className="catalog-results-toolbar">
@@ -35,7 +37,7 @@ export function CatalogResultsToolbar({
       </div>
       <div className="catalog-results-toolbar-actions">
         {actions}
-        <SavedDatasetsLink />
+        {showSaved && <SavedDatasetsLink />}
       </div>
     </div>
   );

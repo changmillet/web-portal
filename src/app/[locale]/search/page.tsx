@@ -425,12 +425,10 @@ export default async function SearchPage({
                 : undefined
             }
             labels={{
-              mode: t("searchMode"),
-              keyword: t("keywordMode"),
-              description: t("descriptionMode"),
+              smartMatch: t("smartMatch"),
             }}
             initialResultsMode={initialEntry ? null : "keyword"}
-            initialDraft={{ kind: parsedSearch.kind, filters: parsedSearch.filters }}
+            initialDraft={{ kind: parsedSearch.kind, filters: parsedSearch.filters, query }}
             help={{ keyword: t("keywordHelp"), description: hybrid("privacy") }}
             browse={
               initialEntry ? (

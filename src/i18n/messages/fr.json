@@ -136,6 +136,7 @@
     "sortRelevance": "Ordre par défaut",
     "sortModified": "Mise à jour récente",
     "sortName": "Par nom",
+    "smartMatch": "Recherche intelligente",
     "keywordMode": "Recherche par mots-clés",
     "descriptionMode": "Décrire le besoin",
     "filtersDescription": "Affinez les résultats par région et période.",

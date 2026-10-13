@@ -29,12 +29,13 @@ const ModeContext = createContext<{
   descriptionDraft: SearchDraft;
   setDescriptionDraft: Dispatch<SetStateAction<SearchDraft>>;
   hasSharedHelp: boolean;
+  smartMatchDisabled: boolean;
   mode: SearchMode;
   resultsMode: SearchMode | null;
   change: (value: SearchMode) => void;
   showDescriptionResults: () => void;
   restoreKeywordResults: () => void;
-  labels: { mode: string; keyword: string; description: string };
+  labels: { smartMatch: string };
 } | null>(null);
 
 export function useSearchWorkspace() {
@@ -46,20 +47,26 @@ export function SearchModeControl() {
   const context = useSearchWorkspace();
   if (!context) return null;
   return (
-    <fieldset className="catalog-search-mode-switch flex" aria-label={context.labels.mode}>
-      {(["keyword", "description"] as const).map((mode) => (
-        <Button
-          key={mode}
-          type="button"
-          variant="ghost"
-          aria-pressed={context.mode === mode}
-          data-state={context.mode === mode ? "on" : "off"}
-          onClick={() => context.change(mode)}
-        >
-          {context.labels[mode]}
-        </Button>
-      ))}
-    </fieldset>
+    <label className="catalog-smart-match">
+      <input
+        type="checkbox"
+        checked={context.mode === "description"}
+        disabled={context.smartMatchDisabled}
+        onChange={(event) => {
+          const workspace = event.currentTarget.closest(".catalog-search-modes");
+          context.change(event.target.checked ? "description" : "keyword");
+          // Both forms stay mounted; move keyboard focus to the now-visible checkbox.
+          requestAnimationFrame(() => {
+            const checkbox = [
+              ...(workspace?.querySelectorAll<HTMLInputElement>(".catalog-smart-match input") ??
+                []),
+            ].find((node) => node.getClientRects().length > 0);
+            checkbox?.focus();
+          });
+        }}
+      />
+      <span>{context.labels.smartMatch}</span>
+    </label>
   );
 }
 
@@ -91,13 +98,9 @@ export function SearchModeSection({
   );
 }
 
-function subscribe(callback: () => void) {
-  window.addEventListener("hashchange", callback);
-  return () => window.removeEventListener("hashchange", callback);
-}
-function isSharedDescription() {
-  return window.location.hash.startsWith("#hybrid=") || window.location.hash === "#description";
-}
+const subscribe = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
 
 /** @import import { SearchModes } from "@/features/catalog/search-modes"; */
 export function SearchModes({
@@ -107,6 +110,7 @@ export function SearchModes({
   descriptionBlocked,
   browse,
   initialResultsMode = null,
+  initialInputMode = "description",
   initialDraft,
   help,
 }: {
@@ -115,25 +119,45 @@ export function SearchModes({
   description: ReactNode;
   browse?: ReactNode;
   initialResultsMode?: SearchMode | null;
-  initialDraft?: Pick<SearchDraft, "kind" | "filters">;
+  initialInputMode?: SearchMode;
+  initialDraft?: Pick<SearchDraft, "kind" | "filters"> & { query?: string };
   help?: { keyword: string; description: string };
-  labels: { mode: string; keyword: string; description: string };
+  labels: { smartMatch: string };
 }) {
   const [descriptionDraft, setDescriptionDraft] = useState<SearchDraft>({
     kind: initialDraft?.kind ?? "process",
     filters: initialDraft?.filters ?? {},
-    query: "",
+    query: initialDraft?.query ?? "",
     limit: 20,
   });
   const [choice, setChoice] = useState<SearchMode | null>(null);
   const [resultsMode, setResultsMode] = useState(initialResultsMode);
-  const sharedDescription = useSyncExternalStore(subscribe, isSharedDescription, () => false);
-  const mode = choice ?? (sharedDescription ? "description" : "keyword");
+  const hydrated = useSyncExternalStore(subscribe, clientReady, serverReady);
+  const mode = choice ?? (hydrated && !descriptionBlocked ? initialInputMode : "keyword");
   const keywordWorkspace = <Fragment key="keyword">{keyword}</Fragment>;
   const descriptionWorkspace = (
-    <Fragment key="description">
-      {descriptionBlocked ? (
-        <SearchModeSection mode="description" area="input">
+    <Fragment key="description">{!descriptionBlocked && description}</Fragment>
+  );
+  return (
+    <ModeContext.Provider
+      value={{
+        mode,
+        descriptionDraft,
+        setDescriptionDraft,
+        hasSharedHelp: !!help,
+        smartMatchDisabled: !hydrated || !!descriptionBlocked,
+        resultsMode,
+        labels,
+        change: setChoice,
+        showDescriptionResults: () => setResultsMode("description"),
+        restoreKeywordResults: () => setResultsMode(initialResultsMode),
+      }}
+    >
+      <div className="catalog-search-modes flex flex-col gap-6">
+        {mode === "keyword"
+          ? [keywordWorkspace, descriptionWorkspace]
+          : [descriptionWorkspace, keywordWorkspace]}
+        {descriptionBlocked && (
           <Alert>
             <AlertDescription>
               <p>{descriptionBlocked.message}</p>
@@ -144,31 +168,7 @@ export function SearchModes({
               </Button>
             </AlertDescription>
           </Alert>
-        </SearchModeSection>
-      ) : (
-        description
-      )}
-    </Fragment>
-  );
-  return (
-    <ModeContext.Provider
-      value={{
-        mode,
-        descriptionDraft,
-        setDescriptionDraft,
-        hasSharedHelp: !!help,
-        resultsMode,
-        labels,
-        change: setChoice,
-        showDescriptionResults: () => setResultsMode("description"),
-        restoreKeywordResults: () => setResultsMode(initialResultsMode),
-      }}
-    >
-      <div className="catalog-search-modes flex flex-col gap-6">
-        <SearchModeControl />
-        {mode === "keyword"
-          ? [keywordWorkspace, descriptionWorkspace]
-          : [descriptionWorkspace, keywordWorkspace]}
+        )}
         {help && (
           <p className="catalog-input-help catalog-workspace-help">
             {(["keyword", "description"] as const).map((key) => (

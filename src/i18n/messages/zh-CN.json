@@ -136,6 +136,7 @@
     "sortRelevance": "默认顺序",
     "sortModified": "最近更新",
     "sortName": "按名称排序",
+    "smartMatch": "智能匹配",
     "keywordMode": "关键词搜索",
     "descriptionMode": "描述需求",
     "filtersDescription": "按地区和时间缩小结果范围。",

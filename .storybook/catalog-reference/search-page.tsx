@@ -175,10 +175,10 @@ export function SearchReference(props: SearchReferenceProps) {
   return (
     <SearchModes
       initialResultsMode="keyword"
+      initialInputMode="keyword"
+      initialDraft={{ kind: "process", filters: {}, query: draft }}
       labels={{
-        mode: m.Search.searchMode,
-        keyword: m.Search.keywordMode,
-        description: m.Search.descriptionMode,
+        smartMatch: m.Search.smartMatch,
       }}
       description={
         <HybridSearchPanel

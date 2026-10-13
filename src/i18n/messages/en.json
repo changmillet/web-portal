@@ -136,6 +136,7 @@
     "sortRelevance": "Default order",
     "sortModified": "Recently updated",
     "sortName": "Name",
+    "smartMatch": "Smart matching",
     "keywordMode": "Keyword search",
     "descriptionMode": "Describe your need",
     "filtersDescription": "Narrow results by geography and time.",

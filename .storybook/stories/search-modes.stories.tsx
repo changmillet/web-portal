@@ -19,6 +19,8 @@ const meta = {
   component: SearchModes,
   subcomponents: {
     SearchModeControl,
+    SearchModeSection,
+    SavedDatasetsLink,
     CatalogSearchHeading,
     HybridSearchPanel,
     CatalogSearchInput,

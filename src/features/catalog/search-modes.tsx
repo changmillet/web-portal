@@ -104,7 +104,9 @@ export function SearchModeControl() {
   );
 }
 
-/** Input mode and submitted results are deliberately independent. Hidden sections stay mounted. */
+/** Input mode and submitted results are deliberately independent. Hidden sections stay mounted.
+ * @import import { SearchModeSection } from "@/features/catalog/search-modes";
+ */
 export function SearchModeSection({
   mode,
   area,
@@ -222,7 +224,9 @@ export function SearchModes({
   );
 }
 
-/** Shared page heading for the production route and its complete Storybook workspace. */
+/** Shared page heading for the production route and its complete Storybook workspace.
+ * @import import { CatalogSearchHeading } from "@/features/catalog/search-modes";
+ */
 export function CatalogSearchHeading({
   title,
   description,

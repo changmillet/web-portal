@@ -426,6 +426,8 @@ export default async function SearchPage({
             }
             labels={{
               smartMatch: t("smartMatch"),
+              smartMatchOnHint: t("smartMatchOnHint"),
+              smartMatchOffHint: t("smartMatchOffHint"),
             }}
             initialResultsMode={initialEntry ? null : "keyword"}
             initialDraft={{ kind: parsedSearch.kind, filters: parsedSearch.filters, query }}

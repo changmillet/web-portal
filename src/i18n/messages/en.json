@@ -137,6 +137,8 @@
     "sortModified": "Recently updated",
     "sortName": "Name",
     "smartMatch": "Smart matching",
+    "smartMatchOnHint": "Smart matching is on. Click to switch to keyword search.",
+    "smartMatchOffHint": "Smart matching is off; keyword search is active. Click to search by describing your needs.",
     "keywordMode": "Keyword search",
     "descriptionMode": "Describe your need",
     "filtersDescription": "Narrow results by geography and time.",

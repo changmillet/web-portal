@@ -179,6 +179,8 @@ export function SearchReference(props: SearchReferenceProps) {
       initialDraft={{ kind: "process", filters: {}, query: draft }}
       labels={{
         smartMatch: m.Search.smartMatch,
+        smartMatchOnHint: m.Search.smartMatchOnHint,
+        smartMatchOffHint: m.Search.smartMatchOffHint,
       }}
       description={
         <HybridSearchPanel

@@ -12,6 +12,7 @@ import {
   type SetStateAction,
 } from "react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
+import { Tooltip } from "radix-ui";
 import { SparklesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -26,6 +27,11 @@ export type SearchDraft = {
 };
 
 type SearchMode = "keyword" | "description";
+type SearchModeLabels = {
+  smartMatch: string;
+  smartMatchOnHint: string;
+  smartMatchOffHint: string;
+};
 const ModeContext = createContext<{
   descriptionDraft: SearchDraft;
   setDescriptionDraft: Dispatch<SetStateAction<SearchDraft>>;
@@ -36,7 +42,7 @@ const ModeContext = createContext<{
   change: (value: SearchMode) => void;
   showDescriptionResults: () => void;
   restoreKeywordResults: () => void;
-  labels: { smartMatch: string };
+  labels: SearchModeLabels;
 } | null>(null);
 
 export function useSearchWorkspace() {
@@ -47,34 +53,54 @@ export function useSearchWorkspace() {
 export function SearchModeControl() {
   const context = useSearchWorkspace();
   if (!context) return null;
+  const hint =
+    context.mode === "description"
+      ? context.labels.smartMatchOnHint
+      : context.labels.smartMatchOffHint;
   return (
-    <Button
-      className="catalog-smart-match"
-      type="button"
-      variant="ghost"
-      size="icon"
-      aria-label={context.labels.smartMatch}
-      title={context.labels.smartMatch}
-      aria-pressed={context.mode === "description"}
-      disabled={context.smartMatchDisabled}
-      onClick={(event) => {
-        const previousToggle = event.currentTarget;
-        const workspace = previousToggle.closest(".catalog-search-modes");
-        context.change(context.mode === "description" ? "keyword" : "description");
-        // Both forms stay mounted; keep focus on the now-visible toggle.
-        requestAnimationFrame(() => {
-          // Do not steal focus if the user has already moved to another control.
-          const active = previousToggle.ownerDocument.activeElement;
-          if (active !== previousToggle && active !== previousToggle.ownerDocument.body) return;
-          const toggle = [
-            ...(workspace?.querySelectorAll<HTMLButtonElement>(".catalog-smart-match") ?? []),
-          ].find((node) => node.getClientRects().length > 0);
-          toggle?.focus();
-        });
-      }}
-    >
-      <SparklesIcon aria-hidden="true" />
-    </Button>
+    <Tooltip.Provider delayDuration={250}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <Button
+            className="catalog-smart-match"
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={context.labels.smartMatch}
+            aria-pressed={context.mode === "description"}
+            disabled={context.smartMatchDisabled}
+            onClick={(event) => {
+              const previousToggle = event.currentTarget;
+              const workspace = previousToggle.closest(".catalog-search-modes");
+              context.change(context.mode === "description" ? "keyword" : "description");
+              // Both forms stay mounted; keep focus on the now-visible toggle.
+              requestAnimationFrame(() => {
+                // Do not steal focus if the user has already moved to another control.
+                const active = previousToggle.ownerDocument.activeElement;
+                if (active !== previousToggle && active !== previousToggle.ownerDocument.body)
+                  return;
+                const toggle = [
+                  ...(workspace?.querySelectorAll<HTMLButtonElement>(".catalog-smart-match") ?? []),
+                ].find((node) => node.getClientRects().length > 0);
+                toggle?.focus();
+              });
+            }}
+          >
+            <SparklesIcon aria-hidden="true" />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content
+            className="catalog-mode-tooltip"
+            side="top"
+            sideOffset={6}
+            collisionPadding={16}
+          >
+            {hint}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }
 
@@ -130,7 +156,7 @@ export function SearchModes({
   initialInputMode?: SearchMode;
   initialDraft?: Pick<SearchDraft, "kind" | "filters"> & { query?: string };
   help?: { keyword: string; description: string };
-  labels: { smartMatch: string };
+  labels: SearchModeLabels;
 }) {
   const [descriptionDraft, setDescriptionDraft] = useState<SearchDraft>({
     kind: initialDraft?.kind ?? "process",

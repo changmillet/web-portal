@@ -137,6 +137,8 @@
     "sortModified": "Zuletzt aktualisiert",
     "sortName": "Nach Name",
     "smartMatch": "Intelligente Suche",
+    "smartMatchOnHint": "Intelligente Suche ist aktiviert. Klicken, um zur Stichwortsuche zu wechseln.",
+    "smartMatchOffHint": "Intelligente Suche ist deaktiviert; die Stichwortsuche ist aktiv. Klicken, um anhand Ihrer Bedarfsbeschreibung zu suchen.",
     "keywordMode": "Stichwortsuche",
     "descriptionMode": "Bedarf beschreiben",
     "filtersDescription": "Grenzen Sie Ergebnisse nach Region und Zeitraum ein.",

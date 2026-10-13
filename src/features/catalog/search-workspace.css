@@ -341,3 +341,16 @@
   height: 16px;
   stroke-width: 1.75;
 }
+
+.catalog-mode-tooltip {
+  z-index: 60;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+  font-size: 13px;
+  line-height: 1.5;
+}

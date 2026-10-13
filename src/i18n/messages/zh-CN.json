@@ -137,6 +137,8 @@
     "sortModified": "最近更新",
     "sortName": "按名称排序",
     "smartMatch": "智能匹配",
+    "smartMatchOnHint": "智能匹配已开启，点击切换为关键词搜索。",
+    "smartMatchOffHint": "智能匹配已关闭，当前为关键词搜索。点击开启智能匹配，按需求描述搜索。",
     "keywordMode": "关键词搜索",
     "descriptionMode": "描述需求",
     "filtersDescription": "按地区和时间缩小结果范围。",

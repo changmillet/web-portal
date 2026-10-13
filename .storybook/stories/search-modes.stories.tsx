@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect } from "storybook/test";
+import { expect, within } from "storybook/test";
 import { http, HttpResponse } from "msw";
 import {
   SearchModeControl,
@@ -65,6 +65,8 @@ const meta = {
           <SearchModes
             labels={{
               smartMatch: m.Search.smartMatch,
+              smartMatchOnHint: m.Search.smartMatchOnHint,
+              smartMatchOffHint: m.Search.smartMatchOffHint,
             }}
             help={{ keyword: m.Search.keywordHelp, description: m.Hybrid.privacy }}
             browse={loaded.browse}
@@ -107,17 +109,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Keyword: Story = {
-  play: async ({ canvas, globals, userEvent }) => {
+  play: async ({ canvas, canvasElement, globals, userEvent }) => {
     const m = dictionaries[storyLocale(globals)];
     await expect(canvas.getByRole("button", { name: m.Search.smartMatch })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+    await userEvent.hover(canvas.getByRole("button", { name: m.Search.smartMatch }));
+    const body = within(canvasElement.ownerDocument.body);
+    await expect(await body.findByRole("tooltip")).toHaveTextContent(m.Search.smartMatchOnHint);
     await userEvent.click(canvas.getByRole("button", { name: m.Search.smartMatch }));
     await expect(canvas.getByRole("button", { name: m.Search.smartMatch })).toHaveAttribute(
       "aria-pressed",
       "false",
     );
+    await userEvent.unhover(canvas.getByRole("button", { name: m.Search.smartMatch }));
+    await userEvent.hover(canvas.getByRole("button", { name: m.Search.smartMatch }));
+    await expect(await body.findByRole("tooltip")).toHaveTextContent(m.Search.smartMatchOffHint);
+    await userEvent.unhover(canvas.getByRole("button", { name: m.Search.smartMatch }));
     await expect(canvas.getByRole("button", { name: m.Hybrid.process })).toBeVisible();
     await expect(canvas.getByRole("button", { name: m.Search.facets })).toBeVisible();
     await expect(

@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-10-12
-lastReviewedCommit: 41582826d52d8ef4803eab2bd2019a04cdffbfb8
-lastReviewedNote: "Portal #151/#152: reviewed Sources discovery retirement, compatible explicit source filters, unchanged detail provenance and brand scope, Atlas navigation progress contrast, and same-origin map geometry credentials for infrastructure-protected previews; Portal remains anonymous with unchanged CSP and map fallback behavior."
+lastReviewedAt: 2026-10-13
+lastReviewedCommit: ad37b36f7975973aa623750d51c17c0a416a63ea
+lastReviewedNote: "Portal #157: reviewed the shared search workspace, default icon toggle, current-state/action tooltip, applied-result separation, sharing privacy and native keyword fallback."
 related:
   - docs/ui-system.md
   - docs/development.md

@@ -8,13 +8,27 @@ import {
   useState,
   useSyncExternalStore,
   type ReactNode,
+  type Dispatch,
+  type SetStateAction,
 } from "react";
 import { FeedbackLink as Link } from "@/components/shell/feedback-link";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+import type { PortalHybridFilters } from "@/lib/hybrid-request";
+
+export type SearchDraft = {
+  kind: "process" | "flow";
+  filters: PortalHybridFilters;
+  query: string;
+  limit: number;
+};
+
 type SearchMode = "keyword" | "description";
 const ModeContext = createContext<{
+  descriptionDraft: SearchDraft;
+  setDescriptionDraft: Dispatch<SetStateAction<SearchDraft>>;
+  hasSharedHelp: boolean;
   mode: SearchMode;
   resultsMode: SearchMode | null;
   change: (value: SearchMode) => void;
@@ -54,14 +68,22 @@ export function SearchModeSection({
   mode,
   area,
   children,
+  when = true,
 }: {
+  when?: boolean;
   mode: SearchMode;
-  area: "input" | "results";
+  area: "input" | "feedback" | "controls" | "results";
   children: ReactNode;
 }) {
   const context = useSearchWorkspace();
   const visible =
-    !context || (area === "input" ? context.mode : (context.resultsMode ?? context.mode)) === mode;
+    when &&
+    (!context ||
+      (area === "input" || area === "feedback"
+        ? context.mode
+        : area === "controls"
+          ? (context.resultsMode ?? "description")
+          : (context.resultsMode ?? context.mode)) === mode);
   return (
     <div hidden={!visible} className={`catalog-workspace-${area}`}>
       {children}
@@ -85,14 +107,24 @@ export function SearchModes({
   descriptionBlocked,
   browse,
   initialResultsMode = null,
+  initialDraft,
+  help,
 }: {
   descriptionBlocked?: { message: string; href: string; label: string };
   keyword: ReactNode;
   description: ReactNode;
   browse?: ReactNode;
   initialResultsMode?: SearchMode | null;
+  initialDraft?: Pick<SearchDraft, "kind" | "filters">;
+  help?: { keyword: string; description: string };
   labels: { mode: string; keyword: string; description: string };
 }) {
+  const [descriptionDraft, setDescriptionDraft] = useState<SearchDraft>({
+    kind: initialDraft?.kind ?? "process",
+    filters: initialDraft?.filters ?? {},
+    query: "",
+    limit: 20,
+  });
   const [choice, setChoice] = useState<SearchMode | null>(null);
   const [resultsMode, setResultsMode] = useState(initialResultsMode);
   const sharedDescription = useSyncExternalStore(subscribe, isSharedDescription, () => false);
@@ -122,6 +154,9 @@ export function SearchModes({
     <ModeContext.Provider
       value={{
         mode,
+        descriptionDraft,
+        setDescriptionDraft,
+        hasSharedHelp: !!help,
         resultsMode,
         labels,
         change: setChoice,
@@ -134,8 +169,42 @@ export function SearchModes({
         {mode === "keyword"
           ? [keywordWorkspace, descriptionWorkspace]
           : [descriptionWorkspace, keywordWorkspace]}
+        {help && (
+          <p className="catalog-input-help catalog-workspace-help">
+            {(["keyword", "description"] as const).map((key) => (
+              <span
+                key={key}
+                aria-hidden={mode !== key}
+                style={{ visibility: mode === key ? "visible" : "hidden", gridArea: "1 / 1" }}
+              >
+                {help[key]}
+              </span>
+            ))}
+          </p>
+        )}
         {!resultsMode && browse ? <div className="catalog-workspace-browse">{browse}</div> : null}
       </div>
     </ModeContext.Provider>
+  );
+}
+
+/** Shared page heading for the production route and its complete Storybook workspace. */
+export function CatalogSearchHeading({
+  title,
+  description,
+  actions,
+}: {
+  title: string;
+  description: string;
+  actions: ReactNode;
+}) {
+  return (
+    <header className="catalog-results-intro">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="font-heading text-2xl font-semibold">{title}</h1>
+        {actions}
+      </div>
+      <p className="text-muted-foreground mt-2">{description}</p>
+    </header>
   );
 }

@@ -252,17 +252,24 @@ export const PaginationFailure: Story = {
 export const ExpiredCursor: Story = { ...PaginationFailure, parameters: { expired: true } };
 export const CancelQuerySharing: Story = {
   play: async ({ canvas, userEvent, globals }) => {
-    const m = dictionaries[storyLocale(globals)].Hybrid;
+    const locale = storyLocale(globals);
+    const m = dictionaries[locale].Hybrid;
     const clipboard = spyOn(navigator.clipboard, "writeText").mockResolvedValue();
     const before = window.location.href;
     try {
       await userEvent.type(canvas.getByRole("searchbox", { name: m.queryLabel }), query);
+      await expect(canvas.queryByRole("button", { name: m.shareQuery })).not.toBeInTheDocument();
+      await userEvent.click(canvas.getByRole("button", { name: m.submit }));
+      await respond("hybrid", query, refinedPage(locale));
+      await respond("lexical", query, lexicalPage(locale));
+      await expect(await canvas.findByRole("heading", { name: m.resultsTitle })).toBeVisible();
+      const requestCount = pending.length;
       await userEvent.click(canvas.getByRole("button", { name: m.shareQuery }));
       await expect(canvas.getByRole("heading", { name: m.sharePreview })).toBeVisible();
       await userEvent.click(canvas.getByRole("button", { name: m.shareCancel }));
       await expect(canvas.queryByRole("heading", { name: m.sharePreview })).not.toBeInTheDocument();
       await expect(clipboard).not.toHaveBeenCalled();
-      await expect(pending).toHaveLength(0);
+      await expect(pending).toHaveLength(requestCount);
       await expect(window.location.href).toBe(before);
       await expect(canvas.getByRole("searchbox", { name: m.queryLabel })).toHaveValue(query);
     } finally {

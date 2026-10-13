@@ -276,15 +276,17 @@
   min-width: 0;
 }
 .catalog-workspace-results {
-  order: 2;
+  order: 5;
   display: flex;
   flex-direction: column;
   gap: 24px;
   min-width: 0;
 }
 .catalog-workspace-browse {
-  order: 3;
+  order: 6;
 }
+.catalog-workspace-feedback[hidden],
+.catalog-workspace-controls[hidden],
 .catalog-workspace-input[hidden],
 .catalog-workspace-results[hidden] {
   display: none;
@@ -334,4 +336,22 @@
 /* The shared clear action owns its accessible label and 44px target. */
 .catalog-query-control input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
+}
+
+.catalog-workspace-help {
+  order: 2;
+  display: grid;
+  margin-top: -14px;
+}
+.catalog-workspace-controls {
+  order: 4;
+  min-width: 0;
+}
+
+.catalog-workspace-feedback {
+  order: 3;
+  min-width: 0;
+}
+.catalog-workspace-feedback .catalog-pending-changes {
+  margin-top: 0;
 }

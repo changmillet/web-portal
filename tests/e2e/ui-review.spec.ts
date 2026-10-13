@@ -120,9 +120,7 @@ test("mobile filters layer above the sticky header, close on selection and prese
   await expect(page).toHaveURL(/geo=cn/);
   await expect(page).toHaveURL(/q=electricity/);
   await page.getByRole("button", { name: en.Search.descriptionMode }).click();
-  await expect(page.getByRole("region", { name: en.Hybrid.activeFilters })).toContainText(
-    "China (CN)",
-  );
+  await expect(page.getByLabel(en.Search.appliedFilters)).toContainText("China (CN)");
   const form = page.getByRole("searchbox", { name: en.Hybrid.queryLabel });
   expect((await form.boundingBox())!.y).toBeLessThan(844);
 });
@@ -244,9 +242,7 @@ test("localizes a Process subtype in both search modes without changing its wire
     page.getByRole("link", { name: `${zh.Common.clear}: ${zh.Search.processSubtype}` }),
   ).toContainText("LCI结果");
   await page.getByRole("button", { name: zh.Search.descriptionMode }).click();
-  await expect(page.getByRole("region", { name: zh.Hybrid.activeFilters })).toContainText(
-    "LCI结果",
-  );
+  await expect(page.getByLabel(zh.Search.appliedFilters)).toContainText("LCI结果");
   const submitted = page.waitForRequest(
     (request) => request.url().endsWith("/internal/hybrid") && request.method() === "POST",
   );

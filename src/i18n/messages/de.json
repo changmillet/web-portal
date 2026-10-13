@@ -152,7 +152,8 @@
     "pendingTitle": "Eingabe geändert",
     "pendingDescription": "Suchen Sie erneut, um die Änderungen anzuwenden. Die Ergebnisse beziehen sich auf die vorherige Beschreibung.",
     "discardChanges": "Änderungen verwerfen",
-    "showingResultsFor": "Ergebnisse für: {query}"
+    "showingResultsFor": "Ergebnisse für: {query}",
+    "applyFilters": "Filter anwenden"
   },
   "Hybrid": {
     "title": "Benötigte Daten beschreiben",

@@ -3,6 +3,7 @@
 import { DataBrandFilter } from "./data-brand-filter";
 import { dataBrandNames, type PortalDataBrandScope } from "@/config/data-brands";
 import { ResponsiveFacets } from "./responsive-facets";
+import { SheetClose } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { CatalogPagination } from "@/features/catalog/catalog-pagination";
@@ -148,12 +149,14 @@ export function HybridSearchPanel({
   const workspace = useSearchWorkspace();
   const catalog = useTranslations("Search");
   const common = useTranslations("Common");
-  const [requestState, setRequestState] = useState<RequestState>({
+  const [localDraft, setLocalDraft] = useState<RequestState>({
     filters: initialFilters,
     kind: initialKind,
     query: "",
     limit: 20,
   });
+  const requestState = workspace?.descriptionDraft ?? localDraft;
+  const setRequestState = workspace?.setDescriptionDraft ?? setLocalDraft;
   const [message, setMessage] = useState("");
   const [sharePreview, setSharePreview] = useState<PortalHybridVersionSearchRequest | null>(null);
   const {
@@ -199,7 +202,7 @@ export function HybridSearchPanel({
       // oxlint-disable-next-line react-hooks/set-state-in-effect -- Invalid shared input is reported locally.
       setMessage(labels.error);
     }
-  }, [labels.error]);
+  }, [labels.error, setRequestState]);
 
   const parsedRequest = useMemo(() => {
     const parsed = portalHybridSearchRequestSchema.safeParse({
@@ -253,7 +256,10 @@ export function HybridSearchPanel({
                   ? localizeProcessSubtype(String(value), locale)
                   : String(value),
       }));
-  const filterEntries = describeFilters(requestState.filters, requestState.kind);
+  const filterEntries = describeFilters(
+    search.request?.filters ?? requestState.filters,
+    search.request?.kind ?? requestState.kind,
+  );
 
   return (
     <div className="catalog-description-workspace">
@@ -294,7 +300,9 @@ export function HybridSearchPanel({
             />
           </form>
         </search>
-        <p className="catalog-input-help">{labels.privacy}</p>
+        {!workspace?.hasSharedHelp && <p className="catalog-input-help">{labels.privacy}</p>}
+      </SearchModeSection>
+      <SearchModeSection mode="description" area="feedback" when={pendingChanges}>
         {pendingChanges ? (
           <output className="catalog-pending-changes" aria-live="polite">
             <div>
@@ -312,129 +320,163 @@ export function HybridSearchPanel({
             </Button>
           </output>
         ) : null}
-        {filterEntries.length ? (
-          <section className="catalog-applied-filters" aria-label={labels.activeFilters}>
-            {filterEntries.map((entry) => (
-              <Badge variant="secondary" key={entry.label}>
-                {entry.label}: {entry.value}
-              </Badge>
-            ))}
-          </section>
-        ) : null}
       </SearchModeSection>
-      <SearchModeSection mode="description" area="results">
+      <SearchModeSection mode="description" area="controls">
+        <div className="catalog-control-bar">
+          <CatalogResultsToolbar
+            showSaved={!workspace}
+            headingRef={resultHeading}
+            titleId="description-results-heading"
+            title={response ? labels.resultsTitle : ""}
+            scope={
+              <CatalogKindSwitch
+                value={requestState.kind}
+                label={labels.kind}
+                labels={{ process: labels.process, flow: labels.flow }}
+                onChange={(kind) => {
+                  setRequestState((current) => ({
+                    ...current,
+                    kind,
+                    filters:
+                      kind === "flow"
+                        ? Object.fromEntries(
+                            Object.entries(current.filters).filter(
+                              ([key]) => key !== "processSubtype",
+                            ),
+                          )
+                        : current.filters,
+                  }));
+                  if (search.request && kind !== search.request.kind) {
+                    start(shareRequest({ ...search.request, kind }));
+                  }
+                }}
+              />
+            }
+            actions={
+              <>
+                {response && (
+                  <Button
+                    disabled={!search.request}
+                    onClick={() => setSharePreview(search.request ?? parsedRequest)}
+                    type="button"
+                    variant="ghost"
+                    aria-label={labels.shareQuery}
+                    title={labels.shareQuery}
+                  >
+                    <LinkIcon aria-hidden="true" />
+                    {labels.shareQuery}
+                  </Button>
+                )}
+                <ResponsiveFacets
+                  drawer
+                  labels={{
+                    title: catalog("facets"),
+                    description: catalog("filtersDescription"),
+                    close: common("close"),
+                  }}
+                >
+                  <div className="flex flex-col gap-4">
+                    <DataBrandFilter
+                      allowedBrandCodes={allowedBrandCodes}
+                      value={requestState.filters.brand}
+                      label={common("dataBrand")}
+                      allLabel={common("allDataBrands")}
+                      onChange={(brand) =>
+                        setRequestState((current) => {
+                          const filters = { ...current.filters };
+                          if (brand) filters.brand = brand;
+                          else delete filters.brand;
+                          return { ...current, filters };
+                        })
+                      }
+                    />
+                    {(
+                      [
+                        ["geography", labels.filterGeography],
+                        ["classification", labels.filterClassification],
+                      ] as const
+                    ).map(([key, label]) => (
+                      <Field key={key}>
+                        <FieldLabel htmlFor={`description-filter-${key}`}>{label}</FieldLabel>
+                        <Input
+                          id={`description-filter-${key}`}
+                          value={String(requestState.filters[key] ?? "")}
+                          onChange={(event) =>
+                            setRequestState((current) => {
+                              const filters = { ...current.filters };
+                              if (event.target.value.trim())
+                                filters[key] = event.target.value.trim();
+                              else delete filters[key];
+                              return { ...current, filters };
+                            })
+                          }
+                        />
+                      </Field>
+                    ))}
+                    {(["referenceYearFrom", "referenceYearTo"] as const).map((key) => (
+                      <Field key={key}>
+                        <FieldLabel htmlFor={`description-filter-${key}`}>
+                          {key === "referenceYearFrom"
+                            ? labels.filterYearFrom
+                            : labels.filterYearTo}
+                        </FieldLabel>
+                        <Input
+                          id={`description-filter-${key}`}
+                          type="number"
+                          min={0}
+                          max={9999}
+                          step={1}
+                          value={requestState.filters[key] ?? ""}
+                          onChange={(event) =>
+                            setRequestState((current) => {
+                              const filters = { ...current.filters };
+                              if (event.target.value === "") delete filters[key];
+                              else filters[key] = event.target.valueAsNumber;
+                              return { ...current, filters };
+                            })
+                          }
+                        />
+                      </Field>
+                    ))}
+                    <SheetClose asChild>
+                      <Button
+                        disabled={!!search.request && !parsedRequest}
+                        onClick={() => {
+                          if (search.request && parsedRequest) start(parsedRequest);
+                        }}
+                      >
+                        {catalog("applyFilters")}
+                      </Button>
+                    </SheetClose>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
+                    >
+                      {labels.clearFilters}
+                    </Button>
+                  </div>
+                </ResponsiveFacets>
+              </>
+            }
+          />
+
+          {filterEntries.length ? (
+            <section className="catalog-applied-filters" aria-label={labels.activeFilters}>
+              {filterEntries.map((entry) => (
+                <Badge variant="secondary" key={entry.label}>
+                  {entry.label}: {entry.value}
+                </Badge>
+              ))}
+            </section>
+          ) : null}
+        </div>
+      </SearchModeSection>
+      <SearchModeSection mode="description" area="results" when={!!search.request || !!message}>
         {search.request ? (
           <p className="catalog-applied-query">
             {catalog("showingResultsFor", { query: search.request.query })}
           </p>
         ) : null}
-        <CatalogResultsToolbar
-          showSaved={!workspace}
-          headingRef={resultHeading}
-          titleId="description-results-heading"
-          title={response ? labels.resultsTitle : ""}
-          scope={
-            <CatalogKindSwitch
-              value={requestState.kind}
-              label={labels.kind}
-              labels={{ process: labels.process, flow: labels.flow }}
-              onChange={(kind) => {
-                setRequestState((current) => ({
-                  ...current,
-                  kind,
-                  filters:
-                    kind === "flow"
-                      ? Object.fromEntries(
-                          Object.entries(current.filters).filter(
-                            ([key]) => key !== "processSubtype",
-                          ),
-                        )
-                      : current.filters,
-                }));
-                if (search.request && kind !== search.request.kind) {
-                  start(shareRequest({ ...search.request, kind }));
-                }
-              }}
-            />
-          }
-          actions={
-            <>
-              <Button
-                disabled={!search.request && !parsedRequest}
-                onClick={() => setSharePreview(search.request ?? parsedRequest)}
-                type="button"
-                variant="ghost"
-                aria-label={labels.shareQuery}
-                title={labels.shareQuery}
-              >
-                <LinkIcon aria-hidden="true" />
-                {labels.shareQuery}
-              </Button>
-              <ResponsiveFacets
-                drawer
-                labels={{
-                  title: catalog("facets"),
-                  description: catalog("filtersDescription"),
-                  close: common("close"),
-                }}
-              >
-                <div className="flex flex-col gap-4">
-                  <DataBrandFilter
-                    allowedBrandCodes={allowedBrandCodes}
-                    value={requestState.filters.brand}
-                    label={common("dataBrand")}
-                    allLabel={common("allDataBrands")}
-                    onChange={(brand) =>
-                      setRequestState((current) => {
-                        const filters = { ...current.filters };
-                        if (brand) filters.brand = brand;
-                        else delete filters.brand;
-                        return { ...current, filters };
-                      })
-                    }
-                  />
-                  {(
-                    [
-                      ["geography", labels.filterGeography],
-                      ["classification", labels.filterClassification],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <Field key={key}>
-                      <FieldLabel htmlFor={`description-filter-${key}`}>{label}</FieldLabel>
-                      <Input
-                        id={`description-filter-${key}`}
-                        value={String(requestState.filters[key] ?? "")}
-                        onChange={(event) =>
-                          setRequestState((current) => {
-                            const filters = { ...current.filters };
-                            if (event.target.value.trim()) filters[key] = event.target.value.trim();
-                            else delete filters[key];
-                            return { ...current, filters };
-                          })
-                        }
-                      />
-                    </Field>
-                  ))}
-                  <Button
-                    disabled={!parsedRequest}
-                    onClick={() => {
-                      if (parsedRequest) start(parsedRequest);
-                    }}
-                  >
-                    {labels.submit}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
-                  >
-                    {labels.clearFilters}
-                  </Button>
-                </div>
-              </ResponsiveFacets>
-            </>
-          }
-        />
-
         {sharePreview ? (
           <Card size="sm">
             <CardHeader>

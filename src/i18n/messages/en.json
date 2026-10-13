@@ -152,7 +152,8 @@
     "pendingTitle": "Input changed",
     "pendingDescription": "Search to apply your changes. Results below use your previous description.",
     "discardChanges": "Discard changes",
-    "showingResultsFor": "Showing results for: {query}"
+    "showingResultsFor": "Showing results for: {query}",
+    "applyFilters": "Apply filters"
   },
   "Hybrid": {
     "title": "Describe the data you need",

@@ -152,7 +152,8 @@
     "pendingTitle": "Saisie modifiée",
     "pendingDescription": "Lancez la recherche pour appliquer les modifications. Les résultats correspondent à la description précédente.",
     "discardChanges": "Annuler les modifications",
-    "showingResultsFor": "Résultats pour : {query}"
+    "showingResultsFor": "Résultats pour : {query}",
+    "applyFilters": "Appliquer les filtres"
   },
   "Hybrid": {
     "title": "Décrire les données recherchées",

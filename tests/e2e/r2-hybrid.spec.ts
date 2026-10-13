@@ -187,6 +187,48 @@ test("shares collection notes only after preview and second confirmation", async
   }
 });
 
+for (const mode of ["keyword", "description"] as const) {
+  test(`submits shared type and filters through ${mode} search`, async ({ page }) => {
+    await page.goto("/en/search?v=1");
+    await page.getByRole("button", { name: en.Hybrid.flow, exact: true }).click();
+    await page.getByRole("button", { name: en.Search.facets }).click();
+    const drawer = page.getByRole("dialog");
+    await drawer.getByLabel(en.Hybrid.filterGeography, { exact: true }).fill("CN");
+    await drawer.getByLabel(en.Hybrid.filterYearFrom).fill("2020");
+    await drawer.getByLabel(en.Hybrid.filterYearTo).fill("2022");
+    await drawer.getByRole("button", { name: en.Search.applyFilters }).click();
+    await expect(drawer).toBeHidden();
+    await page.getByRole("button", { name: en.Search.descriptionMode }).click();
+    await page.getByRole("searchbox", { name: en.Hybrid.queryLabel }).fill("Electricity in China");
+    if (mode === "description") {
+      const submitted = page.waitForRequest(
+        (request) => request.url().endsWith("/internal/hybrid") && request.method() === "POST",
+      );
+      await page.getByRole("searchbox", { name: en.Hybrid.queryLabel }).press("Enter");
+      expect((await submitted).postDataJSON()).toMatchObject({
+        kind: "flow",
+        query: "Electricity in China",
+        filters: { geography: "cn", referenceYearFrom: 2020, referenceYearTo: 2022 },
+      });
+      expect(page.url()).not.toContain("Electricity");
+    } else {
+      await page.getByRole("button", { name: en.Search.keywordMode }).click();
+      await page.getByRole("searchbox", { name: en.Search.label }).fill("steel");
+      await page.getByRole("searchbox", { name: en.Search.label }).press("Enter");
+      await expect(page).toHaveURL(/q=steel/);
+      const parameters = new URL(page.url()).searchParams;
+      expect(Object.fromEntries(parameters)).toMatchObject({
+        kind: "flow",
+        q: "steel",
+        geo: "CN",
+        yearFrom: "2020",
+        yearTo: "2022",
+      });
+      expect(page.url()).not.toContain("Electricity");
+    }
+  });
+}
+
 for (const width of [1440, 390]) {
   test(`keeps one search workspace and identical input geometry at ${width}px`, async ({
     page,
@@ -214,7 +256,21 @@ for (const width of [1440, 390]) {
         };
       });
     await expect(keyword).toBeVisible();
+    const workspaceLayout = () =>
+      page.locator(".catalog-search-modes").evaluate((element) =>
+        [".catalog-workspace-controls", ".catalog-workspace-browse"].map((selector) => {
+          const node = [...element.querySelectorAll(selector)].find(
+            (node) => node.getBoundingClientRect().height > 0,
+          )!;
+          const { x, y, width, height } = node.getBoundingClientRect();
+          return { x, y, width, height };
+        }),
+      );
     const original = await metrics();
+    const originalLayout = await workspaceLayout();
+    await expect(page.getByRole("button", { name: en.Hybrid.process, exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: en.Search.facets })).toBeVisible();
+    await expect(page.getByRole("button", { name: en.Hybrid.shareQuery })).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath(`keyword-${width}.png`), fullPage: true });
     await keyword.fill("steel");
     await page.getByRole("button", { name: en.Search.descriptionMode }).click();
@@ -231,6 +287,7 @@ for (const width of [1440, 390]) {
       );
     });
     expect(await metrics()).toEqual(original);
+    expect(await workspaceLayout()).toEqual(originalLayout);
     await expect(page.getByRole("navigation", { name: en.Home.browseTitle })).toBeVisible();
     await page.screenshot({
       path: testInfo.outputPath(`description-${width}.png`),

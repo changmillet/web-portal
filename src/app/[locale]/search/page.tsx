@@ -26,7 +26,11 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { KeywordSearchForm } from "@/features/catalog/keyword-search-form";
-import { SearchModes, SearchModeSection } from "@/features/catalog/search-modes";
+import {
+  SearchModes,
+  SearchModeSection,
+  CatalogSearchHeading,
+} from "@/features/catalog/search-modes";
 import { ResponsiveFacets } from "@/features/catalog/responsive-facets";
 import { CompareSelectionForm } from "@/features/compare/selection";
 import {
@@ -380,13 +384,11 @@ export default async function SearchPage({
         <style>{"@view-transition{navigation:none}"}</style>
       </noscript>
       <div className="brand-container catalog-search-content">
-        <header className="catalog-results-intro">
-          <div className="flex items-center justify-between gap-4">
-            <h1 className="font-heading text-2xl font-semibold">{reference("catalog")}</h1>
-            <SavedDatasetsLink />
-          </div>
-          <p className="text-muted-foreground mt-2">{t("workspaceDescription")}</p>
-        </header>
+        <CatalogSearchHeading
+          title={reference("catalog")}
+          description={t("workspaceDescription")}
+          actions={<SavedDatasetsLink />}
+        />
 
         <ClassificationNavigationProvider
           locale={locale}
@@ -428,6 +430,8 @@ export default async function SearchPage({
               description: t("descriptionMode"),
             }}
             initialResultsMode={initialEntry ? null : "keyword"}
+            initialDraft={{ kind: parsedSearch.kind, filters: parsedSearch.filters }}
+            help={{ keyword: t("keywordHelp"), description: hybrid("privacy") }}
             browse={
               initialEntry ? (
                 <CatalogSearchEntry
@@ -463,7 +467,6 @@ export default async function SearchPage({
                       />
                     </KeywordSearchForm>
                   </search>
-                  <p className="catalog-input-help">{t("keywordHelp")}</p>
                 </SearchModeSection>
                 {!initialEntry && (
                   <SearchModeSection mode="keyword" area="results">

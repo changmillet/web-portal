@@ -152,7 +152,8 @@
     "pendingTitle": "输入已修改",
     "pendingDescription": "点击搜索应用修改。下方结果仍对应上一次提交的描述。",
     "discardChanges": "放弃修改",
-    "showingResultsFor": "当前结果对应：{query}"
+    "showingResultsFor": "当前结果对应：{query}",
+    "applyFilters": "应用筛选"
   },
   "Hybrid": {
     "title": "描述所需数据",

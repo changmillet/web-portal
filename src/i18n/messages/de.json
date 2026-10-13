@@ -146,7 +146,13 @@
     "classification": "Klassifikation",
     "countsDescription": "Die Zahlen umfassen passende öffentliche Datensatzversionen.",
     "noScriptCompare": "Wählen Sie 2–4 Prozessversionen zum Vergleich.",
-    "dataBrand": "Datenbankmarke"
+    "dataBrand": "Datenbankmarke",
+    "workspaceDescription": "Suchen Sie mit Stichwörtern oder beschreiben Sie die benötigten Daten.",
+    "keywordHelp": "Datensatzname, Material oder Kennung eingeben.",
+    "pendingTitle": "Eingabe geändert",
+    "pendingDescription": "Suchen Sie erneut, um die Änderungen anzuwenden. Die Ergebnisse beziehen sich auf die vorherige Beschreibung.",
+    "discardChanges": "Änderungen verwerfen",
+    "showingResultsFor": "Ergebnisse für: {query}"
   },
   "Hybrid": {
     "title": "Benötigte Daten beschreiben",
@@ -157,7 +163,7 @@
     "queryLabel": "Datenbedarf",
     "queryPlaceholder": "Zum Beispiel: Industriestrom in China, 2022",
     "privacy": "Ihre Beschreibung wird für den Abgleich öffentlicher Daten verwendet. Sie gelangt nur in die Seiten-URL, wenn Sie einen Teilen-Link erstellen. Geben Sie keine vertraulichen Informationen ein.",
-    "submit": "Passende Datensätze finden",
+    "submit": "Suchen",
     "running": "Ähnliche Datensätze werden gesucht…",
     "initialDescription": "Der öffentliche Katalog wird durchsucht. Verfügbare Ergebnisse erscheinen zuerst.",
     "optimizing": "Ergebnisse werden mit Ihrer Beschreibung abgeglichen…",

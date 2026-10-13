@@ -146,7 +146,13 @@
     "classification": "分类",
     "countsDescription": "数量按匹配的公开数据集版本统计。",
     "noScriptCompare": "选择 2–4 个过程版本后比较。",
-    "dataBrand": "数据库品牌"
+    "dataBrand": "数据库品牌",
+    "workspaceDescription": "输入关键词，或描述你需要的数据。",
+    "keywordHelp": "输入数据集名称、材料或标识符。",
+    "pendingTitle": "输入已修改",
+    "pendingDescription": "点击搜索应用修改。下方结果仍对应上一次提交的描述。",
+    "discardChanges": "放弃修改",
+    "showingResultsFor": "当前结果对应：{query}"
   },
   "Hybrid": {
     "title": "描述所需数据",
@@ -157,7 +163,7 @@
     "queryLabel": "数据需求",
     "queryPlaceholder": "例如：2022 年中国工业用电数据",
     "privacy": "描述用于匹配公开数据；除非主动生成分享链接，否则不会写入页面网址。请勿输入机密内容。",
-    "submit": "按需求查找",
+    "submit": "搜索",
     "running": "正在查找相关数据…",
     "initialDescription": "正在检索公开目录，可用结果会先显示。",
     "optimizing": "正在结合描述匹配结果…",

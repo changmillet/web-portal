@@ -146,7 +146,13 @@
     "classification": "Classification",
     "countsDescription": "Counts include matching public dataset versions.",
     "noScriptCompare": "Select 2–4 Process versions, then compare.",
-    "dataBrand": "Database brand"
+    "dataBrand": "Database brand",
+    "workspaceDescription": "Search by keywords or describe the data you need.",
+    "keywordHelp": "Enter a dataset name, material, or identifier.",
+    "pendingTitle": "Input changed",
+    "pendingDescription": "Search to apply your changes. Results below use your previous description.",
+    "discardChanges": "Discard changes",
+    "showingResultsFor": "Showing results for: {query}"
   },
   "Hybrid": {
     "title": "Describe the data you need",
@@ -157,7 +163,7 @@
     "queryLabel": "Data need",
     "queryPlaceholder": "For example: industrial electricity in China, 2022",
     "privacy": "Your description is used to match public data. It is not added to the page URL unless you create a share link. Do not include confidential information.",
-    "submit": "Find matching datasets",
+    "submit": "Search",
     "running": "Finding related datasets…",
     "initialDescription": "Searching the public catalog. Available results will appear first.",
     "optimizing": "Matching results to your description…",

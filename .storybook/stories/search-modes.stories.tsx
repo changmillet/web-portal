@@ -2,13 +2,17 @@ import { CatalogKindSwitch } from "../../src/features/catalog/catalog-kind-switc
 import { CatalogPagination } from "../../src/features/catalog/catalog-pagination";
 import { CatalogResultsToolbar } from "../../src/features/catalog/catalog-results-toolbar";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, within } from "storybook/test";
+import { expect } from "storybook/test";
 import { http, HttpResponse } from "msw";
-import { SearchModeControl, SearchModes } from "../../src/features/catalog/search-modes";
+import {
+  SearchModeControl,
+  SearchModeSection,
+  SearchModes,
+} from "../../src/features/catalog/search-modes";
 import { HybridSearchPanel } from "../../src/features/catalog/hybrid-search-panel";
 import { KeywordSearchForm } from "../../src/features/catalog/keyword-search-form";
 import { Field, FieldLabel } from "../../src/components/ui/field";
-import { Input } from "../../src/components/ui/input";
+import { CatalogSearchInput } from "../../src/features/catalog/catalog-search-input";
 import { Button } from "../../src/components/ui/button";
 import { dictionaries, mobileGlobals, resultLabels, storyLocale } from "../fixtures";
 
@@ -23,7 +27,7 @@ const meta = {
     Field,
     FieldLabel,
     HybridSearchPanel,
-    Input,
+    CatalogSearchInput,
     KeywordSearchForm,
   },
   title: "Catalog/Search modes",
@@ -45,16 +49,21 @@ const meta = {
           description: m.Search.descriptionMode,
         }}
         keyword={
-          <KeywordSearchForm action={`/${locale}/search`}>
-            <Field>
-              <FieldLabel htmlFor="storybook-keyword">{m.Search.label}</FieldLabel>
-              <Input id="storybook-keyword" name="q" placeholder={m.Search.placeholder} />
-            </Field>
-            <SearchModeControl />
-            <Button className="self-start" type="submit">
-              {m.Search.submit}
-            </Button>
-          </KeywordSearchForm>
+          <SearchModeSection mode="keyword" area="input">
+            <KeywordSearchForm action={`/${locale}/search`}>
+              <label className="sr-only" htmlFor="storybook-keyword">
+                {m.Search.label}
+              </label>
+              <CatalogSearchInput
+                id="storybook-keyword"
+                name="q"
+                placeholder={m.Search.placeholder}
+                submitLabel={m.Search.submit}
+                clearLabel={m.Common.clear}
+              />
+            </KeywordSearchForm>
+            <p className="catalog-input-help">{m.Search.keywordHelp}</p>
+          </SearchModeSection>
         }
         description={
           <HybridSearchPanel
@@ -76,14 +85,22 @@ export const Keyword: Story = {};
 export const Description: Story = {
   play: async ({ canvas, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)];
-    await userEvent.click(
-      canvas.getByRole("combobox", { name: `${m.Search.searchMode}: ${m.Search.keywordMode}` }),
-    );
-    await userEvent.click(
-      within(document.body).getByRole("option", { name: m.Search.descriptionMode }),
-    );
-    await expect(canvas.getByRole("textbox", { name: m.Hybrid.queryLabel })).toBeVisible();
-    await expect(canvas.queryByRole("textbox", { name: m.Search.label })).not.toBeInTheDocument();
+    const keyword = canvas.getByRole("searchbox", { name: m.Search.label });
+    await userEvent.type(keyword, "steel");
+    const keywordHeight = keyword
+      .closest('[data-slot="input-group"]')!
+      .getBoundingClientRect().height;
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.descriptionMode }));
+    const description = canvas.getByRole("searchbox", { name: m.Hybrid.queryLabel });
+    await expect(description).toBeVisible();
+    await expect(
+      description.closest('[data-slot="input-group"]')!.getBoundingClientRect().height,
+    ).toBe(keywordHeight);
+    await userEvent.type(description, "Electricity in China");
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.keywordMode }));
+    await expect(keyword).toHaveValue("steel");
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.descriptionMode }));
+    await expect(description).toHaveValue("Electricity in China");
   },
 };
 export const MobileFrench: Story = { ...Description, globals: { ...mobileGlobals, locale: "fr" } };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchWorkspace } from "./search-modes";
 import { useRouter } from "next/navigation";
 import { useTransition, type ReactNode } from "react";
 import { PendingFeedback } from "@/components/shell/navigation-feedback";
@@ -8,6 +9,7 @@ import { PendingFeedback } from "@/components/shell/navigation-feedback";
  * @import import { KeywordSearchForm } from "@/features/catalog/keyword-search-form";
  */
 export function KeywordSearchForm({ action, children }: { action: string; children: ReactNode }) {
+  const workspace = useSearchWorkspace();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   return (
@@ -22,6 +24,7 @@ export function KeywordSearchForm({ action, children }: { action: string; childr
         const parameters = new URLSearchParams();
         for (const [key, value] of new FormData(event.currentTarget))
           if (typeof value === "string") parameters.append(key, value);
+        workspace?.restoreKeywordResults();
         const href = `${action}?${parameters.toString()}`;
         startTransition(() => router.push(href));
       }}

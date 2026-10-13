@@ -120,6 +120,42 @@ afterEach(() => {
 });
 
 describe("progressive, version-aware discovery", () => {
+  it("keeps submitted results while editing and lets the user discard pending changes", async () => {
+    const { user, submit, complete, pending } = setup();
+    await submit("electricity in China");
+    await complete(0, lexicalPage());
+    await complete(1, refinedPage());
+    const input = screen.getByRole("searchbox", { name: messages.Hybrid.queryLabel });
+    await user.type(input, " in 2022");
+    expect(screen.getByText(messages.Search.pendingTitle)).toBeVisible();
+    expect(screen.getByText("Showing results for: electricity in China")).toBeVisible();
+    expect(screen.getByText("Initial catalog result")).toBeVisible();
+    expect(pending).toHaveLength(2);
+    await user.click(screen.getByRole("button", { name: messages.Search.discardChanges }));
+    expect(input).toHaveValue("electricity in China");
+    expect(screen.queryByText(messages.Search.pendingTitle)).not.toBeInTheDocument();
+    expect(pending).toHaveLength(2);
+  });
+
+  it("queries the applied description when changing type and retains an unsubmitted draft", async () => {
+    const { user, submit, complete, pending } = setup();
+    await submit("electricity in China");
+    await complete(0, lexicalPage());
+    await user.type(
+      screen.getByRole("searchbox", { name: messages.Hybrid.queryLabel }),
+      " in 2022",
+    );
+    await user.click(screen.getByRole("button", { name: messages.Hybrid.flow }));
+    expect(pending).toHaveLength(4);
+    expect(pending[2]!.body).toMatchObject({ kind: "flow", query: "electricity in China" });
+    expect(pending[1]!.signal.aborted).toBe(true);
+    expect(screen.queryByText("Initial catalog result")).not.toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: messages.Hybrid.queryLabel })).toHaveValue(
+      "electricity in China in 2022",
+    );
+    expect(screen.getByText(messages.Search.pendingTitle)).toBeVisible();
+  });
+
   it("restores an old shared query without submitting it and preserves its bounded page size", async () => {
     const fragment = encodeHybridQueryFragment({
       schemaVersion: "portal.hybrid-search-request.v1",

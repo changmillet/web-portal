@@ -5,7 +5,6 @@ import type { ComponentProps } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
-import { SearchModeControl } from "./search-modes";
 import "./search-workspace.css";
 
 /** Shared real search input for the public route and interactive design reference.
@@ -15,9 +14,13 @@ export function CatalogSearchInput({
   submitLabel,
   onClear,
   clearLabel,
+  submitDisabled,
+  busy,
   ...input
 }: ComponentProps<typeof InputGroupInput> & {
   submitLabel: string;
+  submitDisabled?: boolean;
+  busy?: boolean;
   onClear?: () => void;
   clearLabel?: string;
 }) {
@@ -57,8 +60,9 @@ export function CatalogSearchInput({
             <XIcon aria-hidden="true" />
           </Button>
         )}
-        <SearchModeControl />
-        <Button type="submit">{submitLabel}</Button>
+        <Button type="submit" disabled={submitDisabled} aria-busy={busy}>
+          {submitLabel}
+        </Button>
       </InputGroupAddon>
     </InputGroup>
   );

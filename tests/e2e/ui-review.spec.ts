@@ -119,14 +119,11 @@ test("mobile filters layer above the sticky header, close on selection and prese
   await expect(drawer).toBeHidden();
   await expect(page).toHaveURL(/geo=cn/);
   await expect(page).toHaveURL(/q=electricity/);
-  await page
-    .getByRole("combobox", { name: `${en.Search.searchMode}: ${en.Search.keywordMode}` })
-    .click();
-  await page.getByRole("option", { name: en.Search.descriptionMode }).click();
+  await page.getByRole("button", { name: en.Search.descriptionMode }).click();
   await expect(page.getByRole("region", { name: en.Hybrid.activeFilters })).toContainText(
     "China (CN)",
   );
-  const form = page.getByRole("textbox", { name: en.Hybrid.queryLabel });
+  const form = page.getByRole("searchbox", { name: en.Hybrid.queryLabel });
   expect((await form.boundingBox())!.y).toBeLessThan(844);
 });
 
@@ -246,10 +243,7 @@ test("localizes a Process subtype in both search modes without changing its wire
   await expect(
     page.getByRole("link", { name: `${zh.Common.clear}: ${zh.Search.processSubtype}` }),
   ).toContainText("LCI结果");
-  await page
-    .getByRole("combobox", { name: `${zh.Search.searchMode}: ${zh.Search.keywordMode}` })
-    .click();
-  await page.getByRole("option", { name: zh.Search.descriptionMode }).click();
+  await page.getByRole("button", { name: zh.Search.descriptionMode }).click();
   await expect(page.getByRole("region", { name: zh.Hybrid.activeFilters })).toContainText(
     "LCI结果",
   );

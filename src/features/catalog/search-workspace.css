@@ -331,15 +331,13 @@
   flex-shrink: 0;
   border-radius: 6px;
   color: var(--muted-foreground);
+  background: transparent;
 }
 .catalog-smart-match[data-slot="button"][aria-pressed="true"] {
   color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
-}
-.catalog-smart-match[aria-pressed="true"] > svg {
-  fill: currentColor;
 }
 .catalog-smart-match[data-slot="button"] > svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
 }

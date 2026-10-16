@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-10-11
-lastReviewedCommit: 8bd7f3d36e632b6acc948dab51b10764ac3f2e33
-lastReviewedNote: "Portal #145: reviewed independent brand content, collection naming and static scope coverage; repository ownership and delivery requirements remain unchanged."
+lastReviewedAt: 2026-10-16
+lastReviewedCommit: 2f77c58eb89ae64ae83a4b7d8520eadb167886bd
+lastReviewedNote: "Portal #159: bounded npm/Actions monitoring reuses unchanged static/browser/components/validate CI; lock-only resolution avoids metadata churn while package, runtime, hooks, UI/generated contracts and hosted release requirements remain intact."
 related:
   - docs/development.md
   - docs/ui-system.md

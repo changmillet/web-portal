@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-13
-lastReviewedCommit: ad37b36f7975973aa623750d51c17c0a416a63ea
+lastReviewedAt: 2026-10-16
+lastReviewedCommit: 2f77c58eb89ae64ae83a4b7d8520eadb167886bd
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #157: reviewed production search and Storybook validation, four-locale interaction coverage and unchanged main-to-EdgeOne release workflow."
+lastReviewedNote: "Portal #159: bounded npm/Actions monitoring reuses unchanged static/browser/components/validate CI; lock-only resolution avoids metadata churn while package, runtime, hooks, UI/generated contracts and hosted release requirements remain intact."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -105,6 +105,10 @@ Portal uses the checked-in UI components and retains the required shadcn Tailwin
 The release audit uses the full dependency graph and fails on high or critical advisories; do not lower this gate or ignore an advisory to publish a feature. Next and `@next/env` stay aligned at the exact compatible stable version in `package.json`. The reviewed security pins retain Undici 8 only in jsdom's Node 24 test graph, patched Sharp within Next's declared range and brace-expansion's current major. The `source-map-js@` empty-range key is pnpm 11 convergence syntax: it pins the reviewed version only where the consumer's declared semver range accepts it. Preserve narrower incompatible edges rather than forcing a new major. Native packages in the upstream lockfile do not qualify macOS Intel as a supported target.
 
 The exact legacy Chinese home aliases use `edge-functions/zh/index.ts` and the single native `/zh/` rewrite. The provider compiles this TypeScript to its Web API edge runtime; the function uses no Node API, environment variable or upstream request. The ordinary Next development server does not execute this provider route. Run its Request/Response unit matrix, typecheck and lint, then build with the installed EdgeOne CLI and generate its routing output. Inspect the emitted exact edge route and rewrite before deployment. Production must verify both aliases without following redirects, with GET/HEAD and ordered, repeated, blank and encoded query values; also verify request-aware root 307/no-store with language cookie and Accept-Language, nested unknown 404 and the unchanged public/private boundary. Only the production matrix proves the rewrite's order relative to the framework's trailing-slash rule.
+
+## Dependency proposals
+
+[Dependency updates](dependency-updates.md) owns monitoring scope, related groups and manual acceptance. Proposals reuse the unchanged four-job CI workflow. Lock-only resolution changes retain review guidance without mandatory documentation metadata edits; manifest, runtime, pnpm policy, hooks and product/source obligations remain active.
 
 ## Storybook and MCP
 

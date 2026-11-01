@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-26
-lastReviewedCommit: cb6304b4b1ceecba98dac0874700b93fd99871c2
+lastReviewedAt: 2026-10-27
+lastReviewedCommit: 623f37fb551b9558e054ba73f76718d83263f313
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #176: main accepted the human-text logo alt budget as 100 Unicode code points per locale after trimming. The actual four-locale brand parser tests cover 100/101 astral and ASCII boundaries and blank rejection; asset authorization, palettes, dimensions, rendering and all release gates remain unchanged."
+lastReviewedNote: "Portal #166: reviewed preserved four-locale Unicode branding/security contract and current Main upstream Storybook router/compiler source; theme/locale/interaction acceptance still requires fresh full candidate qualification."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:

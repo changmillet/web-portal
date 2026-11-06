@@ -12,9 +12,9 @@ import {
 import {
   navigationInputSchema,
   type BrowseSearchInput,
-  type PublicNavigation,
+  type PublicNavigationBranches,
 } from "@/server/contracts/navigation";
-import { getPublicNavigation } from "@/server/data/navigation";
+import { getPublicNavigationBranches } from "@/server/data/navigation";
 import { localizedNavigationLabel } from "@/server/navigation-labels";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 
@@ -35,16 +35,16 @@ export const classificationRequestSchema = z
 
 export async function localizeClassificationPage(
   locale: PortalLocale,
-  page: PublicNavigation,
+  page: PublicNavigationBranches,
 ): Promise<ClassificationPage> {
   const translate = await getTranslations({ locale, namespace: "Navigation" });
-  const identity = (node: PublicNavigation["ancestors"][number]) => ({
+  const identity = (node: PublicNavigationBranches["ancestors"][number]) => ({
     nodeId: node.nodeId,
     parentNodeId: node.parentNodeId,
     code: node.code,
     label: localizedNavigationLabel(node, locale, false, translate),
   });
-  const counted = (node: PublicNavigation["nodes"][number]) => ({
+  const counted = (node: PublicNavigationBranches["nodes"][number]) => ({
     ...identity(node),
     count: node.count,
     directCount: node.directCount,
@@ -66,7 +66,7 @@ export async function localizeClassificationPage(
 
 export async function readClassificationBranch(
   input: ClassificationRequest,
-  read = getPublicNavigation,
+  read = getPublicNavigationBranches,
 ): Promise<ClassificationPage> {
   const { locale, ...request } = classificationRequestSchema.parse(input);
   // The navigation counts are conditioned on the other dimensions, not its selected node.
@@ -84,9 +84,9 @@ export async function readClassificationBranch(
 export async function classificationSeeds(
   locale: PortalLocale,
   input: BrowseSearchInput,
-  current: PublicNavigation | null,
+  current: PublicNavigationBranches | null,
   currentCursor: string | null = null,
-  read = getPublicNavigation,
+  read = getPublicNavigationBranches,
 ): Promise<ClassificationSeed[]> {
   if (!current) return [{ parentNodeId: null, page: null }];
   const context = classificationContext(locale, input);

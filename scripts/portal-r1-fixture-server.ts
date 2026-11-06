@@ -4,7 +4,12 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import type { AddressInfo } from "node:net";
 import { pathToFileURL } from "node:url";
 
-import { navigationFixture, filterNavigationFixture } from "./portal-navigation-fixture";
+import {
+  navigationFixture,
+  navigationBranchesFixture,
+  catalogTotalsFixture,
+  filterNavigationFixture,
+} from "./portal-navigation-fixture";
 import catalogFixture from "../tests/fixtures/portal/catalog-v1.json";
 import environmentFixture from "../tests/fixtures/portal/r1-environments.json";
 
@@ -281,6 +286,10 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
         ...ref,
         linkable: true,
       }));
+    case "portal_navigation_branches_v1":
+      return navigationBranchesFixture(arguments_);
+    case "portal_catalog_totals_v1":
+      return catalogTotalsFixture();
     case "portal_navigation_v2":
       return navigationFixture(arguments_);
     case "portal_search_processes_v4":

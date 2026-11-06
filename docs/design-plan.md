@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-11-06
-lastReviewedCommit: 6c96b06af887055acabf101ad2eb84717b46f4aa
-lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. Pending-feedback browser coverage now releases refinement loading before separately gating filter navigation."
+lastReviewedAt: 2026-11-07
+lastReviewedCommit: 6b6500fdadb0cd555714facaed54d0930d7a7dc7
+lastReviewedNote: "Portal #184: reviewed separate totals/branch read demand, exact Database DTO snapshot and preserved cache, scope, UI and hosted qualification boundaries."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -591,7 +591,9 @@ Portal 不形成第三方 API 产品。Route Handler 或 Server Action 仅允许
 
 `src/server/data/read-coordinator.ts` 的进程级协调器在 loader 内提供同参并发合并（键为"环境身份（URL + publishable key）+ RPC + 请求体规范形 + timeout + cache 策略"的稳定 hash）、实例内准入与有界失败冷却，并把真实回源包进内部 envelope（`loadedAt` + origin marker）：**超过 30 秒窗口的载荷不再视为公开数据**，消费者必须等到一次受控回源结果或返回暂不可用，上游持续失败时不会无限 serve stale；失败永不被当作成功数据缓存。新鲜窗口内可以在上游故障时复用已验证成功结果。回源请求使用自己的 8 秒超时，某个访客的取消不会传播给其他消费者；每个调用方仍独立跑自己的精细 schema（写入前先由 RPC 固定 schema 校验）。本地缓存与准入只在当前运行实例内成立，实例终止即丢失，不宣称跨实例共享缓存或全局限流。服务端 JSON 的 `cacheSource` 区分 `instance/runtime` 实际命中，随机 `instanceMarker` 标识同一进程，不派生自环境、主机或查询内容。
 
-默认每个实例、每个昂贵 RPC family 最多同时运行 8 次回源，准入等待最多 1.5 秒，最多跟踪 256 个未完成键；达到上限时拒绝新工作，不驱逐仍在运行的项。同键失败冷却默认 2 秒，过期项释放容量；这些约束也用于同 family 的 no-store 调用，但不持久缓存其结果。消费者保留各自 deadline；容量或冷却拒绝沿用公开的暂不可用错误，并仅在服务端日志区分原因。首页的 ISR 导航调用保留原 fetch 缓存路径，见缓存职责表。
+默认每个实例、每个昂贵 RPC family 最多同时运行 8 次回源，准入等待最多 1.5 秒，最多跟踪 256 个未完成键；达到上限时拒绝新工作，不驱逐仍在运行的项。同键失败冷却默认 2 秒，过期项释放容量；这些约束也用于同 family 的 no-store 调用，但不持久缓存其结果。消费者保留各自 deadline；容量或冷却拒绝沿用公开的暂不可用错误，并仅在服务端日志区分原因。首页的 ISR 总数调用保留原 fetch 缓存路径，见缓存职责表。
+
+首页和空白搜索入口只调用 `portal_catalog_totals_v1`，获取部署品牌范围内的精确公开版本总数；不展开分类。搜索结果、分类展开和 Region 使用 `portal_navigation_branches_v1`，只计算当前 kind、筛选和父节点下的分支，不计算未展示的全库总数。两者使用独立严格 DTO，沿用 30 秒成功缓存、品牌隔离、8 秒边界和失败语义；总数与分支均归入既有 `catalog_facets` 准入 family。Database 的旧 navigation V2 保留兼容；Portal 切换前必须验证新增接口已部署。
 
 ### 10.1 Portal 服务端客户端
 

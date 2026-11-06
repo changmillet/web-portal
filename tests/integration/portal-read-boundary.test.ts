@@ -6,6 +6,7 @@ import catalogFixture from "../fixtures/portal/catalog-v1.json";
 import environmentFixture from "../fixtures/portal/r1-environments.json";
 
 import { searchPublicFlows, searchPublicProcesses } from "@/server/data/catalog";
+import { getPublicCatalogTotals, getPublicNavigationBranches } from "@/server/data/navigation";
 import { publicSearchPageSchema } from "@/server/contracts/portal";
 import {
   createPortalReadCoordinator,
@@ -84,6 +85,48 @@ function staleBoundary(envelope: PortalReadEnvelope): PortalCacheBoundary {
 }
 
 describe("Portal bounded read boundary against a real origin", () => {
+  it("coalesces each demand-specific RPC independently without requesting the complete aggregate", async () => {
+    const fixture = await start();
+    const events: PortalTelemetryEvent[] = [];
+    const client = createPortalRpcClient({
+      environment: dataEnvironment(fixture.origin),
+      cacheBoundary: coldBoundary(),
+      readCoordinator: createPortalReadCoordinator({ admissionWaitMs: 200 }),
+      logger: (event) => {
+        events.push(event);
+      },
+    });
+    const pages = await Promise.all(
+      Array.from({ length: 6 }, async () => {
+        const [totals, branches] = await Promise.all([
+          getPublicCatalogTotals(client),
+          getPublicNavigationBranches(
+            { kind: "flow", query: "", filters: {}, dimension: "classification" },
+            client,
+          ),
+        ]);
+        return { totals, branches };
+      }),
+    );
+    expect(fixture.receipts.rpcByName["portal_catalog_totals_v1"]).toBe(1);
+    expect(fixture.receipts.rpcByName["portal_navigation_branches_v1"]).toBe(1);
+    expect(fixture.receipts.rpcByName["portal_navigation_v2"]).toBeUndefined();
+    for (const page of pages) {
+      expect(page.branches).not.toHaveProperty("totals");
+      expect(page.totals).not.toHaveProperty("nodes");
+      expect(page.branches.kind).toBe("flow");
+    }
+    expect(
+      events.filter((event) => event.eventKind === "consumer" && event.cacheOutcome === "origin"),
+    ).toHaveLength(2);
+    expect(
+      events.filter(
+        (event) => event.eventKind === "consumer" && event.cacheOutcome === "coalesced",
+      ),
+    ).toHaveLength(10);
+    expect(events.every((event) => event.routeFamily === "catalog_facets")).toBe(true);
+  });
+
   it("collapses concurrent same-parameter reads into one origin call", async () => {
     const fixture = await start();
     const events: PortalTelemetryEvent[] = [];

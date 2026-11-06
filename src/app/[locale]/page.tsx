@@ -9,7 +9,7 @@ import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata, portalWebsiteJsonLd } from "@/lib/seo";
 import type { PublicCatalogSummary } from "@/server/contracts/portal";
 import { getPublicCatalogSummary } from "@/server/data/catalog";
-import { getPublicNavigation } from "@/server/data/navigation";
+import { getPublicCatalogTotals } from "@/server/data/navigation";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 
 export const revalidate = 300;
@@ -39,16 +39,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
-  const [summary, navigation] = await Promise.all([
+  const [summary, catalogTotals] = await Promise.all([
     brandConfig.site === "atlas" ? Promise.resolve(null) : readCatalogSummary(),
-    getPublicNavigation(
-      {
-        kind: "all",
-        query: "",
-        filters: {},
-        dimension: "classification",
-        limit: 1,
-      },
+    getPublicCatalogTotals(
       undefined,
       // This route is statically rendered: the coordinated read path issues a
       // `no-store` origin request, which would opt the page out of ISR.
@@ -69,7 +62,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <SiteHome
         locale={locale}
         summary={summary}
-        counts={navigation?.totals ?? null}
+        counts={catalogTotals?.totals ?? null}
         coverage={catalogCoverage(readPortalServerBrandScope())}
       />
     </>

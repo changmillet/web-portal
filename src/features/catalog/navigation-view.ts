@@ -2,7 +2,7 @@ import "server-only";
 import { getTranslations } from "next-intl/server";
 import type {
   BrowseSearchInput,
-  PublicNavigation,
+  PublicNavigationBranches,
   NavigationDimension,
 } from "@/server/contracts/navigation";
 import { localizedNavigationLabel } from "@/server/navigation-labels";
@@ -14,7 +14,7 @@ export async function navigationView(
   locale: PortalLocale,
   input: BrowseSearchInput,
   dimension: NavigationDimension,
-  page: PublicNavigation | null,
+  page: PublicNavigationBranches | null,
 ): Promise<CatalogNavigationProps> {
   const t = await getTranslations({ locale, namespace: "Navigation" });
   const geographic = dimension === "geography";

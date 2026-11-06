@@ -1,7 +1,7 @@
 {
   "schemaVersion": "portal.database-contract-snapshot.v1",
   "sourceRepository": "tiangong-lca/database",
-  "sourceCommit": "52da798b64a4762d81e0cd452525a9b271397203",
+  "sourceCommit": "e8e305a35f3c23a9409336f298ad136107d746f9",
   "files": [
     {
       "path": "portal.public-flow-link-eligibility.v1.schema.json",
@@ -110,6 +110,30 @@
       "sourcePath": "contracts/portal/generated/portal.public-navigation.v2.d.ts",
       "bytes": 8479,
       "sha256": "428567ba7d6e0e74ceb55da5aa433b0fd678a5ce9f253d0b84f38cc489cb5472"
+    },
+    {
+      "path": "portal.public-navigation-branches.v1.schema.json",
+      "sourcePath": "contracts/portal/portal.public-navigation-branches.v1.schema.json",
+      "bytes": 2564,
+      "sha256": "fe6307625cc1042523320521522cceab6e49a0f77cc66d42d48fb4c117e7ab44"
+    },
+    {
+      "path": "generated/portal.public-navigation-branches.v1.d.ts",
+      "sourcePath": "contracts/portal/generated/portal.public-navigation-branches.v1.d.ts",
+      "bytes": 4890,
+      "sha256": "8778ea56b37fd4031253966815d5169a630bb93cd3187d291cfa00c05a9bce5d"
+    },
+    {
+      "path": "portal.public-catalog-totals.v1.schema.json",
+      "sourcePath": "contracts/portal/portal.public-catalog-totals.v1.schema.json",
+      "bytes": 1276,
+      "sha256": "6a4728340d1ec7bf4708ac921906e72427e07e4c2caa0425dce8f37a1ccbc759"
+    },
+    {
+      "path": "generated/portal.public-catalog-totals.v1.d.ts",
+      "sourcePath": "contracts/portal/generated/portal.public-catalog-totals.v1.d.ts",
+      "bytes": 989,
+      "sha256": "0ad9f2f0d856b26787d7474551533509804d3fb56f89f397b863df8d28ffce60"
     },
     {
       "path": "portal.public-search-input.v4.schema.json",

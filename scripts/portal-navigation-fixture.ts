@@ -229,3 +229,15 @@ export function filterNavigationFixture<T extends { items: unknown[] }>(
     return { ...page, items: page.items.slice(1, 2) };
   return page;
 }
+
+export function navigationBranchesFixture(arguments_: Parameters<typeof navigationFixture>[0]) {
+  const { totals: _totals, ...page } = navigationFixture(arguments_);
+  return { ...page, schemaVersion: "portal.public-navigation-branches.v1" };
+}
+export function catalogTotalsFixture() {
+  return {
+    schemaVersion: "portal.public-catalog-totals.v1",
+    countBasis: "public_versions",
+    totals: navigationFixture({ p_kind: "all", p_dimension: "classification" }).totals,
+  };
+}

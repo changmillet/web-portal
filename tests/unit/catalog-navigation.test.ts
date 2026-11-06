@@ -2,12 +2,13 @@ import { describe, expect, it, vi } from "vitest";
 import {
   parsePortalBrowseUrl,
   browseFiltersSchema,
-  publicNavigationSchema,
+  publicNavigationBranchesSchema,
+  publicCatalogTotalsSchema,
 } from "@/server/contracts/navigation";
 import { publicSearchFiltersSchema } from "@/server/contracts/input";
 import { hierarchyFilters, navigationHref } from "@/features/catalog/navigation-links";
 import { facetHref, searchParameters } from "@/features/catalog/search-links";
-import { getPublicNavigation } from "@/server/data/navigation";
+import { getPublicNavigationBranches } from "@/server/data/navigation";
 import type { PortalRpcClient } from "@/server/data/supabase-rpc";
 
 const node = {
@@ -20,11 +21,10 @@ const node = {
   hasChildren: true,
 };
 const response = {
-  schemaVersion: "portal.public-navigation.v2",
+  schemaVersion: "portal.public-navigation-branches.v1",
   countBasis: "public_versions",
   dimension: "geography",
   kind: "process",
-  totals: { process: 4, flow: 2 },
   parent: null,
   ancestors: [],
   nodes: [node],
@@ -104,13 +104,13 @@ describe("hierarchical catalog navigation", () => {
     };
     const call = vi.spyOn(client, "call");
     await expect(
-      getPublicNavigation(
+      getPublicNavigationBranches(
         { kind: "process", dimension: "geography", filters: {}, query: "" },
         client,
       ),
     ).resolves.toMatchObject({ countBasis: "public_versions" });
     expect(call).toHaveBeenCalledWith(
-      "portal_navigation_v2",
+      "portal_navigation_branches_v1",
       expect.objectContaining({ p_parent_node_id: null, p_limit: 100 }),
       expect.anything(),
       expect.objectContaining({ seconds: 30 }),
@@ -119,20 +119,38 @@ describe("hierarchical catalog navigation", () => {
       schema.parse({ ...response, nodes: [{ ...node, parentNodeId: "geo:de" }] }),
     );
     await expect(
-      getPublicNavigation(
+      getPublicNavigationBranches(
         { kind: "process", dimension: "geography", filters: {}, query: "" },
         client,
       ),
     ).rejects.toThrow(/invalid|Invalid|custom/);
   });
-  it("rejects inconsistent direct counts and duplicate child identities", () => {
+  it("rejects legacy combined payloads and branch-shaped totals", () => {
     expect(
-      publicNavigationSchema.safeParse({ ...response, nodes: [{ ...node, directCount: 5 }] })
+      publicNavigationBranchesSchema.safeParse({ ...response, totals: { process: 4, flow: 2 } })
         .success,
     ).toBe(false);
-    expect(publicNavigationSchema.safeParse({ ...response, nodes: [node, node] }).success).toBe(
-      false,
-    );
+    const totals = {
+      schemaVersion: "portal.public-catalog-totals.v1",
+      countBasis: "public_versions",
+      totals: { process: 4, flow: 2 },
+    };
+    expect(publicCatalogTotalsSchema.safeParse(totals).success).toBe(true);
+    expect(publicCatalogTotalsSchema.safeParse({ ...totals, nodes: [] }).success).toBe(false);
+    expect(
+      publicCatalogTotalsSchema.safeParse({ ...totals, totals: { process: -1, flow: 2 } }).success,
+    ).toBe(false);
+  });
+  it("rejects inconsistent direct counts and duplicate child identities", () => {
+    expect(
+      publicNavigationBranchesSchema.safeParse({
+        ...response,
+        nodes: [{ ...node, directCount: 5 }],
+      }).success,
+    ).toBe(false);
+    expect(
+      publicNavigationBranchesSchema.safeParse({ ...response, nodes: [node, node] }).success,
+    ).toBe(false);
   });
 });
 

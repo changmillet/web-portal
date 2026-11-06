@@ -11,11 +11,11 @@ import {
   type ClassificationPage,
   type ClassificationRequest,
 } from "@/lib/classification-navigation";
-import type { getPublicNavigation } from "@/server/data/navigation";
+import type { getPublicNavigationBranches } from "@/server/data/navigation";
 import { ClassificationBranches } from "@/features/catalog/classification-branches";
 import { createClassificationHandler } from "@/server/classification/handler";
 import { classificationSeeds, readClassificationBranch } from "@/server/classification/navigation";
-import { parsePortalBrowseUrl, type PublicNavigation } from "@/server/contracts/navigation";
+import { parsePortalBrowseUrl, type PublicNavigationBranches } from "@/server/contracts/navigation";
 
 vi.mock("next-intl/server", () => ({
   getTranslations: async ({ locale }: { locale: "en" | "de" | "fr" | "zh-CN" }) =>
@@ -71,13 +71,12 @@ const rawNode = (id: string, parentNodeId: string | null = null) => ({
   directCount: 2,
   hasChildren: true,
 });
-function rawPage(parentNodeId: string | null): PublicNavigation {
+function rawPage(parentNodeId: string | null): PublicNavigationBranches {
   return {
-    schemaVersion: "portal.public-navigation.v2",
+    schemaVersion: "portal.public-navigation-branches.v1",
     countBasis: "public_versions",
     kind: "process",
     dimension: "classification",
-    totals: { process: 7, flow: 0 },
     parent: parentNodeId ? rawNode(parentNodeId) : null,
     ancestors: [],
     nodes: [rawNode("class:isic:0", parentNodeId)],
@@ -146,7 +145,7 @@ describe("same-origin classification reads", () => {
     expect(await (await handler(request())).json()).toEqual({ code: "temporarily_unavailable" });
   });
   it("reads one aggregate child page and removes only this dimension's selected filter", async () => {
-    const read = vi.fn<typeof getPublicNavigation>(async () => rawPage(null));
+    const read = vi.fn<typeof getPublicNavigationBranches>(async () => rawPage(null));
     const result = await readClassificationBranch(
       {
         ...input,
@@ -177,7 +176,7 @@ describe("same-origin classification reads", () => {
   it("hydrates only the root and selected ancestor path, preserving the selected page's opaque cursor", async () => {
     const current = rawPage("class:isic:01");
     current.ancestors = [rawNode("class:isic"), rawNode("class:isic:0", "class:isic")];
-    const read = vi.fn<typeof getPublicNavigation>(async ({ parentNodeId }) =>
+    const read = vi.fn<typeof getPublicNavigationBranches>(async ({ parentNodeId }) =>
       rawPage(parentNodeId ?? null),
     );
     const seeds = await classificationSeeds(

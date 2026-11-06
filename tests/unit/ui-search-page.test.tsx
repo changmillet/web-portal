@@ -3,13 +3,14 @@ import type { ReactNode } from "react";
 import { cleanup, fireEvent, render as renderBase, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { navigationFixture } from "../../scripts/portal-navigation-fixture";
+import { navigationBranchesFixture } from "../../scripts/portal-navigation-fixture";
 import type {
-  getPublicNavigation,
+  getPublicNavigationBranches,
+  getPublicCatalogTotals,
   searchPublicBrowse,
   getPublicBrowseFacets,
 } from "@/server/data/navigation";
-import { publicNavigationSchema } from "@/server/contracts/navigation";
+import { publicNavigationBranchesSchema } from "@/server/contracts/navigation";
 import catalogFixture from "../fixtures/portal/catalog-v1.json";
 import enMessages from "../../src/i18n/messages/en.json";
 import type {
@@ -28,7 +29,8 @@ const catalogMocks = vi.hoisted(() => ({
 }));
 
 const navigationMocks = vi.hoisted(() => ({
-  getPublicNavigation: vi.fn<typeof getPublicNavigation>(),
+  getPublicNavigationBranches: vi.fn<typeof getPublicNavigationBranches>(),
+  getPublicCatalogTotals: vi.fn<typeof getPublicCatalogTotals>(),
   searchPublicBrowse: vi.fn<typeof searchPublicBrowse>(),
   getPublicBrowseFacets: vi.fn<typeof getPublicBrowseFacets>(),
 }));
@@ -96,7 +98,10 @@ describe("Search page sidebar state (Portal #46)", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    navigationMocks.getPublicNavigation.mockRejectedValue(
+    navigationMocks.getPublicNavigationBranches.mockRejectedValue(
+      new PortalDataError("upstream_unavailable"),
+    );
+    navigationMocks.getPublicCatalogTotals.mockRejectedValue(
       new PortalDataError("upstream_unavailable"),
     );
     getTranslations.mockImplementation(async ({ namespace }: { namespace: string }) =>
@@ -104,9 +109,11 @@ describe("Search page sidebar state (Portal #46)", () => {
     );
   });
 
-  it("empty query queries no backend and shows the initial prompt instead of the unavailable text", async () => {
+  it("empty entry reads only totals and keeps its prompt if they are unavailable", async () => {
     await renderSearchPage({});
 
+    expect(navigationMocks.getPublicNavigationBranches).not.toHaveBeenCalled();
+    expect(navigationMocks.getPublicCatalogTotals).toHaveBeenCalledTimes(1);
     expect(catalogMocks.searchPublicProcesses).not.toHaveBeenCalled();
     expect(catalogMocks.searchPublicFlows).not.toHaveBeenCalled();
     expect(catalogMocks.getPublicFacets).not.toHaveBeenCalled();
@@ -136,6 +143,8 @@ describe("Search page sidebar state (Portal #46)", () => {
     await renderSearchPage({ v: "1", kind: "process", q: "electricity" });
     expect(catalogMocks.searchPublicProcesses).toHaveBeenCalledTimes(1);
     expect(catalogMocks.getPublicFacets).not.toHaveBeenCalled();
+    expect(navigationMocks.getPublicCatalogTotals).not.toHaveBeenCalled();
+    expect(navigationMocks.getPublicNavigationBranches).toHaveBeenCalledTimes(1);
   });
 
   it("keeps successful rows and pagination when requested facets fail", async () => {
@@ -154,9 +163,13 @@ describe("Search page sidebar state (Portal #46)", () => {
   });
 
   it("does not read facets when Region navigation succeeds", async () => {
-    navigationMocks.getPublicNavigation.mockResolvedValue(
-      publicNavigationSchema.parse(
-        navigationFixture({ p_kind: "process", p_dimension: "geography", p_parent_node_id: null }),
+    navigationMocks.getPublicNavigationBranches.mockResolvedValue(
+      publicNavigationBranchesSchema.parse(
+        navigationBranchesFixture({
+          p_kind: "process",
+          p_dimension: "geography",
+          p_parent_node_id: null,
+        }),
       ),
     );
     await renderSearchPage({ v: "1", explore: "region" });

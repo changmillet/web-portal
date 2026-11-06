@@ -146,6 +146,15 @@ test("search remains live while pending and filter feedback survives closing its
   });
   await page.getByRole("button", { name: "Refine results", exact: true }).click();
   const drawer = page.getByRole("dialog");
+  await expect(page.locator(".portal-route-progress")).toHaveAttribute("data-pending", "true");
+  await expect(drawer).not.toBeVisible();
+  release();
+  await expect(page).toHaveURL(/refine=1/);
+  await expect(drawer).toBeVisible();
+  await expect(page.locator(".portal-route-progress")).not.toHaveAttribute("data-pending", "true");
+  gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
   const firstFilter = drawer.locator("a[href]").first();
   const destination = await firstFilter.getAttribute("href");
   await firstFilter.click();

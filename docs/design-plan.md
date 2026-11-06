@@ -23,8 +23,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-11-06
-lastReviewedCommit: 3ae61ce5dbadca1b72a52a48347c06ac404572ce
-lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity."
+lastReviewedCommit: 6c96b06af887055acabf101ad2eb84717b46f4aa
+lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. Pending-feedback browser coverage now releases refinement loading before separately gating filter navigation."
 related:
   - docs/ui-system.md
   - docs/development.md

@@ -142,6 +142,7 @@
     "keywordMode": "关键词搜索",
     "descriptionMode": "描述需求",
     "filtersDescription": "按地区和时间缩小结果范围。",
+    "filtersUnavailable": "筛选条件暂时无法加载，请刷新页面重试。",
     "appliedFilters": "已选筛选条件",
     "clearFilters": "清除筛选",
     "allResultsTitle": "符合筛选条件的数据集",

@@ -779,6 +779,13 @@ export async function startPortalR1FixtureServer(
           if (!oldest) break;
           rpcReceiptsByFingerprint.delete(oldest);
         }
+        if (
+          name === "portal_facets_v4" &&
+          String(arguments_?.p_query).startsWith("fixture:facets-fail")
+        ) {
+          writeJson(response, 503, { code: "P0001", message: "portal catalog unavailable" });
+          return;
+        }
         writeJson(response, 200, payload);
         return;
       }

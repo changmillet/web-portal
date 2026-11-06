@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-10-27
-lastReviewedCommit: 623f37fb551b9558e054ba73f76718d83263f313
-lastReviewedNote: "Portal #166: reviewed preservation of qualified Main business/i18n/SEO/generated worker and security/policy prerequisites; anonymous access, precision, privacy, budgets and exact hosted-release requirements remain unchanged."
+lastReviewedAt: 2026-11-06
+lastReviewedCommit: 6c96b06af887055acabf101ad2eb84717b46f4aa
+lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. Pending-feedback browser coverage now releases refinement loading before separately gating filter navigation."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -396,6 +396,8 @@ Sources 目录、首页/搜索/数据库指南入口及新来源筛选不再展�
 - 数据源、版本、访问能力、审核/质量状态；
 - 后端返回的匹配理由；
 - `选择`、`详情`、`复制引用`。
+
+关键词结果页仅在显式打开筛选（`refine=1`）时读取分面；打开动作保留查询、筛选、排序、结果及导航游标，无 JavaScript 时通过原生链接进入同一筛选 URL 并显示静态筛选面板。关闭后重新打开已加载面板不额外请求；改变查询或筛选后重新按需读取。地区导航成功时不重复读取分面，仅在导航不可用时按原有口径读取分面回退。Search、分面分别处理数据读取失败，分面失败不能丢弃成功结果和分页。Atlas 首页只读取实际展示的公共版本计数，不读取仅供 TianGong 使用的目录摘要。既有公开数据缓存时限不变；这些调用量优化不证明数据库单次查询或线上并发延迟。
 
 动态分面计数必须来自后端全结果集聚合，不能由当前页样本推算；单位明确为命中的公开版本，不暗示去重数据集数。首批分面限于已具备索引和稳定字段的：对象类型、访问能力、地区、参考年、Process subtype、数据源。分配方法、技术路线和质量分面在真实数据覆盖与索引验收后加入。
 

@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-10-27
-lastReviewedCommit: 623f37fb551b9558e054ba73f76718d83263f313
+lastReviewedAt: 2026-11-06
+lastReviewedCommit: 63df5af21e877986e868d1d94257cfc74cc0d514
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #166: reviewed current Main Storybook 10.6.3/Vite 8.3.5/exact TS6 hook and upstream router, scoped React/MSW addon composition, inherited Zod/Undici repair and original Actions contracts; frozen install/type checks are distinct from pending full runtime qualification."
+lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. RequestedFilters now waits for animated visibility before asserting; interaction and accessibility requirements are retained."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

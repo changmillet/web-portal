@@ -9,6 +9,10 @@ async function rpcReceiptCount(request: APIRequestContext, name: string, body: o
     .update(JSON.stringify({ ...body, p_allowed_brands: ["tiangong_lca"] }))
     .digest("hex");
   const response = await request.get(`${fixtureOrigin}/receipts/rpc/${name}/${bodySha256}`);
+  if (response.status() === 404) {
+    expect(await response.json()).toEqual({ code: "fixture_receipt_not_found" });
+    return 0;
+  }
   expect(response.ok()).toBe(true);
   return ((await response.json()) as { count: number }).count;
 }
@@ -102,7 +106,7 @@ test("reuses short public Search data without sharing dynamic HTML", async ({ re
   expect(firstCacheControl.get("private")).toBe(true);
   expect(firstCacheControl.get("no-store")).toBe(true);
   expect(await rpcReceiptCount(request, "portal_search_processes_v4", searchBody)).toBe(1);
-  expect(await rpcReceiptCount(request, "portal_facets_v4", facetBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v4", facetBody)).toBe(0);
 
   const second = await request.get(path);
   expect(second.ok()).toBe(true);
@@ -110,6 +114,13 @@ test("reuses short public Search data without sharing dynamic HTML", async ({ re
   expect(secondCacheControl.get("private")).toBe(true);
   expect(secondCacheControl.get("no-store")).toBe(true);
   expect(await rpcReceiptCount(request, "portal_search_processes_v4", searchBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v4", facetBody)).toBe(0);
+
+  const refinement = await request.get(`${path}&refine=1`);
+  expect(refinement.ok()).toBe(true);
+  expect(await rpcReceiptCount(request, "portal_search_processes_v4", searchBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v4", facetBody)).toBe(1);
+  await request.get(`${path}&refine=1`);
   expect(await rpcReceiptCount(request, "portal_facets_v4", facetBody)).toBe(1);
 });
 

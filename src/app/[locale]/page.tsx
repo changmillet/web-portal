@@ -3,6 +3,7 @@ import { readPortalServerBrandScope } from "@/server/data/environment";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { brandConfig } from "@/server/brand";
 import { SiteHome } from "@/sites/home";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata, portalWebsiteJsonLd } from "@/lib/seo";
@@ -39,7 +40,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
   const [summary, navigation] = await Promise.all([
-    readCatalogSummary(),
+    brandConfig.site === "atlas" ? Promise.resolve(null) : readCatalogSummary(),
     getPublicNavigation(
       {
         kind: "all",

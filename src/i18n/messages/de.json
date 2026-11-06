@@ -142,6 +142,7 @@
     "keywordMode": "Stichwortsuche",
     "descriptionMode": "Bedarf beschreiben",
     "filtersDescription": "Grenzen Sie Ergebnisse nach Region und Zeitraum ein.",
+    "filtersUnavailable": "Filter konnten nicht geladen werden. Laden Sie die Seite neu, um es erneut zu versuchen.",
     "appliedFilters": "Aktive Filter",
     "clearFilters": "Filter zurücksetzen",
     "allResultsTitle": "Datensätze für Ihre Filter",

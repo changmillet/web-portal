@@ -22,12 +22,17 @@ const meta = {
       }),
     }),
   ],
-  render: (_, { globals, loaded }) => {
+  render: (_, { globals, loaded, parameters }) => {
     const locale = storyLocale(globals);
     const m = dictionaries[locale];
     return (
       <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[16rem_minmax(0,1fr)]">
         <ResponsiveFacets
+          drawer={parameters.drawer}
+          loadHref={
+            parameters.onDemand ? "/en/search?kind=process&q=electricity&refine=1" : undefined
+          }
+          initiallyOpen={parameters.open}
           labels={{
             title: m.Search.facets,
             description: m.Search.filtersDescription,
@@ -85,4 +90,26 @@ export const MobileGerman: Story = {
 export const DarkFrench: Story = {
   ...MobileGerman,
   globals: { ...mobileGlobals, locale: "fr", theme: "dark" },
+};
+
+export const OnDemand: Story = {
+  parameters: { drawer: true, onDemand: true },
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.facets }));
+    await expect(
+      within(canvasElement.ownerDocument.body).queryByRole("dialog"),
+    ).not.toBeInTheDocument();
+  },
+};
+export const RequestedFilters: Story = {
+  parameters: { drawer: true, open: true },
+  play: async ({ canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = await body.findByRole("dialog", { name: m.Search.facets });
+    await waitFor(() => expect(dialog).toBeVisible());
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+  },
 };

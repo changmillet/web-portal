@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-10-10
-lastReviewedCommit: 38ee06a68db83a346d6e3660afd6e68a74b8c854
-lastReviewedNote: "Portal #141: omitted data-brand configuration defaults to Tiangong LCA; explicit invalid inputs and build/runtime scope drift still fail. Hosted release and CSP/ISR evidence remain independently required."
+lastReviewedAt: 2026-11-06
+lastReviewedCommit: 3ae61ce5dbadca1b72a52a48347c06ac404572ce
+lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

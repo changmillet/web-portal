@@ -173,7 +173,9 @@ export default async function SearchPage({
       ? navigationPromise.then((page) => classificationSeeds(locale, parsedSearch, page, navCursor))
       : Promise.resolve([{ parentNodeId: null, page: null }]);
 
+  const facetsRequested = rawSearchParams.refine === "1";
   let dataUnavailable = false;
+  let facetsUnavailable = false;
   let nextCursor: string | null = null;
   let results: ReturnType<typeof mapSearchItem>[] = [];
   let facets: Awaited<ReturnType<typeof getPublicFacets>> | null = null;
@@ -214,33 +216,44 @@ export default async function SearchPage({
   };
 
   if (hasQuery && !inputInvalid) {
-    try {
-      const { kind: _kind, ...searchInput } = parsedSearch;
-      const [page, facetPage] = await Promise.all([
-        aggregateView
-          ? Promise.resolve(null)
-          : hasNavigationFilters(parsedSearch.filters)
-            ? searchPublicBrowse(parsedSearch)
-            : parsedSearch.kind === "process"
-              ? searchPublicProcesses(searchInput, undefined, { cache: "short-public" })
-              : searchPublicFlows(searchInput, undefined, { cache: "short-public" }),
-        (hasNavigationFilters(parsedSearch.filters) ? getPublicBrowseFacets : getPublicFacets)(
-          {
-            filters: parsedSearch.filters,
-            kind: parsedSearch.kind,
-            query,
-          },
-          undefined,
-          { cache: "short-public" },
-        ),
-      ]);
-      results = page?.items.map((item) => mapSearchItem(item, locale)) ?? [];
-      nextCursor = page?.nextCursor ?? null;
-      facets = facetPage;
-    } catch (error) {
-      if (!(error instanceof PortalDataError)) throw error;
-      dataUnavailable = true;
-    }
+    const { kind: _kind, ...searchInput } = parsedSearch;
+    const readResults = async () => {
+      if (aggregateView) return { page: null, unavailable: false };
+      try {
+        const page = await (hasNavigationFilters(parsedSearch.filters)
+          ? searchPublicBrowse(parsedSearch)
+          : parsedSearch.kind === "process"
+            ? searchPublicProcesses(searchInput, undefined, { cache: "short-public" })
+            : searchPublicFlows(searchInput, undefined, { cache: "short-public" }));
+        return { page, unavailable: false };
+      } catch (error) {
+        if (!(error instanceof PortalDataError)) throw error;
+        return { page: null, unavailable: true };
+      }
+    };
+    const readFacets = async () => {
+      // A closed drawer consumes no counts. Region browsing needs facets only
+      // as a fallback when its navigation read fails.
+      if (!facetsRequested && !(aggregateView && !(await navigationPromise)))
+        return { page: null, unavailable: false };
+      try {
+        const page = await (
+          hasNavigationFilters(parsedSearch.filters) ? getPublicBrowseFacets : getPublicFacets
+        )({ filters: parsedSearch.filters, kind: parsedSearch.kind, query }, undefined, {
+          cache: "short-public",
+        });
+        return { page, unavailable: false };
+      } catch (error) {
+        if (!(error instanceof PortalDataError)) throw error;
+        return { page: null, unavailable: true };
+      }
+    };
+    const [resultRead, facetRead] = await Promise.all([readResults(), readFacets()]);
+    results = resultRead.page?.items.map((item) => mapSearchItem(item, locale)) ?? [];
+    nextCursor = resultRead.page?.nextCursor ?? null;
+    dataUnavailable = resultRead.unavailable;
+    facets = facetRead.page;
+    facetsUnavailable = facetRead.unavailable;
   }
 
   const navigation = await navigationPromise;
@@ -364,11 +377,18 @@ export default async function SearchPage({
     ? preserveNavigationPage(nextSearchPageHref(locale, parsedSearch, nextCursor, cursorTrail))
     : null;
   const allowedBrandCodes = readPortalServerBrandScope().allowedBrandCodes;
+  const refinementParameters = searchParameters(parsedSearch);
+  refinementParameters.set("refine", "1");
+  if (aggregateView) refinementParameters.set("explore", "region");
+  if (navCursor) refinementParameters.set("navCursor", navCursor);
+  if (typeof rawSearchParams.pageTrail === "string" && cursorTrail.length > 0)
+    refinementParameters.set("pageTrail", rawSearchParams.pageTrail);
+  const refinementHref = `${localePath(locale, "search")}?${refinementParameters}`;
   const facetContent = await FacetsPanel({
     locale,
     parsedSearch,
     facets,
-    dataUnavailable,
+    dataUnavailable: facetsUnavailable,
     allowedBrandCodes,
   });
 
@@ -500,7 +520,10 @@ export default async function SearchPage({
                             <>
                               {" "}
                               <ResponsiveFacets
+                                key={`${refinementHref}:${facetsRequested}`}
                                 drawer
+                                loadHref={facetsRequested ? undefined : refinementHref}
+                                initiallyOpen={facetsRequested}
                                 labels={{
                                   title: t("facets"),
                                   description: t("filtersDescription"),
@@ -587,7 +610,7 @@ export default async function SearchPage({
                               </EmptyHeader>
                             </Empty>
                           ) : inputInvalid ||
-                            (dataUnavailable && !(dimension === "region" && navigation)) ? (
+                            (aggregateView ? !navigation && facetsUnavailable : dataUnavailable) ? (
                             <Alert variant={inputInvalid ? "destructive" : "default"}>
                               <AlertDescription>
                                 {inputInvalid ? t("emptyDescription") : t("unavailableDescription")}

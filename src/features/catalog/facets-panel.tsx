@@ -37,14 +37,11 @@ export async function FacetsPanel({
         <FilterIcon aria-hidden="true" />
         <CardTitle>{t("facets")}</CardTitle>
         <CardDescription>
-          {facets
-            ? t("filtersDescription")
-            : dataUnavailable
-              ? t("unavailableDescription")
-              : t("initialDescription")}
+          {facets || dataUnavailable ? t("filtersDescription") : t("initialDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {dataUnavailable && !facets && <output>{t("filtersUnavailable")}</output>}
         {facets
           ? facets.groups
               .filter(

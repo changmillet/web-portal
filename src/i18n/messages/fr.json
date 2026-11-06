@@ -142,6 +142,7 @@
     "keywordMode": "Recherche par mots-clés",
     "descriptionMode": "Décrire le besoin",
     "filtersDescription": "Affinez les résultats par région et période.",
+    "filtersUnavailable": "Impossible de charger les filtres. Rechargez la page pour réessayer.",
     "appliedFilters": "Filtres actifs",
     "clearFilters": "Effacer les filtres",
     "allResultsTitle": "Jeux de données correspondant aux filtres",

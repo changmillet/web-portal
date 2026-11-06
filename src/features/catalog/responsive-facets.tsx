@@ -19,19 +19,33 @@ export function ResponsiveFacets({
   children,
   labels,
   drawer = false,
+  loadHref,
+  initiallyOpen = false,
 }: {
   drawer?: boolean;
+  /** Native refinement URL; the server only reads counts after this navigation. */
+  loadHref?: string;
+  initiallyOpen?: boolean;
   children: ReactNode;
   labels: { title: string; description: string; close: string };
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   return (
     <>
       <PendingFeedback pending={pending} />
       <div className={drawer ? "portal-facets-trigger" : "portal-facets-trigger xl:hidden"}>
-        <Sheet onOpenChange={setOpen} open={open}>
+        <Sheet
+          onOpenChange={(nextOpen) => {
+            if (nextOpen && loadHref) {
+              startTransition(() => router.push(loadHref, { scroll: false }));
+              return;
+            }
+            setOpen(nextOpen);
+          }}
+          open={open}
+        >
           <SheetTrigger asChild>
             <Button
               className="portal-pending-control min-h-11"
@@ -81,9 +95,22 @@ export function ResponsiveFacets({
           </SheetContent>
         </Sheet>
       </div>
-      {!drawer && (
-        <aside aria-label={labels.title} className="portal-facets-content hidden xl:block">
-          {children}
+      {(!drawer || loadHref || initiallyOpen) && (
+        <aside
+          aria-label={labels.title}
+          className={
+            drawer ? "portal-facets-content hidden" : "portal-facets-content hidden xl:block"
+          }
+        >
+          {loadHref ? (
+            <Button asChild variant="outline">
+              <a href={loadHref} rel="nofollow">
+                {labels.title}
+              </a>
+            </Button>
+          ) : (
+            children
+          )}
         </aside>
       )}
       <noscript>

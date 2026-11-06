@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-11-06
-lastReviewedCommit: 3ae61ce5dbadca1b72a52a48347c06ac404572ce
+lastReviewedCommit: 63df5af21e877986e868d1d94257cfc74cc0d514
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity."
+lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. RequestedFilters now waits for animated visibility before asserting; interaction and accessibility requirements are retained."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

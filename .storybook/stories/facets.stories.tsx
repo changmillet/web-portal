@@ -107,7 +107,8 @@ export const RequestedFilters: Story = {
   play: async ({ canvasElement, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)];
     const body = within(canvasElement.ownerDocument.body);
-    await expect(await body.findByRole("dialog", { name: m.Search.facets })).toBeVisible();
+    const dialog = await body.findByRole("dialog", { name: m.Search.facets });
+    await waitFor(() => expect(dialog).toBeVisible());
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
   },

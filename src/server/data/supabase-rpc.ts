@@ -37,6 +37,8 @@ const rpcNames = new Set([
   "portal_search_flows_v4",
   "portal_facets_v4",
   "portal_navigation_v2",
+  "portal_navigation_branches_v1",
+  "portal_catalog_totals_v1",
   "portal_catalog_summary_v2",
   "portal_get_dataset_v2",
   "portal_list_versions_v2",
@@ -52,6 +54,8 @@ export type PortalRpcName =
   | "portal_search_flows_v4"
   | "portal_facets_v4"
   | "portal_navigation_v2"
+  | "portal_navigation_branches_v1"
+  | "portal_catalog_totals_v1"
   | "portal_catalog_summary_v2"
   | "portal_get_dataset_v2"
   | "portal_list_versions_v2"
@@ -188,6 +192,8 @@ function routeFamily(name: PortalRpcName): PortalTelemetryEvent["routeFamily"] {
       return "dataset_exchanges";
     case "portal_facets_v4":
     case "portal_navigation_v2":
+    case "portal_navigation_branches_v1":
+    case "portal_catalog_totals_v1":
       return "catalog_facets";
     case "portal_sitemap_entries_v2":
     case "portal_sitemap_manifest_v2":
@@ -245,7 +251,8 @@ function describeCatalogRead(
 }
 
 function maximumResponseBytes(name: PortalRpcName): number {
-  if (name === "portal_navigation_v2") return 64 * 1024;
+  if (name === "portal_catalog_totals_v1") return 1024;
+  if (name === "portal_navigation_v2" || name === "portal_navigation_branches_v1") return 64 * 1024;
   return name === "portal_sitemap_shard_v2"
     ? sitemapShardMaximumResponseBytes
     : defaultMaximumResponseBytes;

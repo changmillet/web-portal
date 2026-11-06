@@ -1,6 +1,8 @@
 import "server-only";
 
 import { z } from "zod";
+import type { TianGongPortalPublicNavigationBranchesV1 } from "../../../contracts/database-engine/portal/generated/portal.public-navigation-branches.v1";
+import type { TianGongPortalPublicCatalogTotalsV1 } from "../../../contracts/database-engine/portal/generated/portal.public-catalog-totals.v1";
 import type { TianGongPortalPublicNavigationPageV2 } from "../../../contracts/database-engine/portal/generated/portal.public-navigation.v2";
 import {
   catalogSearchInputSchema,
@@ -125,6 +127,27 @@ export const publicNavigationSchema = z
     (page) => new Set(page.nodes.map((node) => node.nodeId)).size === page.nodes.length,
   ) satisfies z.ZodType<TianGongPortalPublicNavigationPageV2>;
 export type PublicNavigation = z.infer<typeof publicNavigationSchema>;
+// Separate wire contracts make discarded aggregate work impossible to request by accident.
+export const publicNavigationBranchesSchema = z
+  .strictObject({
+    schemaVersion: z.literal("portal.public-navigation-branches.v1"),
+    countBasis: publicNavigationSchema.shape.countBasis,
+    dimension: publicNavigationSchema.shape.dimension,
+    kind: publicNavigationSchema.shape.kind,
+    parent: publicNavigationSchema.shape.parent,
+    ancestors: publicNavigationSchema.shape.ancestors,
+    nodes: publicNavigationSchema.shape.nodes,
+    nextCursor: publicNavigationSchema.shape.nextCursor,
+  })
+  .refine(
+    (page) => new Set(page.nodes.map((node) => node.nodeId)).size === page.nodes.length,
+  ) satisfies z.ZodType<TianGongPortalPublicNavigationBranchesV1>;
+export const publicCatalogTotalsSchema = z.strictObject({
+  schemaVersion: z.literal("portal.public-catalog-totals.v1"),
+  countBasis: publicNavigationSchema.shape.countBasis,
+  totals: publicNavigationSchema.shape.totals,
+}) satisfies z.ZodType<TianGongPortalPublicCatalogTotalsV1>;
+export type PublicNavigationBranches = z.infer<typeof publicNavigationBranchesSchema>;
 export type NavigationNode = z.infer<typeof navigationNodeSchema>;
 
 export function hasNavigationFilters(filters: BrowseFilters): boolean {

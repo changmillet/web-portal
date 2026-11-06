@@ -3,7 +3,8 @@ import { cache } from "react";
 import {
   browseSearchInputSchema,
   navigationInputSchema,
-  publicNavigationSchema,
+  publicNavigationBranchesSchema,
+  publicCatalogTotalsSchema,
 } from "@/server/contracts/navigation";
 import { publicFacetsSchema, publicSearchPageSchema } from "@/server/contracts/portal";
 import { createPortalRpcClient, PortalDataError, type PortalRpcClient } from "./supabase-rpc";
@@ -36,7 +37,7 @@ async function readNavigation(
   const value = navigationInputSchema.safeParse(input);
   if (!value.success) throw new PortalDataError("invalid_request");
   const parsed = value.data;
-  const schema = publicNavigationSchema.refine(
+  const schema = publicNavigationBranchesSchema.refine(
     (page) =>
       page.kind === parsed.kind &&
       page.dimension === parsed.dimension &&
@@ -44,7 +45,7 @@ async function readNavigation(
       page.nodes.every((node) => node.parentNodeId === parsed.parentNodeId),
   );
   return client.call(
-    "portal_navigation_v2",
+    "portal_navigation_branches_v1",
     {
       p_kind: parsed.kind,
       p_query: parsed.query,
@@ -55,7 +56,7 @@ async function readNavigation(
       p_limit: parsed.limit,
     },
     schema,
-    cachePolicy(publicNavigationSchema, options?.boundary),
+    cachePolicy(publicNavigationBranchesSchema, options?.boundary),
   );
 }
 
@@ -63,7 +64,7 @@ async function readNavigation(
 const readCachedNavigation = cache((serialized: string) =>
   readNavigation(JSON.parse(serialized), createPortalRpcClient()),
 );
-export async function getPublicNavigation(
+export async function getPublicNavigationBranches(
   input: z.input<typeof navigationInputSchema>,
   client?: PortalRpcClient,
   options?: PortalNavigationReadOptions,
@@ -112,4 +113,22 @@ export async function getPublicBrowseFacets(
     publicFacetsSchema.refine((page) => page.kind === parsed.kind),
     cachePolicy(publicFacetsSchema),
   );
+}
+
+async function readCatalogTotals(client: PortalRpcClient, options?: PortalNavigationReadOptions) {
+  return client.call(
+    "portal_catalog_totals_v1",
+    {},
+    publicCatalogTotalsSchema,
+    cachePolicy(publicCatalogTotalsSchema, options?.boundary),
+  );
+}
+const readCachedCatalogTotals = cache(() => readCatalogTotals(createPortalRpcClient()));
+export async function getPublicCatalogTotals(
+  client?: PortalRpcClient,
+  options?: PortalNavigationReadOptions,
+) {
+  if (client) return readCatalogTotals(client, options);
+  if (options?.boundary === "legacy") return readCatalogTotals(createPortalRpcClient(), options);
+  return readCachedCatalogTotals();
 }

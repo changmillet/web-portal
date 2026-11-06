@@ -43,6 +43,8 @@ const telemetryEventSchema = z.strictObject({
       "portal_facets_v4",
       "portal_facets_v4",
       "portal_navigation_v2",
+      "portal_navigation_branches_v1",
+      "portal_catalog_totals_v1",
       "portal_search_processes_v4",
       "portal_search_flows_v4",
       "portal_sitemap_entries_v2",

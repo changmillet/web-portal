@@ -56,10 +56,11 @@ import { PortalDataError } from "@/server/data/supabase-rpc";
 import {
   parsePortalBrowseUrl,
   hasNavigationFilters,
-  type PublicNavigation,
+  type PublicNavigationBranches,
 } from "@/server/contracts/navigation";
 import {
-  getPublicNavigation,
+  getPublicNavigationBranches,
+  getPublicCatalogTotals,
   searchPublicBrowse,
   getPublicBrowseFacets,
 } from "@/server/data/navigation";
@@ -154,20 +155,28 @@ export default async function SearchPage({
     typeof rawNavCursor === "string" && /^[A-Za-z0-9_-]{1,4096}$/u.test(rawNavCursor)
       ? rawNavCursor
       : null;
-  const navigationPromise: Promise<PublicNavigation | null> = inputInvalid
-    ? Promise.resolve(null)
-    : getPublicNavigation({
-        kind: hasQuery ? parsedSearch.kind : "all",
-        query: parsedSearch.query,
-        filters: hierarchyFilters(parsedSearch, hierarchyDimension),
-        dimension: hierarchyDimension,
-        parentNodeId,
-        cursor: navCursor,
-        limit: hierarchyDimension === "geography" ? 500 : 50,
-      }).catch((error: unknown) => {
+  const initialEntry = !hasQuery && !inputInvalid;
+  const totalsPromise = initialEntry
+    ? getPublicCatalogTotals().catch((error: unknown) => {
         if (error instanceof PortalDataError) return null;
         throw error;
-      });
+      })
+    : Promise.resolve(null);
+  const navigationPromise: Promise<PublicNavigationBranches | null> =
+    inputInvalid || initialEntry
+      ? Promise.resolve(null)
+      : getPublicNavigationBranches({
+          kind: parsedSearch.kind,
+          query: parsedSearch.query,
+          filters: hierarchyFilters(parsedSearch, hierarchyDimension),
+          dimension: hierarchyDimension,
+          parentNodeId,
+          cursor: navCursor,
+          limit: hierarchyDimension === "geography" ? 500 : 50,
+        }).catch((error: unknown) => {
+          if (error instanceof PortalDataError) return null;
+          throw error;
+        });
   const classificationPromise =
     !inputInvalid && !aggregateView && hasQuery
       ? navigationPromise.then((page) => classificationSeeds(locale, parsedSearch, page, navCursor))
@@ -256,7 +265,7 @@ export default async function SearchPage({
     facetsUnavailable = facetRead.unavailable;
   }
 
-  const navigation = await navigationPromise;
+  const [navigation, catalogTotals] = await Promise.all([navigationPromise, totalsPromise]);
   const navigationProps = await navigationView(
     locale,
     parsedSearch,
@@ -368,7 +377,6 @@ export default async function SearchPage({
   ].filter((entry): entry is { keys: string[]; label: string; value: string } =>
     Boolean(entry.value),
   );
-  const initialEntry = !hasQuery && !inputInvalid;
   const clearFiltersHref = searchHref(locale, { ...parsedSearch, filters: {} }, null);
   const previousPageHref = preserveNavigationPage(
     previousSearchPageHref(locale, parsedSearch, cursorTrail),
@@ -458,7 +466,7 @@ export default async function SearchPage({
                   browseOnly
                   locale={locale}
                   kind={parsedSearch.kind}
-                  counts={navigation?.totals ?? null}
+                  counts={catalogTotals?.totals ?? null}
                   coverage={catalogCoverage(readPortalServerBrandScope())}
                 />
               ) : undefined

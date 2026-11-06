@@ -18,6 +18,8 @@ const contractNames = [
   "portal.public-hybrid-candidate-page.v3",
   "portal.public-navigation-input.v2",
   "portal.public-navigation.v2",
+  "portal.public-navigation-branches.v1",
+  "portal.public-catalog-totals.v1",
   "portal.public-search-input.v4",
   "portal.public-search-page.v3",
   "portal.public-version-page.v2",

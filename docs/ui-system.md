@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-11-06
-lastReviewedCommit: 63df5af21e877986e868d1d94257cfc74cc0d514
+lastReviewedAt: 2026-11-07
+lastReviewedCommit: 6b6500fdadb0cd555714facaed54d0930d7a7dc7
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. RequestedFilters now waits for animated visibility before asserting; interaction and accessibility requirements are retained."
+lastReviewedNote: "Portal #184: reviewed separate totals/branch read demand, exact Database DTO snapshot and preserved cache, scope, UI and hosted qualification boundaries."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:

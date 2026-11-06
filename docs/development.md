@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-11-06
-lastReviewedCommit: 63df5af21e877986e868d1d94257cfc74cc0d514
+lastReviewedAt: 2026-11-07
+lastReviewedCommit: 6b6500fdadb0cd555714facaed54d0930d7a7dc7
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity. RequestedFilters now waits for animated visibility before asserting; interaction and accessibility requirements are retained."
+lastReviewedNote: "Portal #184: reviewed separate totals/branch read demand, exact Database DTO snapshot and preserved cache, scope, UI and hosted qualification boundaries."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -65,7 +65,7 @@ Use `PORTAL_BRAND=atlas pnpm dev` or `PORTAL_BRAND=atlas pnpm build` for Atlas; 
 
 Use the same exact source commit for paired brand releases, with separate public origins, build outputs and deployment receipts. Backend connection/feature settings must be verified independently of branding. Adding a brand means extending the closed selector, its presentation modules and localized copy, and the two-brand test matrix; do not fork routes, business rules or server adapters.
 
-Storybook's site toolbar injects presentation identity and matching brand tokens. `Brand/Atlas` includes four locales, desktop/mobile, dark theme, unavailable counts and catalog-selection scenarios. Synthetic counts are only story fixtures. The production home uses the shared navigation DTO; missing counts are explicitly unavailable.
+Storybook's site toolbar injects presentation identity and matching brand tokens. `Brand/Atlas` includes four locales, desktop/mobile, dark theme, unavailable counts and catalog-selection scenarios. Synthetic counts are only story fixtures. The production home uses the shared exact public-version totals DTO; missing counts are explicitly unavailable.
 
 `PORTAL_BRAND=atlas pnpm test:e2e -- tests/e2e/site-presentation.spec.ts` builds against the existing loopback fixture and checks identity, route/metadata parity, light/dark mobile/desktop accessibility, exact-version detail, citations and no-JavaScript reading. CI retains the full TianGong suite and adds the Atlas presentation suite plus existing shared functional flows. `tests/e2e/saved-datasets.spec.ts` checks the secondary Saved entry, inline persistence, removal and default sharing in four locales at desktop light and mobile dark sizes for both builds. Local browser evidence does not prove a hosted Atlas release. A new domain/deployment is a separate operational scope.
 

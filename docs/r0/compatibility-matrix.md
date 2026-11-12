@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-11-06
-lastReviewedCommit: 3ae61ce5dbadca1b72a52a48347c06ac404572ce
-lastReviewedNote: "Portal #182: reviewed on-demand facets, independent Search failure handling, native refinement fallback and Atlas data demand. Public DTOs, 30-second cache, CSP/ISR, brand scope and exact hosted release gates remain unchanged; local tests do not establish hosted capacity."
+lastReviewedAt: 2026-11-12
+lastReviewedCommit: d127295f31c6a0c1f0ff2b4211b4868c3b07a2ea
+lastReviewedNote: "Portal #187: reviewed the disabled-by-default server-only withdrawal relay, public IndexNow file and credential-leak checks. Existing rendering, CSP/ISR, brand and UI boundaries remain unchanged; exact hosted feed activation remains a separate acceptance gate."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

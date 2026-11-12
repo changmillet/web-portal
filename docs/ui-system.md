@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-11-07
-lastReviewedCommit: 6b6500fdadb0cd555714facaed54d0930d7a7dc7
+lastReviewedAt: 2026-11-12
+lastReviewedCommit: d127295f31c6a0c1f0ff2b4211b4868c3b07a2ea
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #184: reviewed separate totals/branch read demand, exact Database DTO snapshot and preserved cache, scope, UI and hosted qualification boundaries."
+lastReviewedNote: "Portal #187: reviewed the disabled-by-default server-only withdrawal relay, public IndexNow file and credential-leak checks. Existing rendering, CSP/ISR, brand and UI boundaries remain unchanged; exact hosted feed activation remains a separate acceptance gate."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:

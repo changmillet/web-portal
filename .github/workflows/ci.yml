@@ -21,6 +21,7 @@ jobs:
     env:
       PORTAL_DATA_BRANDS: tiangong_lca
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+      PORTAL_INDEX_FEED_SECRET: portal_feed_secret_sentinel_v1
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -51,6 +52,7 @@ jobs:
     env:
       PORTAL_DATA_BRANDS: tiangong_lca
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+      PORTAL_INDEX_FEED_SECRET: portal_feed_secret_sentinel_v1
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -101,6 +103,7 @@ jobs:
     env:
       PORTAL_DATA_BRANDS: tiangong_lca
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+      PORTAL_INDEX_FEED_SECRET: portal_feed_secret_sentinel_v1
     steps:
       - name: Check out repository
         uses: actions/checkout@v7

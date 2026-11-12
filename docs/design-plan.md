@@ -905,6 +905,14 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 
 旧英文数据入口 `/data` 与 `/data/` 精确永久跳转到 `/en/lca-database`。归档页面的英文数据访问用途决定目标语言，不按站点默认语言猜测。单独的无状态 `edge-functions/data/index.ts` 仅对 GET/HEAD 返回 301/no-store，并保留查询串；精确 `/data/` rewrite 与原有 `/zh/` rewrite 并存，不匹配嵌套路径或旧博客。
 
+### 11.2.1 增量通知与撤回清单
+
+Database 的事务 outbox 与 Edge 的独立 dispatcher 负责公开数据发布、更新和撤回通知；Portal 不持有服务角色、调度凭据或搜索引擎推送 token，也不在页面请求内发送通知。IndexNow 验证文件 `public/4cb8ce6fb4707a240bee58ce0c818af8.txt` 是协议要求的公开站点所有权证明，内容与文件名一致；通知接收不代表收录。
+
+`/baidu-withdrawals.txt` 是独立的动态纯文本 Route Handler，GET/HEAD 均为 `no-store`、`noindex,nofollow`。仅在 `PORTAL_INDEX_FEED_ENABLED=true`、公开索引已启用且 SITE_URL 为主站 canonical 时开放，否则返回 404。服务端只用当前项目的 publishable key 和独立的 32 字节 base64url `PORTAL_INDEX_FEED_SECRET` 调用固定 Edge 只读清单路径；该 capability 不能认领或发送任务。浏览器输入、Cookie 和 Authorization 不转发，上游 redirect 被拒绝，完整请求/读取超时为 15 秒。
+
+Edge 负责逐项确认历史公开、当前撤回及 HTTP 404 证明，并校验当前品牌范围。Portal 再检查协议版本、canonical 与品牌头、四语 Process/Flow 精确版本 URL、唯一性、50,000 条及严格小于 5 MiB 的 UTF-8 上限；任何失败整份返回无敏感信息的 503，不发布截断清单或陈旧缓存。恢复公开的 URL 必须立即从清单排除。百度普通推送只接新增/更新，撤回清单须在其 HTTPS 死链后台单独登记；该登记和 provider 的实际读取/处理是独立上线证据。现有 sitemap、SEO 元数据、公开可见性与搜索限流继续由原契约约束。
+
 ### 11.3 缓存与新鲜度
 
 安全状态与缓存所有权不能重叠：

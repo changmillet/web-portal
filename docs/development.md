@@ -79,6 +79,12 @@ Omit `PORTAL_DATA_BRANDS` or set it to `tiangong_lca` for a Tiangong-only build,
 
 Database display mode must be qualified and activated separately. A scoped reader refusal stays unavailable. Single-brand pages hide the redundant brand control; multi-brand pages offer only allowed brands. Every version/card/detail carries its independent data brand, preserving existing source attribution. Exchange support may cross brand boundaries, but batch exact Flow-link eligibility emits links only for standalone in-scope Flows. No Platform synchronization is added.
 
+## Incremental search notification relay
+
+`PORTAL_INDEX_FEED_ENABLED` defaults off. For the canonical public deployment, provision `PORTAL_INDEX_FEED_SECRET` through the host secret store with the same dedicated read-only feed credential as the Edge dispatcher; never use its dispatch secret or a Supabase service key. Deploy and validate Database/Edge first, then verify the public IndexNow key file and activate the feed only after its complete live manifest is checked. Disable the flag to roll back the relay without changing public datasets or sitemap behavior. IndexNow sending and Baidu dead-link registration belong to the separately verified operational rollout.
+
+Run `tests/unit/portal-withdrawal-feed.test.ts` for scope, credential, redirect, byte, UTF-8, timeout and fail-closed checks; `tests/e2e/search-notifications.spec.ts` verifies the real production route and public verification file. The existing bundle/response secret scan includes the feed credential marker and CI sentinel. Hosted validation must separately prove no-store/noindex, GET/HEAD, matching origin/brands, upstream failure behavior and removal of restored URLs; local fixtures do not qualify activation.
+
 ## Choose local checks
 
 Run the checks that demonstrate the changed behavior before committing or pushing. A passing check remains evidence for an unchanged diff; repeat it when code, inputs or relevant configuration change, or when investigating a failure. Use the scripts in [package.json](../package.json), and record the actual commands and results in the PR.

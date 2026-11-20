@@ -28,7 +28,7 @@ overrides:
   # Keep Next's compatible image runtime, including the fixed librsvg binaries.
   next>sharp: 0.35.5
   # Keep Storybook's environment loader on the same compatible Next maintenance line.
-  vite-plugin-storybook-nextjs>@next/env: 16.4.2
+  vite-plugin-storybook-nextjs>@next/env: 16.4.6
 pnpmfile: scripts/pnpm-hooks.cjs
 minimumReleaseAgeExclude:
   - "@next/env@16.4.2"

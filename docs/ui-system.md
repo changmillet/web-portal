@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-11-12
-lastReviewedCommit: d127295f31c6a0c1f0ff2b4211b4868c3b07a2ea
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 08b6645e48a146caf0649892f6a4bf101c3c4f7e
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Portal #187: reviewed the disabled-by-default server-only withdrawal relay, public IndexNow file and credential-leak checks. Existing rendering, CSP/ISR, brand and UI boundaries remain unchanged; exact hosted feed activation remains a separate acceptance gate."
+lastReviewedNote: "Portal #196 reviewed the 10.6.7 Storybook renderer with the private TypeScript 6 compiler. The component manifest and accessibility checks retain their existing contracts."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:

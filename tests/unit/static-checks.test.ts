@@ -1,5 +1,15 @@
 // @vitest-environment node
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import childProcess from "node:child_process";
+import { createHash } from "node:crypto";
+import {
+  chmodSync,
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 
@@ -39,6 +49,7 @@ function fixture() {
 }
 afterEach(() => {
   vi.unstubAllEnvs();
+  vi.restoreAllMocks();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
@@ -131,9 +142,16 @@ describe("aggregate static checks", () => {
     const root = fixture();
     const bin = join(root, "bin");
     mkdirSync(bin);
-    const command = join(bin, "controlled-mapshaper");
+    const command = join(
+      bin,
+      process.platform === "win32" ? "controlled-mapshaper.exe" : "controlled-mapshaper",
+    );
     writeFileSync(command, "original tool");
-    vi.stubEnv("MAPSHAPER_BIN", "controlled-mapshaper");
+    chmodSync(command, 0o755);
+    vi.stubEnv(
+      "MAPSHAPER_BIN",
+      process.platform === "win32" ? "controlled-mapshaper.exe" : "controlled-mapshaper",
+    );
     vi.stubEnv("PATH", bin + delimiter + process.env.PATH);
     expect(() => runStaticChecks({ root, run: () => {} })).not.toThrow();
     expect(() =>
@@ -144,5 +162,59 @@ describe("aggregate static checks", () => {
         },
       }),
     ).toThrow(/map inputs or outputs changed/u);
+  });
+  it.each(process.platform === "win32" ? ["directory"] : ["directory", "non-executable file"])(
+    "binds the executable selected after a same-name %s on PATH",
+    (kind) => {
+      const root = fixture();
+      const early = join(root, "early"),
+        late = join(root, "late");
+      mkdirSync(early);
+      mkdirSync(late);
+      const name =
+        process.platform === "win32" ? "controlled-mapshaper.exe" : "controlled-mapshaper";
+      if (kind === "directory") mkdirSync(join(early, name));
+      else {
+        writeFileSync(join(early, name), "not executable");
+        chmodSync(join(early, name), 0o644);
+      }
+      const selected = join(late, name);
+      writeFileSync(selected, "selected executable");
+      chmodSync(selected, 0o755);
+      vi.stubEnv("MAPSHAPER_BIN", name);
+      vi.stubEnv("PATH", early + delimiter + late);
+      const before = captureMapInputs(root);
+      expect(before.files["mapshaper-selected-command"]).toBe(
+        createHash("sha256").update("selected executable").digest("hex"),
+      );
+      expect(() =>
+        runStaticChecks({
+          root,
+          run: (stage: string) => {
+            if (stage === "test") writeFileSync(selected, "changed selected executable");
+          },
+        }),
+      ).toThrow(/map inputs or outputs changed/u);
+    },
+  );
+
+  it("retains fixed pnpm shell commands for native and Windows command-shim installations", () => {
+    const root = fixture();
+    vi.stubEnv("npm_execpath", "C:/Program Files/pnpm/pnpm.cmd");
+    const spawn = vi.spyOn(childProcess, "spawnSync").mockReturnValue({
+      pid: 1,
+      status: 0,
+      signal: null,
+      output: [],
+      stdout: Buffer.alloc(0),
+      stderr: Buffer.alloc(0),
+    });
+    runStaticChecks({ root });
+    expect(spawn).toHaveBeenNthCalledWith(
+      1,
+      "pnpm run check:toolchain",
+      expect.objectContaining({ shell: true }),
+    );
+    expect(spawn).toHaveBeenCalledWith("pnpm run test", expect.objectContaining({ shell: true }));
   });
 });

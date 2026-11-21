@@ -1,7 +1,15 @@
-import { spawnSync } from "node:child_process";
+import childProcess from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
-import { delimiter, isAbsolute, join, relative, resolve } from "node:path";
+import {
+  accessSync,
+  constants,
+  lstatSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  statSync,
+} from "node:fs";
+import { basename, delimiter, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { resolveMapshaper } from "./maps/lib/mapshaper.mjs";
@@ -57,19 +65,29 @@ export function captureMapInputs(root = process.cwd()) {
     add(realpathSync(join(root, "node_modules/mapshaper")), "mapshaper-package");
   } else {
     // The standalone override is an explicit existing generator interface.
-    const extensions =
-      process.platform === "win32"
-        ? ["", ...(process.env.PATHEXT ?? ".EXE;.CMD").split(";")]
-        : [""];
-    const candidates =
-      isAbsolute(tool.command) || tool.command.includes("/") || tool.command.includes("\\")
-        ? [resolve(tool.command)]
-        : (process.env.PATH ?? "")
-            .split(delimiter)
-            .flatMap((directory) =>
-              extensions.map((extension) => join(directory, tool.command + extension)),
-            );
-    const executable = candidates.find((candidate) => existsSync(candidate));
+    const windows = process.platform === "win32";
+    // Node's direct executable search uses COM/EXE on Windows, not PATHEXT.
+    const extensions = windows
+      ? [...(basename(tool.command).includes(".") ? [""] : []), ".com", ".exe"]
+      : [""];
+    const hasPath = windows ? /[/\\:]/u.test(tool.command) : tool.command.includes("/");
+    const directories = windows
+      ? [process.cwd(), ...(process.env.PATH ?? "").split(delimiter)]
+      : (process.env.PATH ?? "").split(delimiter);
+    const candidates = hasPath
+      ? extensions.map((extension) => resolve(tool.command + extension))
+      : directories.flatMap((directory) =>
+          extensions.map((extension) => join(directory, tool.command + extension)),
+        );
+    const executable = candidates.find((candidate) => {
+      try {
+        if (!statSync(candidate).isFile()) return false;
+        if (!windows) accessSync(candidate, constants.X_OK);
+        return true;
+      } catch {
+        return false;
+      }
+    });
     if (!executable) throw new Error(`Cannot resolve selected mapshaper command: ${tool.command}`);
     add(realpathSync(executable), "mapshaper-selected-command");
     if (tool.origin === "scripts/maps/.toolchain")
@@ -87,14 +105,13 @@ export function captureMapInputs(root = process.cwd()) {
 }
 
 function runStage(stage) {
-  const entry = process.env.npm_execpath;
-  if (!entry) throw new Error("Run the aggregate static checks through pnpm check.");
-  const javascript = /\.[cm]?js$/u.test(entry);
-  const result = spawnSync(
-    javascript ? process.execPath : entry,
-    [...(javascript ? [entry] : []), "run", stage],
-    { stdio: "inherit", env: process.env },
-  );
+  // Closed source-authored stages retain the original package-script shell
+  // contract, including pnpm.cmd on Windows. No CLI input enters the shell.
+  const result = childProcess.spawnSync(`pnpm run ${stage}`, {
+    shell: true,
+    stdio: "inherit",
+    env: process.env,
+  });
   if (result.error) throw result.error;
   if (result.status !== 0)
     throw new Error(`${stage} failed with ${result.signal ?? result.status}.`);

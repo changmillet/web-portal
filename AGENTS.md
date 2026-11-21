@@ -16,8 +16,8 @@ checkPaths:
   - docs/development.md
   - docs/ui-system.md
   - .docpact/config.yaml
-lastReviewedAt: 2026-10-27
-lastReviewedCommit: 623f37fb551b9558e054ba73f76718d83263f313
+lastReviewedAt: 2026-11-21
+lastReviewedCommit: ad56746054a6f99484cb2c2d0cbd12abdd9fd110
 lastReviewedNote: "Portal #166: reviewed preserved Main business/runtime/ownership boundaries with the original React/MSW addon and Actions scope; source preparation grants no Main merge or production authority."
 related:
   - docs/development.md

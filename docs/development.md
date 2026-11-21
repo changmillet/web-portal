@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-11-07
-lastReviewedCommit: 6b6500fdadb0cd555714facaed54d0930d7a7dc7
+lastReviewedAt: 2026-11-21
+lastReviewedCommit: ad56746054a6f99484cb2c2d0cbd12abdd9fd110
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -102,7 +102,7 @@ CI and the manual WebGL lane pin setup-node 7.1.0 to its executable commit. The 
 
 The SEO report upload pins upload-artifact 7.0.2. It retains the report name, glob, `always()` condition and warning for missing files. Default archive, hidden-file exclusion, compression, retention and non-overwrite behavior are unchanged. Its artifact client now honors a positive integer `Retry-After` with a 120-second aggregate retry-wait limit; local source controls do not prove a hosted artifact upload. Run the focused `tests/unit/actions-contract.test.ts` gate for workflow/toolchain changes, alongside workflow syntax validation. Hosted CI and release acceptance remain required independently.
 
-`pnpm check` is the aggregate static, unit, build and bundle command when the change warrants that breadth. [CI](../.github/workflows/ci.yml) retains the complete required checks on PRs and `main`, including production browser and Storybook checks. If an expected event produces no run, its manual trigger can run the same complete workflow on the reviewed branch; verify the run's exact head before treating it as evidence. Focused local verification does not waive CI or the [release acceptance requirements](design-plan.md#194-发布门).
+`pnpm check` is the aggregate static, unit, build and bundle command when the change warrants that breadth. Its in-process runner retains the original gate order and runs the complete unfiltered unit suite. The existing region-map asset test performs the one full 29-layer deterministic rebuild; the earlier map stage still runs the MapLibre check. Before that stage, the runner hashes the region-map source/output inventory, pinned contract/dictionary, generator code, locked package inputs and selected mapshaper package. It checks those inputs again immediately after the unit suite and after the remaining gates, rejecting source, output, inventory or tool drift. No file-based receipt or environment switch can skip the actual rebuild or assert that it passed. Independent `pnpm check:maps` remains the complete region-map and MapLibre check. All original region-map geometry/byte assertions and its 180-second child deadline remain intact. [CI](../.github/workflows/ci.yml) retains the complete required checks on PRs and `main`, including production browser and Storybook checks. If an expected event produces no run, its manual trigger can run the same complete workflow on the reviewed branch; verify the run's exact head before treating it as evidence. Focused local verification does not waive CI or the [release acceptance requirements](design-plan.md#194-发布门).
 
 Unit tests rendering shared localized client components must use `NextIntlClientProvider` with the test locale dictionary. Production browser checks open the shortlist add disclosure and filter drawer before interacting with their controls. For constrained local machines, use `--workers=2` for the multi-locale UI suite.
 

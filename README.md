@@ -16,8 +16,8 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-11-21
-lastReviewedCommit: ad56746054a6f99484cb2c2d0cbd12abdd9fd110
+lastReviewedAt: 2026-11-24
+lastReviewedCommit: 2ac6e08be0c8ead5271b7fa40a1b5dc06c3c285f
 lastReviewedNote: "Portal #166: reviewed current Main setup/toolchain and unchanged validation commands against the composed React/MSW/Actions graph; full runtime qualification remains separate."
 related:
   - docs/development.md

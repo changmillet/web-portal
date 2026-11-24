@@ -70,8 +70,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Restore Playwright Chromium cache
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: |
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            pnpm exec playwright install-deps chromium
+          else
+            pnpm exec playwright install --with-deps chromium
+          fi
       # The checker is a generated public snapshot: the authoritative repository is private, so CI
       # verifies the committed bytes against the manifest instead of checking it out.
       - name: Verify the vendored shared SEO checker
@@ -91,6 +103,45 @@ jobs:
           name: portal-seo-checker-report
           path: test-results/**/seo-report.json
           if-no-files-found: warn
+
+  atlas-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PORTAL_DATA_BRANDS: tiangong_lca
+      PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+      PORTAL_INDEX_FEED_SECRET: portal_feed_secret_sentinel_v1
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Enable exact pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.24.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore Playwright Chromium cache
+        id: playwright-atlas-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.playwright-atlas-cache.outputs.cache-hit }}" = "true" ]; then
+            pnpm exec playwright install-deps chromium
+          else
+            pnpm exec playwright install --with-deps chromium
+          fi
 
       - name: Atlas production route and presentation parity
         env:
@@ -123,22 +174,35 @@ jobs:
 
       - name: Build component workspace
         run: pnpm build:storybook
+      - name: Restore Playwright Chromium cache
+        id: playwright-components-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: |
+          if [ "${{ steps.playwright-components-cache.outputs.cache-hit }}" = "true" ]; then
+            pnpm exec playwright install-deps chromium
+          else
+            pnpm exec playwright install --with-deps chromium
+          fi
       - name: Run component interaction and accessibility gates
         run: pnpm test:storybook
 
   validate:
     if: ${{ always() }}
-    needs: [static, browser, components]
+    needs: [static, browser, atlas-parity, components]
     runs-on: ubuntu-latest
     steps:
       - name: Require all gates
         env:
           STATIC_RESULT: ${{ needs.static.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
+          ATLAS_PARITY_RESULT: ${{ needs.atlas-parity.result }}
           COMPONENTS_RESULT: ${{ needs.components.result }}
         run: |
           test "$STATIC_RESULT" = success
           test "$BROWSER_RESULT" = success
+          test "$ATLAS_PARITY_RESULT" = success
           test "$COMPONENTS_RESULT" = success

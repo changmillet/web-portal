@@ -9,7 +9,7 @@ const artifact = "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646c
 
 describe("reviewed Actions inputs", () => {
   it.each([
-    [".github/workflows/ci.yml", 3],
+    [".github/workflows/ci.yml", 4],
     [".github/workflows/webgl.yml", 1],
   ] as const)("preserves exact Node and pnpm setup in %s", (path, count) => {
     const workflow = read(path);
@@ -43,7 +43,7 @@ describe("reviewed Actions inputs", () => {
   it("preserves the failure-report artifact identity and defaults", () => {
     const workflow = read(".github/workflows/ci.yml");
     const step = workflow.match(
-      /      - name: Upload shared SEO checker report\n([\s\S]*?)(?=\n      - name:)/,
+      /      - name: Upload shared SEO checker report\n([\s\S]*?)(?=\n      - name:|\n\n  [a-z-]+:|$)/,
     )?.[1];
     expect(step?.trim()).toBe(
       `if: always()\n        uses: ${artifact}\n        with:\n          name: portal-seo-checker-report\n          path: test-results/**/seo-report.json\n          if-no-files-found: warn`,

@@ -27,6 +27,8 @@ Dependabot monitors the single root pnpm graph on Thursdays at 05:00 and GitHub 
 
 To match the approved Node 24 LTS runtime, npm ignores `@types/node` versions `>=25.0.0` while retaining Node 24 updates; revisit this bound only with explicit approval for a future Node major.
 
+For Portal #202, `vitest`, `@vitest/browser-playwright`, and `@vitest/coverage-v8` were bumped from `4.1.11` to `4.1.12` so `@vitest/mocker` resolves to `4.1.12`, resolving GHSA-qxg6-89mg-rqv8 and GHSA-xp26-3454-mjgp while keeping the Vitest 4.1.x compatibility tuple intact.
+
 The configuration reuses `ci.yml` unchanged. Its `static`, `browser`, `components` and `validate` jobs remain required on the supported existing events. The aggregate requires every other job to succeed. Static validation includes the full dependency audit; browser and component jobs use existing fixtures and public sentinel values, without deployment credentials. Discovery adds no job, platform, general local command or privileged bot execution.
 
 Review the actual manifest and lockfile diff and apply the existing [local check matrix](development.md#choose-local-checks). Keep Next and `@next/env` aligned, the React/Storybook peer graph compatible, and `@types/node` on the reviewed Node 24 line. Preserve `scripts/pnpm-hooks.cjs`, its exact docgen package matches and private TS 6 boundary, the application TS 7 compiler, pnpm overrides, optional dependency/build policy and exact release-age exceptions. A proposal that outgrows those contracts needs explicit compatibility work; do not bypass a hook or broaden an override merely to make installation pass.

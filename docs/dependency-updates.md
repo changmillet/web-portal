@@ -13,8 +13,8 @@ whenToUpdate:
 checkPaths:
   - .github/dependabot.yml
   - docs/dependency-updates.md
-lastReviewedAt: 2026-10-16
-lastReviewedCommit: 2f77c58eb89ae64ae83a4b7d8520eadb167886bd
+lastReviewedAt: 2026-11-25
+lastReviewedCommit: 5288a58cbcc871688535e54cb1d7e61f7457f75f
 lastReviewedNote: "Portal #159: bounded npm/Actions discovery reuses all four existing CI jobs and preserves runtime, dependency-policy, generated-contract and hosted-release boundaries."
 related:
   - development.md
@@ -26,6 +26,8 @@ related:
 Dependabot monitors the single root pnpm graph on Thursdays at 05:00 and GitHub Actions at 05:20, in Asia/Shanghai. Both entries use a seven-day version cooldown. The initial limits are two npm proposals and one Actions proposal. Related Next/React, Storybook/MSW, browser-testing, styling and Oxlint patch/minor updates are grouped. Package majors and other packages remain individually visible; pre-1.0 minor updates still need compatibility review. Preserve existing full-SHA Actions references when updating them.
 
 To match the approved Node 24 LTS runtime, npm ignores `@types/node` versions `>=25.0.0` while retaining Node 24 updates; revisit this bound only with explicit approval for a future Node major.
+
+For Portal #202, `vitest`, `@vitest/browser-playwright`, and `@vitest/coverage-v8` were bumped from `4.1.11` to `4.1.12` so `@vitest/mocker` resolves to `4.1.12`, resolving GHSA-qxg6-89mg-rqv8 and GHSA-xp26-3454-mjgp while keeping the Vitest 4.1.x compatibility tuple intact.
 
 The configuration reuses `ci.yml` unchanged. Its `static`, `browser`, `components` and `validate` jobs remain required on the supported existing events. The aggregate requires every other job to succeed. Static validation includes the full dependency audit; browser and component jobs use existing fixtures and public sentinel values, without deployment credentials. Discovery adds no job, platform, general local command or privileged bot execution.
 

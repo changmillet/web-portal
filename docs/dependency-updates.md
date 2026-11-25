@@ -14,7 +14,7 @@ checkPaths:
   - .github/dependabot.yml
   - docs/dependency-updates.md
 lastReviewedAt: 2026-11-25
-lastReviewedCommit: 4f3567da70e5942274dc6882c9a2a8b4e326b271
+lastReviewedCommit: 5288a58cbcc871688535e54cb1d7e61f7457f75f
 lastReviewedNote: "Portal #159: bounded npm/Actions discovery reuses all four existing CI jobs and preserves runtime, dependency-policy, generated-contract and hosted-release boundaries."
 related:
   - development.md

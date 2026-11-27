@@ -3,6 +3,8 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+import { discoverE2eSpecs, partitionE2eSpecs } from "../../scripts/ci-e2e-shard.mjs";
+
 const read = (path: string) => readFileSync(path, "utf8");
 const setupNode = "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0";
 const artifact = "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2";
@@ -49,5 +51,20 @@ describe("reviewed Actions inputs", () => {
       `if: always()\n        uses: ${artifact}\n        with:\n          name: portal-seo-checker-report\n          path: test-results/**/seo-report.json\n          if-no-files-found: warn`,
     );
     expect(workflow.match(/uses: actions\/upload-artifact@/g)).toHaveLength(1);
+  });
+
+  it("partitions every tests/e2e spec without gaps or overlap and pins seo-checker to shard 1", () => {
+    const entries = discoverE2eSpecs();
+    expect(entries.length).toBeGreaterThanOrEqual(2);
+
+    const partitions = partitionE2eSpecs(entries, 2);
+    expect(partitions).toHaveLength(2);
+    expect(partitions[0]).toContain("tests/e2e/seo-checker.spec.ts");
+    expect(partitions[1]).not.toContain("tests/e2e/seo-checker.spec.ts");
+
+    const combined = partitions.flat().sort((a, b) => a.localeCompare(b));
+    const expected = entries.map((entry) => entry.path).sort((a, b) => a.localeCompare(b));
+    expect(new Set(combined).size).toBe(expected.length);
+    expect(combined).toEqual(expected);
   });
 });

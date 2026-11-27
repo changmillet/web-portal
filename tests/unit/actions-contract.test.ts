@@ -9,7 +9,7 @@ const artifact = "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646c
 
 describe("reviewed Actions inputs", () => {
   it.each([
-    [".github/workflows/ci.yml", 4],
+    [".github/workflows/ci.yml", 5],
     [".github/workflows/webgl.yml", 1],
   ] as const)("preserves exact Node and pnpm setup in %s", (path, count) => {
     const workflow = read(path);

@@ -12,10 +12,57 @@ permissions:
 
 concurrency:
   group: portal-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      mode: ${{ steps.classify.outputs.mode }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Classify CI lane (fail-closed)
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HAS_FULL_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'ci:full') }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" != "pull_request" ] || [ "$HAS_FULL_LABEL" = "true" ]; then
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          docs_only="true"
+          file_count=0
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            file_count=$((file_count + 1))
+            case "$file" in
+              AGENTS.md|README.md|docs/*|.docpact/*) ;;
+              *)
+                docs_only="false"
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "$BASE_SHA" HEAD)
+          if [ "$file_count" -gt 0 ] && [ "$docs_only" = "true" ]; then
+            echo "mode=docs-only" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+          fi
+
   static:
+    needs: plan
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -39,14 +86,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run docs-only format check
+        if: needs.plan.outputs.mode == 'docs-only'
+        run: pnpm check:toolchain && pnpm format:check
+
       - name: Run static and unit gates
+        if: needs.plan.outputs.mode != 'docs-only'
         env:
           SITE_URL: http://localhost:3000
         run: pnpm check
+
       - name: Audit vulnerabilities
+        if: needs.plan.outputs.mode != 'docs-only'
         run: pnpm check:vulnerabilities
 
-  browser:
+  browser-core:
+    needs: plan
+    if: needs.plan.outputs.mode != 'docs-only'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -89,12 +145,12 @@ jobs:
       - name: Verify the vendored shared SEO checker
         run: python3 scripts/verify-vendored-seo.py
 
-      - name: Production integration gates
+      - name: Production integration gates (shard 1/2)
         env:
           SEO_CHECKER_PATH: ${{ github.workspace }}/scripts/vendor/workspace-seo/check.py
           PORTAL_SEO_EVIDENCE: "1"
           BAIDU_SITE_VERIFICATION: ci-public-baidu-marker
-        run: pnpm test:e2e
+        run: node scripts/ci-e2e-shard.mjs --shard 1 --total 2
 
       - name: Upload shared SEO checker report
         if: always()
@@ -104,7 +160,77 @@ jobs:
           path: test-results/**/seo-report.json
           if-no-files-found: warn
 
+  browser-secondary:
+    needs: plan
+    if: needs.plan.outputs.mode != 'docs-only'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PORTAL_DATA_BRANDS: tiangong_lca
+      PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+      PORTAL_INDEX_FEED_SECRET: portal_feed_secret_sentinel_v1
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Enable exact pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.24.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore Playwright Chromium cache
+        id: playwright-secondary-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.playwright-secondary-cache.outputs.cache-hit }}" = "true" ]; then
+            pnpm exec playwright install-deps chromium
+          else
+            pnpm exec playwright install --with-deps chromium
+          fi
+
+      - name: Production integration gates (shard 2/2)
+        env:
+          BAIDU_SITE_VERIFICATION: ci-public-baidu-marker
+        run: node scripts/ci-e2e-shard.mjs --shard 2 --total 2
+
+  browser:
+    if: ${{ always() }}
+    needs: [plan, browser-core, browser-secondary]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require browser shards
+        env:
+          MODE: ${{ needs.plan.outputs.mode }}
+          PLAN_RESULT: ${{ needs.plan.result }}
+          CORE_RESULT: ${{ needs.browser-core.result }}
+          SECONDARY_RESULT: ${{ needs.browser-secondary.result }}
+        run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
+          if [ "$MODE" = "docs-only" ]; then
+            test "$CORE_RESULT" = skipped -o "$CORE_RESULT" = success
+            test "$SECONDARY_RESULT" = skipped -o "$SECONDARY_RESULT" = success
+          else
+            test "$CORE_RESULT" = success
+            test "$SECONDARY_RESULT" = success
+          fi
+
   atlas-parity:
+    needs: plan
+    if: needs.plan.outputs.mode != 'docs-only'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -148,9 +274,16 @@ jobs:
           PORTAL_BRAND: atlas
         run: pnpm test:e2e -- tests/e2e/site-presentation.spec.ts tests/e2e/product-shell.spec.ts tests/e2e/saved-datasets.spec.ts --grep "site presentation|renders public search|HTML-first search to two-member comparison|secondary tools"
 
-  components:
+  components-shard:
+    name: components (shard ${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.mode != 'docs-only'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/2", "2/2"]
     env:
       PORTAL_DATA_BRANDS: tiangong_lca
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
@@ -173,13 +306,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build component workspace
+        if: matrix.shard == '1/2'
         run: pnpm build:storybook
+
       - name: Restore Playwright Chromium cache
         id: playwright-components-cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-chromium-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Chromium
         run: |
           if [ "${{ steps.playwright-components-cache.outputs.cache-hit }}" = "true" ]; then
@@ -187,22 +323,50 @@ jobs:
           else
             pnpm exec playwright install --with-deps chromium
           fi
+
       - name: Run component interaction and accessibility gates
-        run: pnpm test:storybook
+        run: pnpm test:storybook -- --shard=${{ matrix.shard }}
+
+  components:
+    if: ${{ always() }}
+    needs: [plan, components-shard]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require component shards
+        env:
+          MODE: ${{ needs.plan.outputs.mode }}
+          PLAN_RESULT: ${{ needs.plan.result }}
+          SHARDS_RESULT: ${{ needs.components-shard.result }}
+        run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
+          if [ "$MODE" = "docs-only" ]; then
+            test "$SHARDS_RESULT" = skipped -o "$SHARDS_RESULT" = success
+          else
+            test "$SHARDS_RESULT" = success
+          fi
 
   validate:
     if: ${{ always() }}
-    needs: [static, browser, atlas-parity, components]
+    needs: [plan, static, browser, atlas-parity, components]
     runs-on: ubuntu-latest
     steps:
       - name: Require all gates
         env:
+          MODE: ${{ needs.plan.outputs.mode }}
+          PLAN_RESULT: ${{ needs.plan.result }}
           STATIC_RESULT: ${{ needs.static.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
           ATLAS_PARITY_RESULT: ${{ needs.atlas-parity.result }}
           COMPONENTS_RESULT: ${{ needs.components.result }}
         run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
           test "$STATIC_RESULT" = success
           test "$BROWSER_RESULT" = success
-          test "$ATLAS_PARITY_RESULT" = success
           test "$COMPONENTS_RESULT" = success
+          if [ "$MODE" = "docs-only" ]; then
+            test "$ATLAS_PARITY_RESULT" = skipped -o "$ATLAS_PARITY_RESULT" = success
+          else
+            test "$ATLAS_PARITY_RESULT" = success
+          fi

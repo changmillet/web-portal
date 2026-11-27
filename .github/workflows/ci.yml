@@ -145,12 +145,12 @@ jobs:
       - name: Verify the vendored shared SEO checker
         run: python3 scripts/verify-vendored-seo.py
 
-      - name: Production integration gates (shard 1/2)
+      - name: Production integration gates (shard 1/4)
         env:
           SEO_CHECKER_PATH: ${{ github.workspace }}/scripts/vendor/workspace-seo/check.py
           PORTAL_SEO_EVIDENCE: "1"
           BAIDU_SITE_VERIFICATION: ci-public-baidu-marker
-        run: node scripts/ci-e2e-shard.mjs --shard 1 --total 2
+        run: node scripts/ci-e2e-shard.mjs --shard 1 --total 4
 
       - name: Upload shared SEO checker report
         if: always()
@@ -161,10 +161,15 @@ jobs:
           if-no-files-found: warn
 
   browser-secondary:
+    name: browser-secondary (shard ${{ matrix.shard }}/4)
     needs: plan
     if: needs.plan.outputs.mode != 'docs-only'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [2, 3, 4]
     env:
       PORTAL_DATA_BRANDS: tiangong_lca
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
@@ -201,10 +206,10 @@ jobs:
             pnpm exec playwright install --with-deps chromium
           fi
 
-      - name: Production integration gates (shard 2/2)
+      - name: Production integration gates (shard ${{ matrix.shard }}/4)
         env:
           BAIDU_SITE_VERIFICATION: ci-public-baidu-marker
-        run: node scripts/ci-e2e-shard.mjs --shard 2 --total 2
+        run: node scripts/ci-e2e-shard.mjs --shard ${{ matrix.shard }} --total 4
 
   browser:
     if: ${{ always() }}
@@ -283,7 +288,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: ["1/2", "2/2"]
+        shard: ["1/4", "2/4", "3/4", "4/4"]
     env:
       PORTAL_DATA_BRANDS: tiangong_lca
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
@@ -306,7 +311,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build component workspace
-        if: matrix.shard == '1/2'
+        if: matrix.shard == '1/4'
         run: pnpm build:storybook
 
       - name: Restore Playwright Chromium cache

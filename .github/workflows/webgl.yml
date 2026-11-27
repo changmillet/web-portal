@@ -30,8 +30,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Restore Playwright Chromium cache
+        id: playwright-webgl-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: |
+          if [ "${{ steps.playwright-webgl-cache.outputs.cache-hit }}" = "true" ]; then
+            pnpm exec playwright install-deps chromium
+          else
+            pnpm exec playwright install --with-deps chromium
+          fi
       - name: WebGL component interactions
         run: pnpm test:storybook
       - name: Homepage WebGL performance
